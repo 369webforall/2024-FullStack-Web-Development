@@ -2,7 +2,10 @@
 
 [OPEN DOC](https://docs.google.com/document/d/1ELQUPHZVlOkczI4yI2p_uJD5po9nPI-NFIRUnzzEa3k/edit?usp=sharing)
 
+## Configure git
+
 ```
+
 Set your username:
 
  git config --global user.name "Robert Welker"
@@ -90,11 +93,16 @@ GitHub is a code hosting platform for version control and collaboration. It lets
 
 - ssh-keygen -t ed25519 -C "your_email@example.com"
 
-- to copy the SSH key
+**add your SSH private key to the ssh-age**
+
+- ssh-add ~/.ssh/id_ed25519
+
+**copy the SSH key**
 
 - cat ~/.ssh/id_ed25519.pub | clip
 
-- go to github setting SSH and GPG keys
+**go to github setting SSH and GPG keys**
+
 - Click new SSH key
 - give title
 - paste the key in box
