@@ -73,7 +73,7 @@ or
 
 create different feature branches as you progress in your project. commit regularly.
 
-![git-branch](/image/github-flow.jpg)
+![git-branch](./image/github-flow.jpg)
 
 # Create Accout in Github
 
