@@ -2,6 +2,10 @@
 
 [OPEN DOC](https://docs.google.com/document/d/1ELQUPHZVlOkczI4yI2p_uJD5po9nPI-NFIRUnzzEa3k/edit?usp=sharing)
 
+# Video
+
+[Setup system](https://youtu.be/kvI8U2m-MpA)
+
 ## Configure git
 
 ```
