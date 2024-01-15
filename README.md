@@ -1,5 +1,8 @@
 # 2024-FullStack-Web-Development
 
+**COURSE TOPICS**
+[Course TOPICS](https://docs.google.com/spreadsheets/d/1lEdATp18fRM0FKvwVG5KdCKRLHEkDfmCOa13u110ClY/edit#gid=0)
+
 **Warmin up**
 
 - Introduction

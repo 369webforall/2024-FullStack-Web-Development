@@ -5,7 +5,6 @@
 ## Configure git
 
 ```
-
 Set your username:
 
  git config --global user.name "Robert Welker"
@@ -93,7 +92,7 @@ GitHub is a code hosting platform for version control and collaboration. It lets
 
 - ssh-keygen -t ed25519 -C "your_email@example.com"
 
-**add your SSH private key to the ssh-age**
+**add your SSH private key to the ssh-agent**
 
 - ssh-add ~/.ssh/id_ed25519
 
