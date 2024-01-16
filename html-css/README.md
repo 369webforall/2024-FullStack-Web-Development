@@ -1,5 +1,12 @@
 # HTML - Hypertext Markup Language
 
+- Describes the structure of a Web page
+
+  **Two things you must understand in high level**
+
+1. Tags
+2. Attributes
+
 **What is HTML?**
 
 - HTML stands for Hyper Text Markup Language
