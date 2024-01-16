@@ -7,6 +7,10 @@
 1. Tags
 2. Attributes
 
+# Video
+
+[HTML-class1](https://youtu.be/PsIji3CFRM8)
+
 **What is HTML?**
 
 - HTML stands for Hyper Text Markup Language
