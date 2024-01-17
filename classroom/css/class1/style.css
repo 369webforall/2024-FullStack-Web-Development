@@ -1,0 +1,35 @@
+
+* {
+    margin: 0;
+    padding: 0;
+   box-sizing: border-box;
+}
+
+h2 {
+    background-color: gray;
+    padding: 20px;
+    color: red;
+}
+
+#big {
+    background-color: blue;
+    padding: 10px;
+    color: white;
+}
+
+.h3class {
+    background-color: #b52a2a;
+
+    padding: 5px;
+    color: aliceblue;
+    margin-top: 10px;
+}
+
+
+section {
+    border: 5px solid purple;
+    margin: 10px;
+    padding: 20px 40px;
+    width: 600px;
+    
+}
