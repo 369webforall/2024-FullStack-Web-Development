@@ -4,35 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Zerodha-online stock trading website</title>
+    <link rel="stylesheet" href="./zerodha.css" />
   </head>
   <body>
     <header>
-      <div>
-        <img src="./images/logo.svg" alt="zerodha logo" />
-      </div>
+      <div class="wrapper" id="navbar">
+        <div>
+          <img src="./images/logo.svg" alt="zerodha logo" class="logo" />
+        </div>
 
-      <nav>
-        <ul>
-          <li>Signup</li>
-          <li>About</li>
-          <li>Products</li>
-          <li>Pricing</li>
-          <li>Support</li>
-          <li>🍔</li>
-        </ul>
-      </nav>
+        <nav>
+          <ul>
+            <li>Signup</li>
+            <li>About</li>
+            <li>Products</li>
+            <li>Pricing</li>
+            <li>Support</li>
+            <li>🍔</li>
+          </ul>
+        </nav>
+      </div>
     </header>
-    <main>
-      <img src="./images/landing.png" alt="zerodha stock trading" />
+    <div class="wrapper">
+      <main>
+        <img src="./images/landing.png" alt="zerodha stock trading" />
 
-      <div>
-        <h1>Invest in everything</h1>
-        <p>
-          Online platform to invest in stocks, derivatives, mutual funds, and
-          more
-        </p>
-        <button>Sign up now</button>
-      </div>
-    </main>
+        <div class="content">
+          <h1>Invest in everything</h1>
+          <p>
+            Online platform to invest in stocks, derivatives, mutual funds, and
+            more
+          </p>
+          <button>Sign up now</button>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
