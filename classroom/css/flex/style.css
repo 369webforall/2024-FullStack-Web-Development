@@ -1,0 +1,47 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.wrapper {
+  border: 5px solid peru;
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.container {
+  border: 5px solid red;
+  padding: 5px;
+  display: flex;
+  gap: 20px;
+  height: 80vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  font-size: 5rem;
+}
+
+#box1 {
+  background-color: hsl(0, 40%, 35%);
+  flex: 2 1 0;
+}
+#box2 {
+  background-color: hsl(62, 62%, 53%);
+  flex: 1 1 0;
+}
+#box3 {
+  background-color: hsl(228, 73%, 58%);
+  flex: 1 1 0;
+  align-self: flex-end;
+}
+#box4 {
+  background-color: hsl(291, 79%, 21%);
+  flex: 1 1 0;
+  flex-basis: 80%;
+}
