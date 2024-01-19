@@ -162,3 +162,7 @@ As the final step, you need to enable formatOnSave in VSCode. You can add the fo
 ```
 
 [Integrating Prettier and ESLint With VS Code](https://enlear.academy/integrating-prettier-and-eslint-with-vs-code-1d2f6fb53bc9)
+
+# linters-config
+
+[linters-config](https://github.com/microverseinc/linters-config)
