@@ -6,6 +6,8 @@
 
 [Setup system](https://youtu.be/kvI8U2m-MpA)
 
+[Linter Config](https://youtu.be/qbhTKsPjZpg)
+
 ## Configure git
 
 ```
