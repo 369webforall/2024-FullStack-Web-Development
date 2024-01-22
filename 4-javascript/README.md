@@ -9,7 +9,7 @@
 
 # Video (class recording and offline video)
 
-[Data-types and operators](https://youtu.be/uxIxeAIxBhk)
+1. [Data-types and operators](https://youtu.be/uxIxeAIxBhk)
 
 **JavaScript basic to advance**
 
