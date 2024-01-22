@@ -7,6 +7,10 @@
 - OOPS in js
 - Projects
 
+# Video (class recording and offline video)
+
+[Data-types and operators](https://youtu.be/uxIxeAIxBhk)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
@@ -384,6 +388,7 @@ render();
 💡 JavaScript is a programming language that is used for converting static web pages to **interactive and dynamic** web pages.
 
 💡 A Javascript engine is a program present in web browsers that executes Javascript code.
+
 ![Browser engine]('./images/browserrenders.jpg)
 
 2. What are **client side** and **server side** ?
