@@ -11,6 +11,8 @@
 
 1. [Data-types and operators](https://youtu.be/uxIxeAIxBhk)
 
+2. [class-2](https://youtu.be/8v3mxQRboqE)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
