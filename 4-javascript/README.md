@@ -17,6 +17,8 @@
 
 4. [class-4-function](https://youtu.be/sAE106lp_X4)
 
+5. [class-5-function](https://youtu.be/qG0n6AfIiLg)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
