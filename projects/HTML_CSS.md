@@ -75,7 +75,8 @@ copy the link of pull request and send me in my chatbox.
 i will review u code, and once confirm you can merge the code.
 
 - once you merge , host your code
-[hosting- netlify]()
+
+[hosting- netlify](https://www.netlify.com/)
 
 - merge you code in local machine to development.
 - git merge development
