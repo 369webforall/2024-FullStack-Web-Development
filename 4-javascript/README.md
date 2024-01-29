@@ -19,6 +19,8 @@
 
 5. [class-5-function](https://youtu.be/qG0n6AfIiLg)
 
+6. [class-6-A_Loops](https://youtu.be/Bp9WBhneHk0)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
