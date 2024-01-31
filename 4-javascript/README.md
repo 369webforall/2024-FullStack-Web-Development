@@ -23,6 +23,8 @@
 
 7. [class-7-A&B_Loops](https://youtu.be/SxhjO2Hwy3g)
 
+8. [class-8-B&C_Loops](https://youtu.be/Pv-1WlHDfa4)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
