@@ -27,6 +27,8 @@
 
 9. [class-9-Array](https://youtu.be/ZvtUqBNAJdU)
 
+10. [class-10-Array-AB](https://youtu.be/pP-r0Ifk7xY)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.

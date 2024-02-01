@@ -33,3 +33,20 @@ console.log(num.length)
 
 
 console.log(num[num.length - 1])
+
+let name = "hello i dev"
+
+
+
+let arr = [2,5,6]
+arr.push(100)
+
+console.log(arr)
+
+let n5 = arr.pop()
+console.log("pop method")
+console.log(n5)
+
+arr.unshift(200)
+console.log(arr)
+console.log(arr.shift())
