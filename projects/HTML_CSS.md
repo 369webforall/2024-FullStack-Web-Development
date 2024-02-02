@@ -89,3 +89,32 @@ i will review u code, and once confirm you can merge the code.
 git add .
 git commit -m 'live link'
 git push
+
+
+# Project-2
+[Product Landing Page](https://product-landing-page.freecodecamp.rocks/)
+
+## Steps to follow
+- create github repositories
+- clone to your computer
+- create **development** branch - git checkout -b developement
+- Update readme file,  add **# Product Landing Page** in first line
+- git add .
+- git commit -m 'development branch'
+- git push --set-upstream origin main
+or just try git push and follow the instruction from git.
+
+- change the setting in github to make your development branch as the main branch
+
+- Create new branch -  git checkout -b feature-branch
+
+-  add index.html, style.css, images folder
+- first complete the structure of your webpage, basically write all the html part first. 
+- make sure to commit on every section of the code.
+
+- style the page.
+- Once the project is completed open the pull request and send me the link.
+- merge pull request.
+- host the website.
+- update readme file.
+
