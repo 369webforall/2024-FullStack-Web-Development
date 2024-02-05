@@ -31,6 +31,10 @@
 
 11. [class-10-Array-C](https://youtu.be/8nssSSWNm3A)
 
+12. [class-11-Nested_Array-A](https://youtu.be/S6j6ppffi-s)
+
+13. [class-12-Nested_Array-B & C](https://youtu.be/3qVvEWgAXCw)
+
 **JavaScript basic to advance**
 
 Welcome to JavaScript. JavaScript is the language of the web. I enjoy using and teaching JavaScript and I hope you will do so too.
