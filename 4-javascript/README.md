@@ -35,7 +35,7 @@
 
 13. [class-12-Nested_Array-B & C](https://youtu.be/3qVvEWgAXCw)
 
-14. [class-13-JS-Object](https://youtu.be/wFtKP343Upc)
+14. [class-13-JS-Object](https://youtu.be/zFsk3191J1k)
 
 
 **JavaScript basic to advance**
