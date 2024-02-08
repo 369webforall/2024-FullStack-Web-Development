@@ -37,6 +37,8 @@
 
 14. [class-13-JS-Object](https://youtu.be/zFsk3191J1k)
 
+14. [class-14-JS-Object](https://youtu.be/QF0sipnF3D8)
+
 
 **JavaScript basic to advance**
 
