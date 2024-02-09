@@ -8,7 +8,9 @@ CSS is the language we use to style a Web page.
 
 [2-CSS-FlexBox](https://youtu.be/BGH3V68sJ5A)
 
-[3-HTML-CSS-STRUCTURE](https://youtu.be/CjfpbOK8r7o)
+[3-HTML-CSS-STRUCTURE-1](https://youtu.be/CjfpbOK8r7o)
+
+[4-HTML-CSS-STRUCTURE-2](https://youtu.be/ZGYN6XIv5vg)
 
 # What is CSS?
 
