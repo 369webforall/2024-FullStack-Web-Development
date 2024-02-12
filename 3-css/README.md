@@ -14,6 +14,8 @@ CSS is the language we use to style a Web page.
 
 [5-HTML-CSS-STRUCTURE-3](https://youtu.be/GHZp0xS5t2c)
 
+[6-HTML-CSS-STRUCTURE-4](https://youtu.be/LnPR2zfJxUk)
+
 # What is CSS?
 
 - CSS stands for Cascading Style Sheets
