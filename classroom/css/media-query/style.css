@@ -1,0 +1,33 @@
+:root{
+    font-size: 20px;
+}
+
+.parent {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+background-color: red;
+}
+h1 {
+    font-size: 4rem;
+}
+
+
+
+@media(max-width:600px){
+    .parent {
+        flex-direction: column;
+        background-color: green;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+}
+
+
+
+/* em , rem */
+
+/* vh, vw */
