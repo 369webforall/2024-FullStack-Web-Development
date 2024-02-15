@@ -1,33 +1,45 @@
-:root{
-    font-size: 20px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    font-size: 10px;
+}
+
+p {
+    font-size: 1.8rem;
+}
+
+h1 {
+    font-size: 2rem;
 }
 
 .parent {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-background-color: red;
-}
-h1 {
-    font-size: 4rem;
+  border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
+@media(min-width:600px){
+    .parent{
+        background-color: red;
 
-
-@media(max-width:600px){
-    .parent {
-        flex-direction: column;
-        background-color: green;
     }
 
     h1 {
-        font-size: 1.5rem;
+        font-size: 3rem;
     }
-    
 }
 
-
-
-/* em , rem */
-
-/* vh, vw */
+@media(min-width:1000px){
+    .parent{
+        background-color: green;
+        flex-direction: row;
+    }
+    h1 {
+        font-size: 4rem;
+    }
+}

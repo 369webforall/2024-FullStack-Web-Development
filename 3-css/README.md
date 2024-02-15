@@ -18,6 +18,8 @@ CSS is the language we use to style a Web page.
 
 [7-HTML-Form-css unit and media](https://youtu.be/lDjSo6ie1JU)
 
+[7-HTML-CSS-Challenge 8](https://youtu.be/9Wy1iFhPvew)
+
 # What is CSS?
 
 - CSS stands for Cascading Style Sheets
