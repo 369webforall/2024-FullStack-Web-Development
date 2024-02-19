@@ -41,6 +41,8 @@
 
 15. [class-15-JS-Object](https://youtu.be/JyO-gcEDg0s)
 
+16. [class-16-A_decomposing_problems](https://youtu.be/dmp5n3_MvVE)
+
 
 **JavaScript basic to advance**
 
