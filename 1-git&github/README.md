@@ -31,6 +31,20 @@ git config --global edit
 
 ```
 
+```javascript
+
+git add .
+git commit -m "change 1"
+git log 
+git reset . - this is just opposite of add . take out of the staging area.
+git push
+
+git checkout -b branch_name
+
+git checkout version id to go any previous version.
+
+```
+
 ## Let's create project now and practice the git command
 
 - create new folder
