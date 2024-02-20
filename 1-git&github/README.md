@@ -8,6 +8,8 @@
 
 [Linter Config](https://youtu.be/qbhTKsPjZpg)
 
+[Git Revision](https://youtu.be/YnZbWjKRK-o)
+
 ## Configure git
 
 ```
