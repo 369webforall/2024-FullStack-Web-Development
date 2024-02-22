@@ -43,6 +43,8 @@
 
 16. [class-16-A_decomposing_problems](https://youtu.be/dmp5n3_MvVE)
 
+17. [Javascript revision](https://youtu.be/WKIV07RBC8g)
+
 
 **JavaScript basic to advance**
 
