@@ -1,4 +1,28 @@
 # DOM
+
+- What Is DOM
+
+- Accessing Elements From DOM
+- All About Text
+- DOM Classes
+- DOM Attributes
+- DOM Siblings
+- DOM Styles
+- Creating and Appending Elements
+- Remove Elements From DOM
+- DOM Events Basics
+- DOM Events In Depth
+- Keyboard Events
+
+## DOM Projects
+
+- DOM Project 1
+- DOM Project 2
+- DOM Project 3
+- DOM Project 4
+- DOM Project 5
+
+
 ## Document Object Model
 
 A standard for how to get, change, add, or delete HTML Element.
@@ -16,6 +40,25 @@ A standard for how to get, change, add, or delete HTML Element.
 - DOM represents the page so that programs can change  the document structure, style and content.
 - DOM represents the document as **nodes and Objects**
 
+```js
+console.log(document)
+console.log(document) // display the document 
+
+console.dir(document) // list all the document properties
+
+// document is an object so that, we can access its properties and methods
+
+console.log(document.head)
+console.log(document.title)
+console.log(document.body)
+
+
+document.title = "This is the DOM class"
+
+document.body.style.backgroudColor = "gray"
+
+```
+
 ## DOM Example
 
 ![Execution Context](../images/DOM1.png)
@@ -24,27 +67,11 @@ A standard for how to get, change, add, or delete HTML Element.
 
 - **Using javascript api's we can manipulate DOM object. Some of them are**
 
-- createElement
-- appendChild
-- removeElement
-- querySelector
-- querySelectorAll
-- insertBefore
-- addEventListener
-- removeEventListener
-- removeChild
-- replaceChild
-- cloneNode
-- setAttribute
-- getAttribute
-- removeAttribute
-
-
 **Example**
 
 ```javascript
   const btn = document.createElement("button");
-   const onClick = () => alert("clicked");
+  const onClick = () => alert("clicked");
    btn.textContent = "Creating Node";
    document.body.appendChild(btn);
    btn.addEventListener("click", onClick);
@@ -54,14 +81,6 @@ A standard for how to get, change, add, or delete HTML Element.
 ```
 
 ## Practical exercise
-
-console.log(document) // display the document 
-
-console.dir(document) // list all the document properties
-
-document.title = "This is the DOM class"
-
-document.body.style.backgroudColor = "gray"
 
 **In the DOM manipulation exercise, there are many ways to manipulate the DOM, but we will just learn some common techniques which are enough to do our job.**
 
@@ -105,13 +124,14 @@ body.appendChild(div)
 
 div.innerHTML ="<h1>This is em tag</h1>"
 
-Right way to add the html is create node first, add text and then appen.
-
+- Right way to add the html is create node first, add text and then append.
+```js
 const h1 = document.createElement('h1')
 h1.textContent = "This is heading one"
 div.append(h1)
-
+```
 **methods to select the html element**
+
 - document.getElementById("demo");
 
 - document.getElementsByClassName("hero");
@@ -120,7 +140,7 @@ div.append(h1)
 - document.querySelector(".hero")
 - document.querySelector("div")
 
-getAttribute, 
+**getAttribute**
 
 let demo = document.querySelector("#demo")
 
