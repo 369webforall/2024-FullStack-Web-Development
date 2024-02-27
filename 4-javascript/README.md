@@ -47,6 +47,8 @@
 
 18. [class-18-B_decomposing_problems](https://youtu.be/5ehab3Eb0CY)
 
+19. [class-19-C_decomposing_problems](https://youtu.be/aZEYfif3Fyo)
+
 
 **JavaScript basic to advance**
 

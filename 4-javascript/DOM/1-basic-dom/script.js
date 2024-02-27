@@ -1,26 +1,17 @@
-// how to create element
-console.log(document.body)
-
-let div = document.createElement('div');
-
-console.log(div)
-
-div.textContent = "This is div"
-
-document.body.append(div)
-
-console.log(div)
+// creating element
+// adding the text
+// appening the element node
 
 
+let demo = document.getElementById("demo")
+
+console.log(demo)
 
 
-let h2 = document.createElement("h2")
+let h1 = document.createElement('h1')
 
-h2.innerText = "This is h2"
+console.log(h1)
 
-console.log(h2)
+h1.textContent = "This is heading one"
 
-document.body.appendChild(h2)
-
-document.body.innerHTML = '<p>This is a paragraph</p>'
-
+demo.append(h1)
