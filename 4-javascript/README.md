@@ -53,6 +53,8 @@
 
 1. [Todo App](https://youtu.be/HpSeT2rzlnY)
 
+2. [Todo App-2](https://youtu.be/vKVURGWYljA)
+
 
 **JavaScript basic to advance**
 
