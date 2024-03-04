@@ -101,10 +101,16 @@ greet("John Welker")
 
 ```js
 
-const sum = (...numbers) => numbers.reduce((acc, val) => acc + val, 0);
-const arr1 = [1, 2, 3];
-const arr2 = [...arr1, 4, 5];
+function abcd(a,b,c,...d){
+  console.log(a,b,c,d)
+}
 
+abcd(1,2,3,4,5,6,7,8)
+
+const arr1 = [1, 2, 3];
+const arr2 = [...arr1, 4, 5]; // spread operator
+
+console.log(arr2)
 
 ```
 
@@ -113,6 +119,15 @@ const arr2 = [...arr1, 4, 5];
 - Destructuring allows extracting values from arrays or objects into distinct variables.
 
 ```js
+let a = [2, 3]
+
+let [b, c] = a;
+
+let obj = {name:"dev", age: 45}
+
+let {age} = obj;
+
+console.log(age)
 
 const [first, second] = [1, 2];
 
