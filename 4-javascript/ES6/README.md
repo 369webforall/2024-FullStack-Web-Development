@@ -1,5 +1,10 @@
 # ES6
 
+## Video - class recording
+
+ 1. [ES6- class1](https://youtu.be/5o3-sU-9E8I)
+ 
+
  **Learn what is important**
  ## Topics
 
