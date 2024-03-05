@@ -3,6 +3,8 @@
 ## Video - class recording
 
  1. [ES6- class1](https://youtu.be/5o3-sU-9E8I)
+
+ 1. [ES6- class2 - async -await - constructor function](https://youtu.be/jGv_vPf2N3k)
  
 
  **Learn what is important**

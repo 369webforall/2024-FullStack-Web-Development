@@ -101,28 +101,6 @@ let person2 = new Person('Robert','Welker');
 console.log(person1)
 
 ```
-
-
-**Classes:**
-
-- Classes in JavaScript provide a structured and organized approach to defining objects and their behavior, making 
-   code more readable and maintainable. They're an essential part of modern JavaScript programming.
-
-
-```js
-
-class Rectangle {
-    constructor(width, height) {
-        this.width = width;
-        this.height = height;
-    }
-    area() {
-        return this.width * this.height;
-    }
-}
-
-```
-
 - above code is functionally equivalent to the following:
 
 ```js
@@ -174,6 +152,27 @@ Person.prototype.getFullName = function () {
     
 let person = new Person("John", "Doe");
 console.log(person.getFullName());
+
+```
+
+
+**Classes:**
+
+- Classes in JavaScript provide a structured and organized approach to defining objects and their behavior, making 
+   code more readable and maintainable. They're an essential part of modern JavaScript programming.
+
+
+```js
+
+class Rectangle {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+    area() {
+        return this.width * this.height;
+    }
+}
 
 ```
 
