@@ -14,7 +14,6 @@
 - default parameters
 - rest parameter and spread operator
 - Destructuring
-- classes
 - modules
 - Promises
 - Async and await
