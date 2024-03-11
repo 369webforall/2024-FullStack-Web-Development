@@ -1,5 +1,10 @@
 # Mini-JS-Projects
 
+# Video Link
+
+[Project-class 1](https://youtu.be/kXHo0BPAjZQ)
+
+
 1. Color flipper
 2. Palindrome Checker
 3. Random Quote Generator
