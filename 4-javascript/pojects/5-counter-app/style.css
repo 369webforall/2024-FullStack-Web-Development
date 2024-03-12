@@ -4,12 +4,22 @@
     box-sizing: border-box;
 
 }
+body {
+    border:5px solid green;
+    width: 100%;
+    height: 100vh;
+    margin: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .wrapper {
     width: 70%;
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
+    
 }
 
 #btn-wrapper {
