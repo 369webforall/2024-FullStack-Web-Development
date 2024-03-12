@@ -9,6 +9,7 @@
 2. Palindrome Checker
 3. Random Quote Generator
 4. Stop Watch
+5. counter app
 
 
 # Color flipper
@@ -241,5 +242,240 @@ function resetClock() {
     duration = 0;
     setTime()
 }
+
+```
+
+# 5-Counter App
+
+write 3 function, display, increase and decrease, job of display function is to render the count.
+
+- index.html
+
+```html
+    <div class=" wrapper">
+        <h1>Counter App</h1>
+
+        <div>
+            <h2>Count: <span id="output"></span></h2>
+
+            <div id="btn-wrapper">
+                <button id="increase" onclick="increase()">+</button>
+                <button id="decrease" onclick="decrease()">-</button>
+            </div>
+            
+        </div>
+    </div>
+```
+
+style.css
+
+```css
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+.wrapper {
+    width: 70%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#btn-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 18px;
+}
+button {
+    background-color: purple;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+}
+```
+
+script.js
+
+```js
+
+let count = 0;
+
+const display = () => {
+    let span = document.getElementById("output");
+    span.innerText = count;
+};
+
+function increase(){
+    count += 1
+    display()
+}
+
+function decrease(){
+    count -= 1
+    display()
+}
+
+display();
+```
+
+# 6-Calculator app
+
+- In this app we will foucs on UI of the calculator and use eval function to perform the calcualtion.
+
+index.html
+
+```html
+   <div class="calculator">
+        <input type="text" placeholder="0" id="inputBox" readonly>
+
+        <div>
+            <button class="operator ac">AC</button>
+            <button class="operator del">DEL</button>
+            <button class="operator">%</button>
+            <button class="operator">/</button>
+        </div>
+         <div>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="operator">*</button>
+        </div>
+        <div>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button class="operator">-</button>
+        </div>
+        <div>
+            <button>3</button>
+            <button>2</button>
+            <button>1</button>
+            <button class="operator">+</button>
+        </div>
+        <div>
+            <button>00</button>
+            <button>0</button>
+            <button>.</button>
+            <button class="operator">=</button>
+        </div>
+    </div>
+```
+
+style.css
+```css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightblue;
+}
+
+.calculator {
+    padding: 20px;
+    border:2px solid #000;
+    border-radius: 16px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.8);
+    background-color: #000;
+}
+
+input {
+    width: 320px;
+    padding: 24px;
+    margin: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0px 0px 8px rgba(0,0,0,0.5);
+    font-size: 65px;
+    text-align: right;
+    color: #fff;
+    border: solid 2px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    text-shadow: 0px 1px 5px rgba(0,0,0,0.2);
+}
+
+input::placeholder{
+    color:#fff;
+}
+
+button {
+    width: 60px;
+    height: 60px;
+    margin: 10px;
+    color: #fff;
+    background-color: rgba(0,0,0,0.7);
+    font-size: 24px;
+    cursor: pointer;
+    border:1px solid rgba(255,25,255,0.2);
+    border-radius: 25px;
+    text-shadow: 0px 1px 5px rgba(0,0,0,0.2);
+}
+
+.ac, .del {
+    font-size: 20px;
+}
+
+button:hover{
+    color:#fff;
+    background: #f67c14;
+}
+
+.equalBtn {
+    background:#f67c14;
+}
+
+.operator {
+    color: #f67c14;
+}
+```
+
+
+script.js
+
+```js
+const display = document.getElementById("inputBox");
+let button = document.querySelectorAll("button");
+let buttonArray = Array.from(button)
+
+let string = ""
+
+buttonArray.forEach((btn)=>{
+    btn.addEventListener('click', (event)=>{
+        if(event.target.innerHTML === "DEL"){
+            string = string.substring(0, string.length - 1)
+            display.value = string
+        }else if(event.target.innerHTML === "AC"){
+            string =""
+            display.value = string
+        } else if(event.target.innerHTML === '='){
+            string = eval(string)
+            display.value = string
+        }
+        
+        
+        else {
+            string += event.target.innerHTML;
+            display.value = string
+            
+        }
+        
+
+    })
+})
 
 ```

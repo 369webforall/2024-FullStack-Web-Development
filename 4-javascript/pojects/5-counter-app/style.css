@@ -1,0 +1,29 @@
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+.wrapper {
+    width: 70%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#btn-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 18px;
+}
+button {
+    background-color: purple;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+}
