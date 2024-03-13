@@ -88,7 +88,7 @@ walkDog(()=>{
 
  ```
  
- **Promise is the solution**
+ **Promise is the solution for callback hell**
 
  ```js
 
