@@ -434,7 +434,7 @@ render();
 
 💡 A Javascript engine is a program present in web browsers that executes Javascript code.
 
-![Browser engine]('./images/browserrenders.jpg)
+![Browser engine](./images/browserrenders.jpg)
 
 2. What are **client side** and **server side** ?
 
@@ -442,7 +442,7 @@ render();
 
 💡 A server is a device, computer, or software application that provides services,resources or functions to client.
 
-![client server]('./images/client-server.png)
+![client server](./images/client-server.png)
 
 3. What is **Scope** in Javascript ?
 
