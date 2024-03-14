@@ -1,4 +1,5 @@
 # Video 
+[scope-scope-chain-1](https://youtu.be/o-T4RRNuE94)
 
 ## Topics
 - Lexical environment
