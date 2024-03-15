@@ -2,13 +2,13 @@
 
 // synchronouse code
 
-console.log("Start")
-const a = () => {
-    console.log("function call")
-};
+//console.log("Start")
+// const a = () => {
+//     console.log("function call")
+// };
 
-a();
-console.log("end")
+// a();
+// console.log("end")
 
 //web api settimeout,  call back function will wait in callback queue
 
@@ -23,6 +23,7 @@ console.log("end")
 console.log("Start")
 
 let btn  = document.getElementById("btn")
+console.log(btn)
 btn.addEventListener('click', function cb(){
 console.log("Button is clicked, so callback function is called")
 })
