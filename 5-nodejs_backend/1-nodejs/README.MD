@@ -591,3 +591,5 @@ app.listen(3000, ()=>{
 - PATCH- /users/1 - update the user with id 1
 - DELETE- / users/1 - delete the user with id 1
 
+
+[Restful API guide-freecodecamp](https://www.freecodecamp.org/news/build-a-restful-api-using-node-express-and-mongodb/)
