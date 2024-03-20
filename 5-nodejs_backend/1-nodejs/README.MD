@@ -440,3 +440,154 @@ Finally, we start the Express server and listen on a specified port.
 
 Middleware functions provide a powerful way to modularize and reuse code in an Express application, improving maintainability and readability. They allow you to separate concerns and handle common tasks in a centralized manner.
 
+
+## Middleware exercise
+
+- every action function is a middleware
+- easiest way to create a middleware is to write a function
+- middleware runs in order we define it.
+- you can define middleware for specific path or route.
+
+
+```js
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+app.use(loggedIn);
+
+app.get('/', (req, res)=>{
+res.send("This is root route")
+})
+
+app.get('/users',loggedIn, (req, res)=>{
+    res.send("This is users page")
+    })
+
+function loggedIn(req, res, next){
+const user = req.query.name;
+const pass = req.query.pass;
+if(user==='dev' && pass==='12345'){
+    console.log("User Logged in")
+    next()
+    return;
+}else {
+    res.send("User not allowed, try again")
+}
+}
+
+app.listen(3000, ()=>{
+    console.log("Server is running in port 3000")
+})
+
+```
+
+
+# Mongodb
+
+- MongoDB is a popular NoSQL database, or document based database that stores data in a flexible, JSON-like format. Express.js is a web application framework for Node.js, which is commonly used for building web servers and APIs. Integrating MongoDB with an Express server allows you to store and retrieve data from the database within your web application.
+
+Here's an example of how you can set up an Express server with MongoDB integration:
+
+First, make sure you have MongoDB installed and running on your machine.
+
+`npm install mongoose`
+
+`npm i body-parser`
+`app.use(bodyParser.urlencoded({ extended: false }))`
+
+- bodyparse is middleware to parse any data from body.
+
+
+`app.js`
+
+```js
+const express = require("express");
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+
+mongoose.connect('mongodb+srv://demo:vA5gKnp7daj0H03P@cluster0.plk3ydz.mongodb.net/users?retryWrites=true&w=majority&appName=Cluster0').then(()=>{
+    console.log("Mongodb is connected");
+})
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+});
+
+// Define a schema for your data
+const Schema = mongoose.Schema;
+const userSchema = new Schema({
+    name: String,
+    email: String,
+    password:String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+const app = express();
+
+app.use(express.json());
+app.use(loggedIn);
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get('/', (req, res)=>{
+res.send("This is root route")
+})
+
+app.get('/users',loggedIn, async (req, res)=>{
+    try {
+        const users = await User.find();
+        res.status(201).json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+    })
+
+    app.post("/users", async (req, res)=>{
+const user = new User({
+    name:req.body.name,
+    email:req.body.email,
+    password:req.body.password
+})
+try {
+    const newUser = await user.save();
+    res.status(201).json(newUser);
+} catch (error) {
+    console.log(error)
+}
+
+    })
+function loggedIn(req, res, next){
+const user = req.query.name;
+const pass = req.query.pass;
+if(user==='dev' && pass==='12345'){
+    console.log("User Logged in")
+    next()
+    return;
+}else {
+    res.send("User not allowed, try again")
+}
+}
+
+app.listen(3000, ()=>{
+    console.log("Server is running in port 3000")
+})
+
+
+```
+
+## Restapi
+
+**REST API - JSON**
+
+- GET - /users - Get all the users
+- GET - /users/1 - Get user with id 1
+- GET - /users/2 - Get user with id 2
+- POST- /users - create a new user
+- PATCH- /users/1 - update the user with id 1
+- DELETE- / users/1 - delete the user with id 1
+
