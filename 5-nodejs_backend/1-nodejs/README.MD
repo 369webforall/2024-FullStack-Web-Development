@@ -5,6 +5,10 @@
 
 2. [express-http-server](https://youtu.be/Sv49pWgcFHs)
 
+3. [express-middleware](https://youtu.be/SKFHS6Ajkp4)
+
+4. [express-mongodb](https://youtu.be/U2tzvlU4Qec)
+
 1. `Node.js:` Node.js is an open-source, cross-platform JavaScript runtime environment that allows developers to run JavaScript code outside of a web browser. It's built on Chrome's V8 JavaScript engine and is widely used for building server-side and networking applications.
 
 2. `npm (Node Package Manager):` npm is the default package manager for Node.js. It allows developers to install, share, and manage dependencies efficiently.
