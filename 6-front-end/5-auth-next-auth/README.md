@@ -1,3 +1,3 @@
 # Class Recording
 
-1. [Auth](:target="_blank")
+1. [Auth]()
