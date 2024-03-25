@@ -1,12 +1,12 @@
 # Class Recording
 
-1. [React-basic](:target="_blank")
+1. [React-basic](target="_blank")
 
 # React-Nextjs Topics
 
 ## REACTJS
 
-[REACTJS](https://react.dev/ :target="_blank")
+[REACTJS](https://react.dev/ "REACTJS" target="_blank")
 
 ### You will learn
 
@@ -110,7 +110,7 @@ Follow the Doccument from react website.
 
 ## NEXTJS
 
-[NEXTJS](https://nextjs.org/docs :target="_blank")
+[NEXTJS](https://nextjs.org/docs target="_blank")
 
 1.  Intro to nextjs
 
