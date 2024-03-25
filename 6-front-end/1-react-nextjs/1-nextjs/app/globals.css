@@ -2,3 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+button {
+    padding: 12px 24px;
+    background-color: aqua;
+    border-radius: 33px;
+    width: 150px;
+}
