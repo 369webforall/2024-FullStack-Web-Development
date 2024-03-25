@@ -1,6 +1,6 @@
 # Class Recording
 
-1. [React-basic]()
+1. [1. React-Nextjs-basic](https://youtu.be/ws9wAT2gMAQ)
 
 # React-Nextjs Topics
 
