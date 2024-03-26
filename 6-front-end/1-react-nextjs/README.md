@@ -140,19 +140,35 @@ Follow the Doccument from react website.
 
     `npx create-next-app@latest`
 
-3.  Routing & navigation
+3.  Routing & navigation 
+  - navbar, footer, layout,
 4.  Metadata
 5.  Styling: Tailwind CSS 
 6.  Image component
+  - Image component avoid CLS - content layout shift.
+  -  If your are using external image link then make sure to update next.config file.
+
+```js
+module.exports = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+      },
+    ],
+  },
+}
+```
 7.  Client vs Server components
 8.  Server actions
-9.  Suspense and streaming
-10. Caching, static & dynamic rendering
-11. Middleware
-12. Folder structure
-13. Static export
-14. Push to GitHub
-15. Environment variables in Next.js
-16. Hosting
+9. Caching, static & dynamic rendering
+10. Middleware
+11. Folder structure
+12. Static export
+13. Push to GitHub
+14. Environment variables in Next.js
+15. Hosting
 
 
+[dummy/fake JSON data](https://dummyjson.com/)
