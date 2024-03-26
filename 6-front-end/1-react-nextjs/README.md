@@ -4,6 +4,8 @@
 
 2. [React-Nextjs-basic](https://youtu.be/3h_Qd63kQ8Q)
 
+3. [React-Nextjs-Routing](https://youtu.be/93gSQme8HEY)
+
 # React-Nextjs Topics
 
 ## REACTJS

@@ -1,21 +1,13 @@
-import Button from "@/components/button"
-import User from "@/components/user"
-const HomePage = () => {
-  return(
+import React from 'react'
+
+const Home = () => {
+  return (
     <div>
-<h1 className="text-4xl text-red-800">This is home page</h1>
-  <p>This is a paragraph</p>
-<div className="mx-5">
+      <h1>Home page</h1>
+      <p>This is paragragraph.</p>
 
-
-  <Button />
-
- <User name="John Welker" age={40} />
- <User name="Dev" age={45} />
- <User name="Dipesh" age={20} />
-  </div>
     </div>
   )
 }
 
-export default HomePage
+export default Home

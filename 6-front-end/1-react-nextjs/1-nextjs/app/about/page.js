@@ -1,11 +1,9 @@
+"use client"
 import React from 'react'
-
+console.log("This is server page")
 const AboutPage = () => {
   return (
-    <div>
-        <h1>About Page</h1>
-        <p>This is the details of the about page</p>
-    </div>
+    <div>AboutPage</div>
   )
 }
 
