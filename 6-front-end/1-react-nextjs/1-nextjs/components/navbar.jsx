@@ -7,7 +7,8 @@ const Navbar = () => {
         {id:2, label:'About', href:'/about'},
         {id:3, label:'Blogs', href:'/blogs'},
         {id:4, label:'Contact', href:'/contact'},
-        {id:5, label:'Dashboard', href:'/dashboard'}
+        {id:5, label:'Dashboard', href:'/dashboard'},
+        {id:6, label:'Products', href:'/products'}
     ]
   return (
     <header className='flex border-b gap-4 items-center py-4'>

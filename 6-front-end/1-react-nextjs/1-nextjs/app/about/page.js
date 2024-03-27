@@ -1,10 +1,7 @@
-"use client"
-import React from 'react'
-console.log("This is server page")
 const AboutPage = () => {
-  return (
-    <div>AboutPage</div>
-  )
+return (
+   <div className='text-left text-4xl text-red-600'>hello world</div>
+)
 }
 
 export default AboutPage
