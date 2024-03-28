@@ -1,6 +1,6 @@
 # Class Recording
 
-1. [TypeScript-basic]()
+1. [TypeScript-basic](https://youtu.be/HVmwU7O0nVY)
 
 
 ## Types of languages
