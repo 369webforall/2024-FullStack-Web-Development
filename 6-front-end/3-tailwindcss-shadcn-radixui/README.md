@@ -1,6 +1,6 @@
 # Class Recording
 
-1. [tailwindcss-basic]()
+1. [tailwindcss-basic](https://youtu.be/wZrXdXWeQaM)
 
 
 # Complete the challenges using nextjs and tailwindcss.
