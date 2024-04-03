@@ -2,6 +2,8 @@
 
 1. [tailwindcss-basic](https://youtu.be/3nyzRSSNDAE)
 
+2. [tailwindcss-ch3](https://youtu.be/RlSKM9zKsjQ)
+
 
 # Complete the challenges using nextjs and tailwindcss.
 
@@ -10,3 +12,6 @@
 - Install nextjs project with typescript and tailwind css
 - understand the folder structure
 - practice the tailwind by following document from tailwind official website.
+
+[Tailwind css cheatsheet](https://tailwindcomponents.com/cheatsheet/)
+
