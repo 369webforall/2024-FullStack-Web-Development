@@ -6,6 +6,8 @@
 
 3. [tailwindcss-ch6](https://youtu.be/j3kfk2Outpg)
 
+4. [tailwindcss-grid](https://youtu.be/EVe7uXfVAVk)
+
 
 # Complete the challenges using nextjs and tailwindcss.
 

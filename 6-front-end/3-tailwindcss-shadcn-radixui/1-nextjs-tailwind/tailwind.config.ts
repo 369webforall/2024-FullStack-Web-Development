@@ -14,6 +14,14 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+
+    gridTemplateRows: {
+      
+
+      // Complex site-specific row configuration
+      'layout': 'auto 1fr auto',
+    }
+
   },
   plugins: [],
 };
