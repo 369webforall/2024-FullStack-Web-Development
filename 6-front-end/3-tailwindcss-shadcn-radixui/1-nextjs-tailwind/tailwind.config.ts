@@ -20,8 +20,8 @@ const config: Config = {
 
       // Complex site-specific row configuration
       'layout': 'auto 1fr auto',
-    }
-
+    },
+   
   },
   plugins: [],
 };
