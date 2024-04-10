@@ -1,3 +1,4 @@
+import { Oswald } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -13,6 +14,10 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily:{
+        oswald:["var(--oswald)"],
+        moon:["var(--moon)"]
+      }
     },
 
     gridTemplateRows: {
