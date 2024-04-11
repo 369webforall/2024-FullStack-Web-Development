@@ -12,7 +12,6 @@ export default function Ch8Layout({
   return (
     <div className={`h-full grid grid-rows-layout ${oswald.className} ${moon.className}`}>
       <Navbar />
-
       <main>{children}</main>
       <Footer />
     </div>

@@ -8,6 +8,7 @@ const Ch8 = () => {
       <SectionOne />
      <SectionTwo />
       <SectionThree />
+      
     </>
   )
 }

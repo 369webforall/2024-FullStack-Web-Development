@@ -12,6 +12,10 @@
 
 6. [tailwindcss-challenge -ch8](https://youtu.be/bMy3qiQU3nc)
 
+7. [tailwindcss-challenge -ch8-footer](https://youtu.be/cS4xBVZM2jw)
+
+7. [tailwindcss-challenge -ch8-footer](https://youtu.be/D8Q6hZD7afA)
+
 
 # Complete the challenges using nextjs and tailwindcss.
 
