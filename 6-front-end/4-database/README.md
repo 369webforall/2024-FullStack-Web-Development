@@ -1,5 +1,9 @@
 # Database
 
+## Class Recording
+
+1. [Database class 1](https://youtu.be/dwVAs2ysdM4)
+
 ## What is a database?
 
 - Learning objectives
