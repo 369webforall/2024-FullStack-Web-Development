@@ -137,3 +137,93 @@ pg is a Node.js library that you can use in your backend app to store data in th
 ## Why is SQL important?
 SQL is important because it is how you interact directly with databases. Yes, you might be able to work with databases through libraries and not use or write any SQL, but knowing what is happening underneath will prove to be an invaluable asset.
 
+## Step 6  - Creating a table and defining it’s schema.
+
+**Table in SQL**
+
+A single database can have multiple tables inside. 
+Think of them as collections in a MongoDB database.
+`SQL` stands for `Structured query language`. It is a language in which you can describe what/how you want to put data in the database.
+To create a table, the command to run is - 
+
+![SQL Database Design](./images/SQL1.png)
+
+**What is a database schema?**
+
+A database schema defines how data is organized within a relational database; this is inclusive of logical constraints such as, table names, fields, data types and the relationships between these entities.
+
+```js
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+```
+
+There are a few parts of this SQL statement, let’s decode them one by one
+
+1. CREATE TABLE users
+
+`CREATE TABLE users:` This command initiates the creation of a new table in the database named `users`.
+
+2. id SERIAL PRIMARY KEY
+
+- `id:` The name of the first column in the users table, typically used as a unique identifier for each row (user). Similar to _id in mongodb
+- `SERIAL:` A PostgreSQL-specific data type for creating an auto-incrementing integer. Every time a new row is inserted, this value automatically increments, ensuring each user has a unique id.
+- `PRIMARY KEY:` This constraint specifies that the id column is the primary key for the table, meaning it uniquely identifies each row. Values in this column must be unique and not null.
+
+3.  email VARCHAR(255) UNIQUE NOT NULL,
+- `email:` The name of the second column, intended to store the user's username.
+- `VARCHAR(50):` A variable character string data type that can store up to 50 characters. It's used here to limit the length of the username.
+- `UNIQUE:` This constraint ensures that all values in the username column are unique across the table. No two users can have the same username.
+- `NOT NULL:` This constraint prevents null values from being inserted into the username column. Every row must have a username value.
+
+4. password VARCHAR(255) NOT NUL
+
+Same as above, can be non uniqye
+
+5. created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+
+- `created_at:` The name of the fifth column, intended to store the timestamp when the user was created.
+- `TIMESTAMP WITH TIME ZONE:` This data type stores both a timestamp and a time zone, allowing for the precise tracking of when an event occurred, regardless of the user's or server's time zone.
+- `DEFAULT CURRENT_TIMESTAMP:` This default value automatically sets the created_at column to the date and time at which the row is inserted into the table, using the current timestamp of the database server.
+
+## Step 7 - Interacting with the database
+
+`There are 4 things you’d like to do with a database`
+
+1. `INSERT`
+
+```js
+INSERT INTO users (username, email, password)
+VALUES ('username_here', 'user@example.com', 'user_password');
+```
+
+`Notice how you didn’t have to specify the id  because it auto increments`
+
+2. UPDATE
+
+```js
+
+UPDATE users
+SET password = 'new_password'
+WHERE email = 'user@example.com';
+```
+
+3. DELETE
+
+```js
+DELETE FROM users
+WHERE id = 1;
+```
+
+4. Select
+
+```js
+SELECT * FROM users
+WHERE id = 1;
+```
+
