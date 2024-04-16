@@ -4,6 +4,8 @@
 
 1. [Database class 1](https://youtu.be/dwVAs2ysdM4)
 
+2. [Database class 2-postgres](https://youtu.be/YAPGckP0px8)
+
 ## What is a database?
 
 - Learning objectives
