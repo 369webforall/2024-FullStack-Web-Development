@@ -229,3 +229,214 @@ SELECT * FROM users
 WHERE id = 1;
 ```
 
+# Prisma (ORM)
+
+ **Step 1 - What are ORMs**
+
+`Defination`
+
+
+- ORM stands for Object-Relational Mapping, a programming technique used in software development to convert data between incompatible type systems in object-oriented programming languages. This technique creates a "virtual object database" that can be used from within the programming language.
+
+- ORMs are used to abstract the complexities of the underlying database into simpler, more easily managed objects within the code
+
+`Let's understand in easy way`
+
+- ORMs let you easily interact with your database without worrying too much about the underlying syntax (SQL language for eg)
+
+**Step 2 - Why ORMs?**
+
+1. Simpler syntax (converts objects to SQL queries under the hood)
+
+```js
+// no ORM
+const query = SELECT * FROM users WHERE email = 'dev@gmail.com'
+
+//ORM
+
+const user = User.find({
+    where:{email:'dev@gmail.com'}
+})
+
+```
+
+2. Unified API irrespective of the Database.
+
+- Imagine you have a magic tool that lets you easily switch between different databases without much trouble. And no matter which database you're using, you can still use the same commands to talk to it. It's like having a universal remote control for your databases!
+
+![abstraction](./images/prisma1.png)
+
+
+3. Type safety/Auto completion
+
+```js
+// Define the User table schema
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function createUser(username: string, email: string, password: string) {
+  const newUser = await prisma.user.create({
+    data: {
+      username,
+      email,
+      password,
+    },
+  });
+  return newUser;
+}
+
+async function findUserById(id: number) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return user;
+}
+
+// Usage
+
+createUser('john_doe', 'john@example.com', 'password123')
+  .then((user) => {
+    console.log('Created user:', user);
+  })
+  .catch((error) => {
+    console.error('Error creating user:', error);
+  });
+
+findUserById(1)
+  .then((user) => {
+    console.log('Found user by id:', user);
+  })
+  .catch((error) => {
+    console.error('Error finding user by id:', error);
+  });
+
+```
+ 
+
+ 4. Automatic migrations
+
+ - Automatic migrations refer to the process where a database schema is automatically updated to match changes made in the application code without requiring manual intervention. Prisma, being an ORM (Object-Relational Mapping) tool, excels in handling automatic migrations.
+
+ `Here's how it works and why it's beneficial:`
+
+- Schema Synchronization: When you define your database schema using Prisma's schema language (as shown in the example I provided earlier), Prisma uses this schema definition as the single source of truth for your application's database structure.
+
+- Tracking Changes: As you make changes to your Prisma schema (adding new models, fields, or modifying existing ones), Prisma tracks these changes and generates migration files automatically.
+
+- Migration Execution: When you run a command to deploy these changes (for instance, prisma migrate dev), Prisma automatically applies these migrations to your database, updating its structure to match the new schema.
+
+- Safety and Consistency: Automatic migrations ensure that your application's database structure is always in sync with your codebase, reducing the likelihood of errors due to schema inconsistencies. This is especially important in collaborative environments or when deploying changes across different environments (development, staging, production).
+
+- Ease of Development: By automating the migration process, Prisma eliminates the need for developers to write manual SQL migration scripts, saving time and reducing the potential for human error.
+
+- Version Control Integration: Since Prisma generates migration files as part of your codebase, these files can be version-controlled along with your application code, providing a complete history of database schema changes and facilitating collaboration among team members.
+
+- Overall, Prisma's support for automatic migrations simplifies the database management process, making it more efficient and less error-prone compared to manually writing and executing migration scripts. It allows developers to focus more on building features and less on managing database changes.
+
+
+**Step 3 - What is Prisma**
+
+![prisma](./images/prisma2.png)
+
+1. Data model
+In a single file, define your schema. What it looks like, what tables you have, what field each table has, how are rows related to each other.
+2. Automated migrations
+Prisma generates and runs database migrations based on changes to the Prisma schema. 
+3. Type Safety
+Prisma generates a type-safe database client based on the Prisma schema.
+
+4. Auto-Completion
+Prisma give you auto completion of code which make easy to write code.
+
+**Installation of prisma**
+- npm install prisma
+- npx prisma init
+
+- change the review the primsa folder and .env file
+
+- make change to the prisma.config file for your database
+
+- add the database connection string in your .env file
+
+- add schema for your table
+
+- run npx prisma migrate dev
+- npx prisma generate
+- npx prisma db push
+- npx prisma studio 
+
+**Best practice for instantiating Prisma Client with Next.js**
+
+- create client.ts file in prisma folder. and insert below code.
+
+```js
+import { PrismaClient } from '@prisma/client'
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+}
+
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+
+```
+
+**Assignment**
+
+- create schema for user and todo
+- crate api to do curd operation
+- use postman as fontend application to perform the CRUD operation.
+```js
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  firstName  String
+  lastName   String
+}
+
+model Todo {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  done        Boolean @default(false)
+  userId      Int
+}
+
+
+```
+
