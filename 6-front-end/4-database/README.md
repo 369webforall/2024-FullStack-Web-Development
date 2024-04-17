@@ -6,6 +6,8 @@
 
 2. [Database class 2-postgres](https://youtu.be/YAPGckP0px8)
 
+3. [Database class 3- Prisma setup](https://youtu.be/O_54n3HhnHw)
+
 ## What is a database?
 
 - Learning objectives
@@ -364,7 +366,10 @@ Prisma give you auto completion of code which make easy to write code.
 
 **Installation of prisma**
 - npm install prisma
+
 - npx prisma init
+
+- npm install @prisma/client
 
 - change the review the primsa folder and .env file
 
@@ -375,8 +380,13 @@ Prisma give you auto completion of code which make easy to write code.
 - add schema for your table
 
 - run npx prisma migrate dev
+
+**Generating the prisma client**
+
 - npx prisma generate
+
 - npx prisma db push
+
 - npx prisma studio 
 
 **Best practice for instantiating Prisma Client with Next.js**
@@ -405,8 +415,9 @@ if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
 **Assignment**
 
 - create schema for user and todo
-- crate api to do curd operation
+- create api to perform a curd operation
 - use postman as fontend application to perform the CRUD operation.
+
 ```js
 
 // This is your Prisma schema file,
