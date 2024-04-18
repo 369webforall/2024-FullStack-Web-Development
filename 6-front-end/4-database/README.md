@@ -8,6 +8,8 @@
 
 3. [Database class 3- Prisma setup](https://youtu.be/O_54n3HhnHw)
 
+4. [Database class 3- Prisma setup](https://youtu.be/SDSTKyrO2XU)
+
 ## What is a database?
 
 - Learning objectives
