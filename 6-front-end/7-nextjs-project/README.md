@@ -1,6 +1,9 @@
 # Nextjs Project - fix-issue
 
+[Github project Link](https://github.com/369webforall/fix-issue)
+
 ## Class Recording
+[issue tracker - class 1](https://youtu.be/Q2tWxNqfUtM)
 
 ## Project Topics
 
