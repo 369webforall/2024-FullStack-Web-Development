@@ -31,37 +31,36 @@
 
 ### install packages & configure vscode settings.
 
-- prettier, eslint-config-prettier, prettier-plugin-tailwindcss
+- `npm install -D prettier, eslint-config-prettier, prettier-plugin-tailwindcss`
 
-- go to vscode setting, search: files:associations
-- click add button; item: \*.css value:tailwindcss
-  `this will make tailwind syntax work in css file`
-- setting: editor: quick suggestions delay
-- others : on
-- change strings : on
+- go to vscode setting, `search: files:associations`
+
+- click add button; `item: \*.css value:tailwindcss`
+- this will make tailwind syntax work in css file
+- setting: editor:quick suggestions delay
+- `others : on`
+- change`strings : on`
 
 - [prettier config](https://github.com/tailwindlabs/prettier-plugin-tailwindcss)
 
-`npm install -D prettier prettier-plugin-tailwindcss`
+`add file to your main project folder and name it prettier.config.js`
 
 ```js
-// .prettierrc
+//prettier.config.js
 
-- add file to your main project folder called it `prettier.config.js`
-
-
-{
-  "plugins": ["prettier-plugin-tailwindcss"]
+module.exports = {
+    "plugins": [require("prettier-plugin-tailwindcss")]
 }
-
 ```
 
 - change default formatter from none to prettier-code formatter
+`Editor:default formatter; select prettier-code formatter`
 
 use `alt+shift+f` for automatic formatting
 
 - also make change to `.eslintrc.json`
-- by adding below code there will be no conflict btween prettier and eslint.
+
+`by adding below code there will be no conflict btween prettier and eslint.`
 
 ```js
 {
