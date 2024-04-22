@@ -31,7 +31,7 @@
 
 ### install packages & configure vscode settings.
 
-- `npm install -D prettier, eslint-config-prettier, prettier-plugin-tailwindcss`
+- `npm install -D prettier eslint-config-prettier prettier-plugin-tailwindcss`
 
 - go to vscode setting, `search: files:associations`
 
