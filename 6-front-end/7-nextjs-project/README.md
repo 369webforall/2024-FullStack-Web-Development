@@ -5,6 +5,8 @@
 ## Class Recording
 [issue tracker - class 1](https://youtu.be/Q2tWxNqfUtM)
 
+[issue tracker - class 2](https://youtu.be/a5jLd0ok900)
+
 ## Project Topics
 
 ### WHAT SHOULD YOU KNOW FIRST
@@ -127,13 +129,13 @@ b. `Advanced features`
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
  ```
@@ -145,6 +147,24 @@ generator client {
  `DATABASE_URL="postgresql://postgres:password@localhost:5433/fix-issue?schema=public"`
 
  **Creating the issue model**
+
+ ```js
+model Issue {
+  id String @id @default(uuid())
+  title String @db.VarChar(50)
+  description String @db.Text
+  status Status @default(OPEN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+ ```
 
  **Building an API**
  - add folder `app/api/issues/new/route.ts`
