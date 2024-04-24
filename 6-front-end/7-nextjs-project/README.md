@@ -169,6 +169,8 @@ enum Status {
  **Building an API**
  - add folder `app/api/issues/new/route.ts`
 
+ [Article for zod](https://www.educative.io/answers/what-is-zod)
+
 **Setting up radix ui**
 
 - [Radixui](https://www.radix-ui.com/)
@@ -176,3 +178,45 @@ enum Status {
 - Get started / installation
 
 **Building new issue page**
+- We crate form to add new issue.
+- Radix-ui (TextField/ TextArea)
+- We can replace textarea with react component library called React SimpleMDE (EasyMDE) Markdown Editor
+
+`npm install --save react-simplemde-editor easymde`
+
+`import SimpleMDE from "react-simplemde-editor";`
+`import "easymde/dist/easymde.min.css";`
+
+[React SimpleMDE (EasyMDE) Markdown Editor](https://www.npmjs.com/package/react-simplemde-editor)
+
+
+**Handling form submission**
+
+- We will use very popular library called `React Hook Form`
+- This form makes very easy for form submission, track changes in our form,  easy to use validation and display validation error.
+
+`npm install react-hook-form`
+
+`import { useForm, SubmitHandler } from "react-hook-form" `
+
+- next define the interface of our form
+
+```js
+inteface IssueFormData {
+  title:string;
+  description:string;
+}
+
+```
+**Handling Errors**
+
+**Implementing client side valiation**
+
+- we can use same schema for form and the API, so extract the schema and place in seperate file.
+
+`npm i @hookform/resolvers`
+
+**Extracting the error message component**
+- create ErrorMessage component and add all logic to display error here.
+
+**Add spinner**
