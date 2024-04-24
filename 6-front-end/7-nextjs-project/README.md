@@ -7,6 +7,8 @@
 
 [issue tracker - class 2](https://youtu.be/a5jLd0ok900)
 
+[issue tracker - class 3- Create issue](https://youtu.be/45vPDy14gQk)
+
 ## Project Topics
 
 ### WHAT SHOULD YOU KNOW FIRST
@@ -178,7 +180,7 @@ enum Status {
 - Get started / installation
 
 **Building new issue page**
-- We crate form to add new issue.
+- We use radix ui to add form.
 - Radix-ui (TextField/ TextArea)
 - We can replace textarea with react component library called React SimpleMDE (EasyMDE) Markdown Editor
 
