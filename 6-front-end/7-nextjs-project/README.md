@@ -9,6 +9,8 @@
 
 [issue tracker - class 3- Create issue](https://youtu.be/45vPDy14gQk)
 
+[issue tracker - class 4- Create issue](https://youtu.be/X3vSzW26Xlk)
+
 ## Project Topics
 
 ### WHAT SHOULD YOU KNOW FIRST
@@ -202,7 +204,7 @@ enum Status {
 `import { useForm, SubmitHandler } from "react-hook-form" `
 
 - next define the interface of our form
-
+9749424286
 ```js
 inteface IssueFormData {
   title:string;
