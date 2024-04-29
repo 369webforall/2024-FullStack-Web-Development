@@ -13,6 +13,8 @@
 
 [issue tracker - class 5- view issue-1](https://youtu.be/v0Xi3VW5gxU)
 
+[issue tracker - class 5- view issue-2](https://youtu.be/b6EjDL3zgVM)
+
 ## Project Topics
 
 ### WHAT SHOULD YOU KNOW FIRST
