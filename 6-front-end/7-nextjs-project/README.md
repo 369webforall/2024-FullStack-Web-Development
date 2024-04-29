@@ -82,7 +82,8 @@ use `alt+shift+f` for automatic formatting
 ### Setting up the Project
 
 1. Project Roadmap
-   a. `Core feature - CRUD operation for issues.`
+
+a. `Core feature - CRUD operation for issues.`
 
 - crating issues
 - view issues
