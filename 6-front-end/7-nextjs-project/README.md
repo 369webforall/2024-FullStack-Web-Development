@@ -224,3 +224,84 @@ inteface IssueFormData {
 - create ErrorMessage component and add all logic to display error here.
 
 **Add spinner**
+
+## Viewing issues
+1. Showing the issues
+2. Building the issue status badge
+    - In TypeScript, a "record" is one of the utility types that allows you to define key-value pairs where both the keys and the values have specific types. This utility type is particularly useful when you need to create an object with a fixed set of keys and ensure type safety.
+    ```js
+      const statusMap:Record<Status, {label:String, color:'green'|'orange'|'red'}> = {
+        OPEN:{label:'Open', color:'green'},
+        IN_PROGRESS:{label:'In-progress', color:'orange'},
+        CLOSED:{label:'Closed', color:'red'},
+      }
+    ```
+3. Adding loading skeletons
+
+delay the loading of the page
+    `npm i delay`
+
+    ```js
+    import delay from 'delay' 
+     await delay(3000)
+     ```
+
+`npm install react-loading-skeleton`
+
+[react-loading-skeleton](https://www.npmjs.com/package/react-loading-skeleton)
+
+
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
+<Skeleton /> // Simple, single-line loading skeleton
+<Skeleton count={5} /> // Five-line loading skeleton
+
+4. Showing issue details page
+  - here our goal is to just fetching the issue data with id, and displaying that with no style.
+5. Styling the issue details page
+    - Add style to the details page.
+
+6. Adding Markdown preview
+ - We have to use seperate package to preview the markdown content.
+  - `npm i react-markdown`
+  - [react-markdown](https://www.npmjs.com/package/react-markdown)
+
+  ```js
+  import Markdown from 'react-markdown'
+
+<Markdown>page details</Markdown>
+
+  ```
+
+  - in tailwindcss heading and list items are unstyled, by default, so to fix this issue we need to add tailwindcss/typography
+
+[tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography)
+
+
+7. Building a Styled Link component
+8. Additional Loading Skeletons
+9. Disabling Server side rendering
+10. Refactoring and organizing imports
+
+
+## Updating Issues
+1. Adding the  Edit Button
+2. Applying the single  responsibility principle
+3. Building Edit issue page
+4. Building an API
+5. Updating and Issue
+6. Unserstanding caching
+7. Improving the Loading Experience
+
+## Deleting Issues 
+
+1. Adding a Delete Button
+2. Adding a confirmation Dialog Box
+3. Building an API
+4. Deleting an issue
+5. Handling an errors
+6. Improving an user experience
+7. Removing duplicate skeletons
+
+## Authentication
