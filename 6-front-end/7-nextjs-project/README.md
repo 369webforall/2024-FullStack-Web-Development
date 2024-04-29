@@ -11,6 +11,8 @@
 
 [issue tracker - class 4- Create issue](https://youtu.be/X3vSzW26Xlk)
 
+[issue tracker - class 5- view issue-1](https://youtu.be/v0Xi3VW5gxU)
+
 ## Project Topics
 
 ### WHAT SHOULD YOU KNOW FIRST
