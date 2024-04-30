@@ -18,6 +18,9 @@
 [issue tracker - class 5- view issue-2](https://youtu.be/b6EjDL3zgVM)
 
 
+[issue tracker - class 6- Update Issue](https://youtu.be/lTyqq_CWCv0)
+
+
 
 ## Project Topics
 
