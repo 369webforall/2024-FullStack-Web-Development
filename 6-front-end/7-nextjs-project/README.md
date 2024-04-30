@@ -11,9 +11,13 @@
 
 [issue tracker - class 4- Create issue](https://youtu.be/X3vSzW26Xlk)
 
+[issue tracker - class 5- view issue re-record](https://youtu.be/l8796RXETU4)
+
 [issue tracker - class 5- view issue-1](https://youtu.be/v0Xi3VW5gxU)
 
 [issue tracker - class 5- view issue-2](https://youtu.be/b6EjDL3zgVM)
+
+
 
 ## Project Topics
 
