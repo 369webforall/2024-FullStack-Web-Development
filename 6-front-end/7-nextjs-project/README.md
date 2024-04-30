@@ -301,6 +301,25 @@ import 'react-loading-skeleton/dist/skeleton.css'
 4. Building an API
 5. Updating and Issue
 6. Unserstanding caching
+  **Caching**
+  ### Data cache:
+  - when we fetch data using fetch();
+  - nextjs store data in file system.
+  - it is permanent until we redeploy.
+
+  - if you want to disable this behaviour then we pass `fetch('...', 'no-store')`
+  - we can also add timebase revalidation. `fetch('...', {next:  {revalidation:3600}})`
+  - This will revalidate the data after that time.
+
+### Full Route cache(Cache on the server)
+
+  **Rendering**
+
+  a. static (render statically at build time, if no parameter, then route are consider static)
+    
+  b. dynamic (render dynamically at request time, with parameter routes are consider dynamic)
+
+
 7. Improving the Loading Experience
 
 ## Deleting Issues 
