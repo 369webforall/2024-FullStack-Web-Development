@@ -20,6 +20,8 @@
 
 [issue tracker - class 6- Update Issue](https://youtu.be/lTyqq_CWCv0)
 
+[issue tracker - class 7- Delete Issue](https://youtu.be/FhpHWK-_41M)
+
 
 
 ## Project Topics
