@@ -297,38 +297,31 @@ app.post('/login', async (req, res) => {
 // Middleware to authenticate and authorize requests
 
 const authenticateUser = (req, res, next) => {
-
   try {
-
     // Extract the token from the Authorization header
 
-    const token = req.header('Authorization').replace('Bearer', "");
-
- 
+    const token = req.header("Authorization").split(" ")[1];
+    console.log(token)
 
     // Verify the token using the secret key
+    if (token) {
+      let user = jwt.verify(token, secretKey);
+      console.log(user)
 
-    const decoded = jwt.verify(token, secretKey);
+      // Attach the user ID and email to the request object for further processing
+      req.userId = user.userId;
 
- 
-
-    // Attach the user ID and email to the request object for further processing
-
-    req.userId = decoded.userId;
-
-    req.email = decoded.email;
-
- 
+      req.email = user.email;
+    } else {
+      res.status(401).json({ message: "Unauthorized User" });
+    }
 
     next();
-
   } catch (err) {
-
-    return res.status(401).json({ error: 'Invalid or expired token' });
-
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
-
 };
+
 
  
 
