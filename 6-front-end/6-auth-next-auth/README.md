@@ -65,7 +65,7 @@ token -
 
 `Step 2: Install Dependencies`
 
-`npm install express jsonwebtoken bcryptjs mongoose nodemon`
+`npm install express jsonwebtoken bcrypt mongoose nodemon`
 
 `Step 3: Create the Server`
 
