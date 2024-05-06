@@ -1,6 +1,6 @@
 # Class Recording
 
-1. [Auth]()
+1. [Auth class -1](https://youtu.be/V9OYR0DCd18)
 
 # What is authentication?
 
