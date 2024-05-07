@@ -334,3 +334,70 @@ app.get('/protected', authenticateUser, (req, res) => {
 });
 
 ```
+
+# Next Auth
+
+- Website authjs -  [Auth.js](https://authjs.dev/getting-started)
+
+Setp1: `Install nextjs project and configure prettier and eslint step2 and step 3`
+
+Step2: `npm install -D prettier eslint-config-prettier prettier-plugin-tailwindcss`
+
+Step3: `create prettier.config.ts file in root of the project and add below code next update the .eslintrc.json`
+
+```js
+//prettier.config.ts
+
+module.exports = {
+    "plugins": [require("prettier-plugin-tailwindcss")]
+}
+
+// .eslintrc.json
+
+{
+  "extends": ["next/core-web-vitals", "prettier"]
+}
+
+
+```
+- From authjs website follow the instruction to setup the nextauth.
+
+Step 4: `npm install next-auth@beta`
+
+- add .env.local file and `npx auth secret`
+`AUTH_SECRET=qbSSVh5jLqEUwFPJ3wttACm6owwEO3oAbhuVW5EQLQY=`
+
+- follow the steps in authjs website.
+
+Step - 5: `setup prisma to manage database, create schema and push the database schema`
+- `npm i prisma`
+- `npx prisma init`
+`npm install @prisma/client @auth/prisma-adapter`
+- Add prisma client
+- create schema
+- `npm exec prisma migrate dev`
+- `npx prisma db push`
+- `npx prisma studio`
+
+We completed the setting up prisma.
+
+Step-6 : 
+- import PrismaAdapter in auth.ts
+ `import { PrismaAdapter } from "@auth/prisma-adapter"`
+
+ ```js
+import NextAuth from "next-auth"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import prisma from '@prisma/client'
+ 
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [],
+})
+
+ ```
+
+ 
+
+
+
