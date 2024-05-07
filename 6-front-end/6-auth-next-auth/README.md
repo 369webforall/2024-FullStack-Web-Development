@@ -2,6 +2,8 @@
 
 1. [Auth class -1](https://youtu.be/V9OYR0DCd18)
 
+1. [Auth(nextauth) class -2](https://youtu.be/JIXbfX0aySg)
+
 # What is authentication?
 
 - Authentication is the process of letting users signup/signin into websites via `username` / `password` or using `SSO` (single sign on)
