@@ -2,7 +2,9 @@
 
 1. [Auth class -1](https://youtu.be/V9OYR0DCd18)
 
-1. [Auth(nextauth) class -2](https://youtu.be/JIXbfX0aySg)
+2. [Auth(nextauth) class -2](https://youtu.be/JIXbfX0aySg)
+
+3. [From Youtube- Nextauth](https://www.youtube.com/watch?v=splh0ZIo-s4)
 
 # What is authentication?
 
@@ -398,22 +400,454 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 })
 
  ```
-- SessionWrapper.tsx
+
+Step -7 
+- create register and login form form for user. we will use shadcn so setup shadcn.
+
+`npx shadcn-ui@latest add form`
+
+`npx shadcn-ui@latest add input`
+
+
+/register/RegisterForm.tsx
+/register/page.tsx  and import RegisterForm
 
 ```js
-"use client";
-import { SessionProvider } from "next-auth/react";
+"use client"
+import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import axios from 'axios';
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
-import React from "react";
+const formSchema = z.object({
+  name: z.string().min(1, {
+    message: "Name is required.",
+  }),
+  email:z.string().min(1, {message:"Email is required"}),
+  password:z.string().min(6, {message:"Password is required"})
+})
 
-const SessionWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <SessionProvider>{children}</SessionProvider>;
-};
+export function RegisterForm() {
+  const router = useRouter();
+// 1. Define your form.
+const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email:"",
+      password:"",
+    },
+  })
+ 
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    
+    try {
+      await axios.post('/api/register', values);
+      router.push('/login');
+  
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }
 
-export default SessionWrapper
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="name" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="email" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your email
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input placeholder="Password" {...field} />
+              </FormControl>
+              <FormDescription>
+                Password
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      
+        <Button type="submit">Create New User</Button>
+        <div className="mt-2">
+        <Link href='/login' >If you have account ? go to login page</Link>
+        </div>
+      
+      </form>
+    </Form>
+  )
+}
+
 
 ```
 
 
+step -8 : Build the API for register form.
+- api/register/route.ts
+- user bcrypt to hash the password before saving to the database.
+
+- `npm i bcrypt`
+- `npm i @types/bcrypt`
+
+```js
+// route.ts
+
+import prisma from "@/prisma/client";
+import bcrypt from 'bcrypt';
+
+import { NextResponse, NextRequest } from "next/server";
+import { z } from "zod"
+const formSchema = z.object({
+    name: z.string().min(1, {
+      message: "Name is required.",
+    }),
+    email:z.string().min(1, {message:"Email is required"}),
+    password:z.string().min(6, {message:"Password is required"})
+  })
+  
+export const POST = async(request:NextRequest)=>{
+const body = await request.json();
+console.log(body)
+const validation = formSchema.safeParse(body);
+if(!validation.success){
+    return NextResponse.json({message:"Validation failed"}, {status:401})
+}
+const user = await prisma.user.findUnique({where:{email:body.email}})
+if(user){
+    return NextResponse.json({message:"user exist, please login"}, {status:400})  
+}
+const pwhashed = await bcrypt.hash(body.password, 10);
+
+await prisma.user.create({
+    data:{
+        name:body.name,
+        email:body.email,
+        password:pwhashed
+    }
+})
+
+return NextResponse.json({message:"Success, user created"}, {status:200})
+}
+
+```
+
+## LoginForm
+
+// LoginForm.tsx
+
+```js
+"use client"
+import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+
+import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/ui/button"
+import { login } from "@/lib/actions";
+import {z} from 'zod'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+
+const formSchema = z.object({
+  email:z.string().min(1, {message:"Email is required"}),
+  password:z.string().min(6, {message:"Password is required"})
+})
+
+export function LoginForm() {
+  const router = useRouter();
+// 1. Define your form.
+const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email:"",
+      password:"",
+    },
+  })
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+   try {
+      await login(values)
+   } catch (error) {
+    console.log(error)
+   }
+  }
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+         <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="email" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your email
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input placeholder="Password" {...field} />
+              </FormControl>
+              <FormDescription>
+                Password
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+       
+        <Button type="submit">Login</Button>
+      </form>
+      <div className="my-2">
+        <Link href='/register'>If you don&apos;t have account ? create new account</Link>
+        </div>
+    </Form>
+  )
+}
 
 
+```
+
+## action.ts
+
+```js
+'use server';
+
+import { AuthError } from 'next-auth';
+import { signIn, signOut } from '@/auth';
+import { z } from "zod"
+const loginSchema = z.object({
+    email:z.string().min(1, {message:"Email is required"}),
+    password:z.string().min(6, {message:"Password is required"})
+  })
+
+const defaultValues = {
+ email: '',
+ password: '',
+};
+
+export async function login(values: z.infer<typeof loginSchema>) {
+ try {
+  const validatedFields = loginSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+   return {
+    message: 'validation error',
+    errors: validatedFields.error.flatten().fieldErrors,
+   };
+  }
+
+  const {email, password} = validatedFields.data;
+  
+  await signIn('credentials', {email, password, redirectTo:'/protected'});
+
+  return {
+   message: 'success',
+   errors: {},
+  };
+ } catch (error) {
+  if (error instanceof AuthError) {
+   switch (error.type) {
+    case 'CredentialsSignin':
+     return {
+      message: 'credentials error',
+      errors: {
+       ...defaultValues,
+       credentials: 'incorrect email or password',
+      },
+     };
+    default:
+     return {
+      message: 'unknown error',
+      errors: {
+       ...defaultValues,
+       unknown: 'unknown error',
+      },
+     };
+   }
+  }
+  throw error;
+ }
+}
+
+export async function logout() {
+ await signOut();
+}
+
+
+```
+
+## auth.ts
+
+```js
+import NextAuth from 'next-auth';
+import {PrismaAdapter} from "@auth/prisma-adapter"
+import { authConfig } from './auth.config';
+import Credentials from 'next-auth/providers/credentials';
+import prisma from './prisma/client';
+import bcrypt from 'bcrypt'
+
+async function getUser(email:string) {
+ const user = await prisma.user.findUnique({
+    where:{email:email}
+ })
+    return user
+}
+
+export const {
+ auth,
+ signIn,
+ signOut,
+ handlers
+} = NextAuth({
+    adapter:PrismaAdapter(prisma),
+ ...authConfig,
+ providers: [
+  Credentials({
+   name: 'credentials',
+   credentials: {
+    email: {},
+    password: {},
+   },
+   async authorize(credentials) {
+      const {email, password} = credentials;
+    const user = await getUser(email as string);
+    if(!user || !user.password) return null;
+const pwMatch =await bcrypt.compare(password as string, user.password)
+
+if(pwMatch) {
+   return user 
+}else {
+   return null
+}
+
+   
+   },
+  }),
+ ],
+});
+
+```
+
+## auth.config.ts
+
+```js
+import type { NextAuthConfig } from 'next-auth';
+
+export const authConfig = {
+ session: {
+  strategy: 'jwt',
+ },
+ pages: {
+  signIn: '/login',
+  signOut: '/',
+ },
+ callbacks: {
+  authorized({ auth }) {
+   const isAuthenticated = !!auth?.user;
+
+   return isAuthenticated;
+  },
+ },
+ providers: [],
+} satisfies NextAuthConfig;
+
+```
+
+## middleware.ts
+
+```js
+import NextAuth from 'next-auth';
+import { authConfig } from '@/auth.config';
+import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT, DEFAULT_LOGIN_REDIRECT } from '@/routes';
+
+const { auth } = NextAuth(authConfig);
+
+export default auth((req) => {
+ const { nextUrl } = req;
+
+ const isAuthenticated = !!req.auth;
+ const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
+
+ if (isPublicRoute && isAuthenticated)
+  return Response.redirect(new URL(DEFAULT_REDIRECT, nextUrl));
+
+ if (!isAuthenticated && !isPublicRoute)
+  return Response.redirect(new URL(ROOT, nextUrl));
+});
+
+export const config = {
+ matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};
+
+```
