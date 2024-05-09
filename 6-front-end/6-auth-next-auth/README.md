@@ -8,6 +8,8 @@
 
 3. [Auth(nextauth) class -3](https://youtu.be/l6K0GEkXsQY)
 
+4. [Auth(nextauth) class -login with google and github](https://youtu.be/iBwpdk0WD5I)
+
 # What is authentication?
 
 - Authentication is the process of letting users signup/signin into websites via `username` / `password` or using `SSO` (single sign on)
