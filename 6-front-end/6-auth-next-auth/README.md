@@ -6,6 +6,8 @@
 
 3. [From Youtube- Nextauth](https://www.youtube.com/watch?v=splh0ZIo-s4)
 
+3. [Auth(nextauth) class -3](https://youtu.be/l6K0GEkXsQY)
+
 # What is authentication?
 
 - Authentication is the process of letting users signup/signin into websites via `username` / `password` or using `SSO` (single sign on)
@@ -851,3 +853,11 @@ export const config = {
 };
 
 ```
+
+# Login with socials (Google / Github)
+
+`https://console.cloud.google.com/apis/dashboard?project=my-next-app-399203`
+
+
+- setup the Google console and Github setting for id and secret
+- add the variables in .env file.
