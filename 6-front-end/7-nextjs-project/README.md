@@ -338,3 +338,21 @@ import 'react-loading-skeleton/dist/skeleton.css'
 7. Removing duplicate skeletons
 
 ## Authentication
+
+1. Setting up nextauth
+2. Configure google provider
+3. Adding the prisma adapter
+4. Adding login and logout links
+5. Change layout of navbar
+6. Adding dropdown menu
+7. Trobuleahooting any error (Avatar not loading)
+8. Refactor code
+9. Adding loading skeleton
+
+## Assign issue to users
+
+## Filtering, Sorting, and Pagination 
+
+## Dashboard
+
+## Deployment
