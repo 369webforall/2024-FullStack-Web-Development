@@ -23,6 +23,11 @@
 [issue tracker - class 7- Delete Issue](https://youtu.be/FhpHWK-_41M)
 
 
+[issue tracker - class 8- Authentication](https://youtu.be/jMrx2Nhg0GM)
+
+
+
+
 
 ## Project Topics
 
@@ -348,6 +353,8 @@ import 'react-loading-skeleton/dist/skeleton.css'
 7. Trobuleahooting any error (Avatar not loading)
 8. Refactor code
 9. Adding loading skeleton
+
+
 
 ## Assign issue to users
 
