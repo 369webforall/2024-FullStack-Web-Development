@@ -353,10 +353,271 @@ import 'react-loading-skeleton/dist/skeleton.css'
 7. Trobuleahooting any error (Avatar not loading)
 8. Refactor code
 9. Adding loading skeleton
+10. Securing the application
 
 
 
 ## Assign issue to users
+
+1. Build the assignee select component
+2. Populating the Assignee select component
+3. Setting up react query
+4. Fetching data and react query
+5. Add assigned issue to prisma schema
+6. implementing the API 
+7. Assigne issue to User
+8. Show toast notification 
+9. Refactor the Assingnee select component
+
+**Step details**
+
+- Add dropdown list to select the user.
+- use select component from Radix ui.
+
+```js
+// /issues/view/_components/Assignee.tsx
+
+const[users, setUsers] = useState<User[]>([]);
+
+useEffect(()=>{
+  const fetchUsers = async ()=>{
+    const {data} = await axios.get<User[]>('/api/users');
+    setUsers(data)
+  }
+  fetchUsers();
+
+}, [])
+
+<Select.Root>
+  <Select.Trigger placeholder='Assign user....'/>
+  <Select.Content>
+    <Select.Group>
+      <Select.Label>Suggestions</Select.Label>
+      <Select.Item value="1">Dev</Select.Item>
+      <Select.Item value="2">Robert</Select.Item>
+      // map users and use 
+      {users.map((user)=>(
+        <Select.Item key = {user.id} value={user.id}>{user.name}</Select.Item>
+      ))}
+    </Select.Group>
+  </Select.Content>
+</Select.Root>
+
+```
+
+- In React we can fetch data using useEffect hook and store in useState variable.
+- There is issue with approch,
+- Don't have any error handling code. we can add the error handling code, but again what if call to back backend failed. there is no logic for retrying to fetch the data.
+- There is no caching implemented here.
+- every time we have to fetch the data if needed.
+
+- For this solution we can use `TanStack Query` library for data fetching, error handling and caching.
+
+[https://tanstack.com/](https://tanstack.com/query/v4/docs/framework/react/installation)
+
+`npm i @tanstack/react-query`
+
+- create `QueryClientProvider.tsx` in root of the project.
+
+```js
+'use client'
+
+import {
+  QueryClient,
+  QueryClientProvider as ReactQueryClientProvider
+} from '@tanstack/react-query'
+import { PropsWithChildren } from 'react'
+
+const queryClient = new QueryClient({})
+
+const QueryClientProvider = ({ children }: PropsWithChildren) => {
+  return (
+    <ReactQueryClientProvider client={queryClient}>
+      {children}
+    </ReactQueryClientProvider>
+  )
+}
+
+export default QueryClientProvider
+
+```
+
+- it use react context to share the information with children component.
+- make `use client`
+- make sure to wrap the every thing inside the body with `QueryClientProvider` component
+
+
+
+**fetch user PI**
+
+```js
+// fetch user api/users/route.ts
+import prisma from '@/prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const users = await prisma.user.findMany({ orderBy: { name: 'asc' } })
+  return NextResponse.json(users)
+}
+```
+
+
+**fetch data with react query**
+- import useQuery 
+
+```js
+import {useQuery} from '@tanstack/react-query';
+
+const AssigneeSelect = ()=>{
+  const {data: users, error, isLoading}= useQuery<User[]>({
+    queryKey:['users'],
+    queryFn: ()=> axios.get('/api/users').then((res)=>res.data),
+    staleTime: 60 * 1000, // 60 sec
+    retry:3
+  });
+
+  if(isLoading) return <Skeletom />
+}
+
+```
+
+
+**Add assigned issue to prisma schema**
+
+- update the  Issue  model 
+
+```js
+assignedToUserId String?
+assignedToUser User?  @relation(fields:[assignedToUserId], references:[id])
+
+
+// User model
+
+assignedIssues Issue[]
+
+// run npx prisma migrate dev
+
+```
+
+**Implementing the API**
+
+```js
+// add new schema (patchIssueSchema)
+
+import { z } from 'zod'
+
+export const patchIssueSchema = z.object({
+  title: z.string().min(1, 'title is required').max(255).optional(),
+  description: z
+    .string()
+    .min(1, 'description is required')
+    .max(65535)
+    .optional(),
+  assignedToUserId: z
+    .string()
+    .min(1, 'AssignedToUserId is required.')
+    .max(255)
+    .optional()
+    .nullable()
+})
+
+
+// PATCH api 
+
+import { patchIssueSchema } from '@/app/validationSchemas'
+import { auth } from '@/auth'
+import prisma from '@/prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  // const session = await auth()
+  // if (!session) return NextResponse.json({}, { status: 401 })
+
+  const body = await request.json()
+  const validation = patchIssueSchema.safeParse(body)
+  if (!validation.success)
+    return NextResponse.json(validation.error.errors, { status: 400 })
+
+  const { title, description, assignedToUserId } = body
+  if (assignedToUserId) {
+    const user = await prisma.user.findUnique({
+      where: { id: assignedToUserId }
+    })
+    if (!user)
+      return NextResponse.json({ error: 'Invalid user' }, { status: 400 })
+  }
+
+  const issue = await prisma.issue.findUnique({
+    where: { id: parseInt(params.id) }
+  })
+  if (!issue) return NextResponse.json({ error: 'Invalid issue' })
+
+  const updatedIssue = await prisma.issue.update({
+    where: { id: issue.id },
+    data: { title, description, assignedToUserId }
+  })
+
+  return NextResponse.json(updatedIssue)
+}
+
+```
+
+**Assigning an issue to user**
+
+```js
+
+const AssigneeSelect = ({issue}: {issue:Issue}) {
+
+return(
+
+<Select.Root defaultValue={issue.assignedToUserId || ""} onValueChange={(userId)=>{
+  axios.patch(`/api/issues/${issue.id}`, {assignedToUserId: userId || null})
+}}>
+  <Select.Trigger placeholder='Assign user....'/>
+  <Select.Content>
+    <Select.Group>
+      <Select.Label>Suggestions</Select.Label>
+      <Select.Item value="">Unassigned</Select.Item>
+      // map users and use 
+      {users.map((user)=>(
+        <Select.Item key = {user.id} value={user.id}>{user.name}</Select.Item>
+      ))}
+    </Select.Group>
+  </Select.Content>
+</Select.Root>
+
+)
+
+}
+```
+
+**toast notifaction**
+
+`npm i react-hot-toast`
+
+```js
+// in assigneeSelect
+
+import toast, {Toaster} from 'react-hot-toast'
+
+
+ // below the select call the Toaster component
+ 
+</Toaster>
+
+// add try{}catch{}
+
+try {
+
+}catch(error){
+  toast.error('Changes could not be saved)
+}
+
+
+```
 
 ## Filtering, Sorting, and Pagination 
 
