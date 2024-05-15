@@ -25,7 +25,9 @@
 
 [issue tracker - class 8- Authentication](https://youtu.be/jMrx2Nhg0GM)
 
-[issue tracker - class 9- Assigned issue](https://youtu.be/75xqjDHP33Y)
+[issue tracker - class 9- Assigned user - 1](https://youtu.be/75xqjDHP33Y)
+
+[issue tracker - class 10- Assigned user to issue - 2](https://youtu.be/-yZxbmkiKU8)
 
 
 
