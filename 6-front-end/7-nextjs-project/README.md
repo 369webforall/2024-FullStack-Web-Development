@@ -553,7 +553,7 @@ export async function PATCH(
   }
 
   const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) }
+    where: { id: params.id }
   })
   if (!issue) return NextResponse.json({ error: 'Invalid issue' })
 
@@ -571,29 +571,48 @@ export async function PATCH(
 
 ```js
 
-const AssigneeSelect = ({issue}: {issue:Issue}) {
+"use client"
+import React, {useState, useEffect} from 'react'
+import { Select } from '@radix-ui/themes'
+import axios from 'axios'
+import { Issue, User } from '@prisma/client'
+import {useQuery} from '@tanstack/react-query';
+import Skeleton from '@/app/components/Skeleton';
 
-return(
+const AssigneeSelect = ({issue}: {issue:Issue}) => {
+const {error, isLoading, data:users}= useQuery<User[]>({
+  queryKey:['users'],
+  queryFn: ()=> axios.get('/api/users').then((res)=>res.data),
+  staleTime: 60 * 1000, // 60 sec
+  retry:3
+});
 
-<Select.Root defaultValue={issue.assignedToUserId || ""} onValueChange={(userId)=>{
-  axios.patch(`/api/issues/${issue.id}`, {assignedToUserId: userId || null})
-}}>
+if(isLoading) return <Skeleton />
+    
+   const assignIssue =  (userId:string)=>{
+     axios.patch(`/api/issues/${issue.id}`, {assignedToUserId:userId === "unassigned" ? null : userId})
+   }
+  return (
+    <div className='mt-4'>
+  <Select.Root defaultValue={issue.assignedToUserId || "unassigned"} onValueChange={assignIssue}>
   <Select.Trigger placeholder='Assign user....'/>
   <Select.Content>
     <Select.Group>
       <Select.Label>Suggestions</Select.Label>
-      <Select.Item value="">Unassigned</Select.Item>
-      // map users and use 
-      {users.map((user)=>(
-        <Select.Item key = {user.id} value={user.id}>{user.name}</Select.Item>
-      ))}
+      <Select.Item value="unassigned">Unassigned</Select.Item>
+      
+   {users && users.map((user)=>(<Select.Item key={user.id} value={user.id}>{user.name}</Select.Item>)
+    
+   )}
     </Select.Group>
   </Select.Content>
 </Select.Root>
-
-)
-
+    </div>
+  )
 }
+
+export default AssigneeSelect
+
 ```
 
 **toast notifaction**
@@ -622,6 +641,82 @@ try {
 ```
 
 ## Filtering, Sorting, and Pagination 
+
+1. Building the Filter component
+2. Filtering issues
+3. Making columns sortable
+4. Sorting issues
+5. Fix filtering bug
+6. Generating dummy data
+7. Building the pagination component 
+8. Implementing pagination
+9. Pagination issues
+10. Refactoring code, extracting issuetable component
+
+
+**Building the Filter component**
+
+- We want to filter our issues with their status
+- Build the component for selecting the status.
+-  Add IssueStatusFilter.tsx
+- import in ActionButton component.
+
+```js
+
+"client component"
+import React from 'react'
+import { Status } from '@prisma/client'
+import { Select } from '@radix-ui/themes'
+
+const statuses:{label:string, value?: Status}[] = [{label: 'All'}, 
+{label:"Open", value:"OPEN"}, 
+{label:"Closed", value:"CLOSED"}, 
+{label:"In-progress", value:"IN_PROGRESS"}
+]
+
+const IssueStatusFilter = () => {
+  return (
+   <Select.Root>
+    <Select.Trigger placeholder='Filter by status....'/>
+    <Select.Content>
+        {statuses.map((status)=><Select.Item key={status.label} value={status.value ?? 'ALL'}>{status.label}</Select.Item>)}
+    </Select.Content>
+   </Select.Root>
+  )
+}
+
+export default IssueStatusFilter
+
+```
+
+**Filtering issue**
+
+```js
+ <Select.Root
+      onValueChange={(status) => {
+        const query = status === 'ALL' ? '' : `?status=${status}`
+        router.push(`/issues/view${query}`)
+      }}
+    >
+
+    // update issues/view/page.tsx
+
+    ({searchParams}:{searchParams: {status:Status}})
+
+    const statuses = Object.values(Status)
+
+    const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
+
+    const issues = await prisma.issues.findMany({
+      where: {
+        status: status
+      }
+    })
+
+```
+
+
+
 
 ## Dashboard
 
