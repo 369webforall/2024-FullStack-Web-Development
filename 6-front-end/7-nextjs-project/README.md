@@ -29,6 +29,8 @@
 
 [issue tracker - class 10- Assigned user to issue - 2](https://youtu.be/-yZxbmkiKU8)
 
+[issue tracker - class 11- Filter and sort](https://youtu.be/OmFhq0Hla2s)
+
 
 
 
