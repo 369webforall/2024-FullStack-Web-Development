@@ -717,7 +717,52 @@ export default IssueStatusFilter
 
 ```
 
+- Now go to issues/view/page.tsx
 
+```js
+const IssuePage = async({searchParams}:{searchParams:{status:Status}}) => {
+
+  const statuses = Object.values(Status)
+  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
+  
+  const issues = await prisma.issue.findMany({
+    where:{
+      status:status
+    }
+  });
+
+```
+
+**Making columns sortable**
+
+- issues/veiw/page.tsx
+
+```js
+ const columns:{label:string; 
+    value: keyof Issue;
+  className?:string;
+   }[] = [
+    {label:'Issue', value:'title'},
+    {label:'Status', value:'status', className:'hidden md:table-cell'},
+    {label:'Created', value:'createdAt', className:'hidden md:table-cell'}]
+
+
+
+    <Table.Row>
+      {columns.map((column)=>(
+        <Table.ColumnHeaderCell key={column.value} className={column.className}><NextLink href={{query:{...searchParams, orderBy:column.value}}}>{column.label}</NextLink>
+        {column.value === searchParams.orderBy && <ArrowUp className='inline'/>}
+        </Table.ColumnHeaderCell>
+      ))}
+    </Table.Row>
+```
+
+
+```js
+ orderBy:{
+      [searchParams.orderBy]:'asc'
+    }
+```
 
 
 ## Dashboard
