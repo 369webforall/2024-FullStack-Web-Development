@@ -651,11 +651,10 @@ try {
 3. Making columns sortable
 4. Sorting issues
 5. Fix filtering bug
-6. Generating dummy data
-7. Building the pagination component 
-8. Implementing pagination
-9. Pagination issues
-10. Refactoring code, extracting issuetable component
+6. Building the pagination component 
+7. Implementing pagination
+8. Pagination issues
+9. Refactoring code, extracting issuetable component
 
 
 **Building the Filter component**
@@ -766,6 +765,127 @@ const IssuePage = async({searchParams}:{searchParams:{status:Status}}) => {
     }
 ```
 
+**fix the sorting issue bug**
+
+
+**pagination**
+- create Pagination.tsx file in component, This componet we can use in other places also.
+- Build the layout of the pagination component.
+
+```js
+interface Props {
+  itemCount: number;
+  pageSize: number;
+  currentPage: number;
+}
+
+const Pagination = ({itemCount, pageSize, currentSize}:Props)=>{
+
+  const pageCount = Math.Ceil(itemCount / pageSize);
+  if(pageCount <= 1>) return null
+
+  return(
+    <Flex>
+<Text>Page {currentPage} of {pageCount} </Text>
+     <Flex>
+  )
+}
+
+```
+
+- we can import Pagination component and test this first by passing the fixed value.
+
+- itemCount = {100}, pageSize = {10}, currentPage={2}
+
+- Now lets add the button to change between pages.
+
+```js
+return(
+    <Flex align="center" gap="2">
+<Text size="2">Page {currentPage} of {pageCount} </Text>
+<Button color="gray" variant="soft" disabled={currentPage===1}>
+<DoubleArrowLeftIcon />
+</Button>
+<Button color="gray" variant="soft" disabled={currentPage===1}>
+<ChevronLeftIcon />
+</Button>
+<Button color="gray" variant="soft" disabled={currentPage===pageCount}>
+<ChevronRightIcon />
+</Button>
+<Button color="gray" variant="soft" disabled={currentPage===pageCount}>
+<DoubleArrowRightIcon  />
+</Button>
+     <Flex>
+  )
+
+```
+
+**Implement pagination**
+
+- As user navigate between pages, we need to pass the current page as query parameter to current url. similar to sort parameter.
+- we use two hooks, useRouter, useSearchParams
+
+```js
+'use client'
+
+const router = useRouter();
+const searchParams = useSearchParams();
+
+
+const changePage = ()=>{
+  const params = new URLSearchParams(searchParams);
+  params.set('page', page.toString());
+  router.push('?' + params.toString())
+}
+
+
+
+<Button onClick={()=>changePage(1)}>
+<Button onClick={()=>changePage(currentPage-1)}>
+<Button onClick={()=>changePage(currentPage+1)}>
+<Button onClick={()=>changePage(pageCount)}>
+```
+
+- read the page count from searchParams.page
+
+({searchParams}:{searchParams:{page:string}})=>
+
+currentPage(parseInt(searchParams.page))
+
+**Use the pagination component to the page now**
+
+```js
+// view/page.tsx
+
+interfaceProps {
+  searchParams:{
+    status:Status,
+    orderBy: keyof Issue,
+    page: string
+  };
+}
+
+
+const page = parseInt(searchParams.page) || 1;
+
+const pageSize = 10;
+
+const issue = await prisma.issue.findMany({
+  where:{status,},
+  orderBy,
+  skip:(page-1)*pageSize,
+  take: pageSize
+});
+
+const issueCount = await prisma.issue.count({where:{status}})
+
+<Pagination
+pageSize = {pageSize}
+currentPage={page}
+itemCount={issueCount}
+>
+
+```
 
 ## Dashboard
 
