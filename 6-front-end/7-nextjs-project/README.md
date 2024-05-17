@@ -31,6 +31,8 @@
 
 [issue tracker - class 11- Filter and sort](https://youtu.be/OmFhq0Hla2s)
 
+[issue tracker - class 12- Pagination](https://youtu.be/lqUxsRd3Tac)
+
 
 
 
@@ -871,7 +873,7 @@ const page = parseInt(searchParams.page) || 1;
 const pageSize = 10;
 
 const issue = await prisma.issue.findMany({
-  where:{status,},
+  where:{status},
   orderBy,
   skip:(page-1)*pageSize,
   take: pageSize
