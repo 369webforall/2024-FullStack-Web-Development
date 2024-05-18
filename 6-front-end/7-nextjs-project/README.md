@@ -890,5 +890,161 @@ itemCount={issueCount}
 ```
 
 ## Dashboard
+1. Building the latest issue component
+2. Issue Summary component
+3. Build BarChart Component
+4. Laying out the Dashboard
+
+- In our dashboard we want to build three components. we will build all seperately , then put together.
+
+- In issue componet, display table, with title, status and avatar for assigned issue.
+- fetch the user also by eager loading method. (include: {assignedToUser: true})
+
+`LatestIssue.tsx`
+
+```js
+import React from 'react'
+import prisma from '@/prisma/client'
+import { Table, Flex, Avatar, Card, Heading } from '@radix-ui/themes';
+import Link from 'next/link';
+import { IssueBadge } from '@/app/components';
+const LatestIssue = async () => {
+    const issues = await prisma.issue.findMany({
+        orderBy:{
+            createdAt:'desc'
+        },
+        take:5,
+        include:{assignedToUser:true}
+    });
+  return (
+    <Card mt='4'>
+        <Heading my="2">Latest Issue</Heading>
+  <Table.Root>
+    <Table.Body>
+        {issues.map((issue)=>(
+            <Table.Row key={issue.id}>
+                <Table.Cell>
+                    <Flex justify="between">
+                    <Flex direction="column" gap="2">
+                    <Link href={`/issues/view/${issue.id}`}>{issue.title}</Link>
+                    <IssueBadge status={issue.status}/>
+                    </Flex>
+                    {issue.assignedToUserId && <Avatar src={issue.assignedToUser?.image!} fallback='av' size='2' radius='full'/>}
+                    </Flex>
+                    </Table.Cell>
+            </Table.Row>
+        ))}
+    </Table.Body>
+  </Table.Root>
+  </Card>
+)}
+
+export default LatestIssue
+
+```
+`IssueSummary.tsx`
+
+```js
+import { Status } from '@prisma/client';
+import { Flex, Card, Text } from '@radix-ui/themes';
+import Link from 'next/link';
+import React from 'react'
+interface Props {
+    open: number;
+    inProgress: number;
+    closed: number;
+}
+
+const IssueSummary = ({open, inProgress, closed}:Props) => {
+  const containers:{label:string, value:number, status:Status}[] = [
+    {label: 'Open Issues', value: open, status:'OPEN'},
+    {label: 'In Progress Issues', value: inProgress, status:"IN_PROGRESS"},
+    {label: 'Closed Issues', value: closed, status:'CLOSED'}
+  ]
+    return (
+    <Flex gap='4'>
+        {containers.map((container)=>(
+            <Card key={container.label}>
+                <Flex direction='column' gap='4'>
+            <Link href={`/issues/view?status=${container.status}`}>{container.label}</Link>
+            <Text>{container.value}</Text>
+                </Flex>
+
+            </Card>
+
+        ))}
+    </Flex>
+  )
+}
+
+export default IssueSummary
+
+```
+
+```js
+import React from 'react'
+// import LatestIssue from './_components/LatestIssue'
+import IssueSummary from './_components/IssueSummary'
+import prisma from '@/prisma/client'
+const Dashboard = async () => {
+  const open = await prisma.issue.count({where: {status:'OPEN'}});
+  const inProgress = await prisma.issue.count({where: {status:'IN_PROGRESS'}});
+  const closed = await prisma.issue.count({where: {status:'CLOSED'}});
+  return (
+  <div>
+    <IssueSummary open={open} inProgress={inProgress} closed={closed}/>
+  </div>
+  )
+}
+
+export default Dashboard
+
+```
+
+**chart component**
+- we will use Recharts `npm i recharts`
+- IssueChart.tsx
+
+```js
+"use client"
+import {  Card } from '@radix-ui/themes';
+
+import {ResponsiveContainer, BarChart, XAxis, YAxis, Bar} from 'recharts'
+
+interface Props {
+    open: number;
+    inProgress: number;
+    closed: number;
+}
+
+const IssueChart = ({open, inProgress, closed}: Props) => {
+    const data = [
+        {label:'Open', value:open},
+        {label:'In progress', value:inProgress},
+        {label:'Closed', value:closed},
+    
+    ]
+  return (
+   <Card>
+    <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={data}>
+            <XAxis dataKey="label" />
+            <YAxis />
+            <Bar dataKey="value" barSize="30" fill='#6682fa'/>
+        </BarChart>
+
+    </ResponsiveContainer>
+   </Card>
+  )
+}
+
+export default IssueChart
+
+```
+
 
 ## Deployment
+1. Adding metadata
+2. Removing .env
+3. Setting up production database.
+4. Deploying in vercel
