@@ -33,6 +33,8 @@
 
 [issue tracker - class 12- Pagination](https://youtu.be/lqUxsRd3Tac)
 
+[issue tracker - class 13- Dashboard](https://youtu.be/z4FC6430oGs)
+
 
 
 
