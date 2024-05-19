@@ -35,6 +35,8 @@
 
 [issue tracker - class 13- Dashboard](https://youtu.be/z4FC6430oGs)
 
+[issue tracker - class 14- Deployment](https://youtu.be/N5AGEcoSLD0)
+
 
 
 
@@ -1050,3 +1052,8 @@ export default IssueChart
 2. Removing .env
 3. Setting up production database.
 4. Deploying in vercel
+
+https://fix-issue.vercel.app/
+
+https://console.aiven.io/login
+
