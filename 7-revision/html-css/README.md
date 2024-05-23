@@ -6,6 +6,12 @@
 
 [CSS Position](https://www.youtube.com/watch?v=MxEtxo_AaZ4&t=438s)
 
+[FLEX BOX - Class recording](https://youtu.be/mJ6Pjne4B0s)
+
+[CSS GRID- Class recording](https://youtu.be/NyR1KZfl05A)
+
+[CARD- Class recording](https://youtu.be/9I6TMbfiyBU)
+
 # HTML
 - Most common elements
 - Block and inline elements
