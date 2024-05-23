@@ -1,0 +1,95 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap');
+
+body {
+    font-size: 16px;
+    font-family: "Red Hat Display", sans-serif;
+    background-color:var(--paleBlue);
+  
+   
+   
+}
+
+:root {
+    --paleBlue:hsl(225, 100%, 94%);
+    --brightBlue:hsl(245, 75%, 52%);
+    --veryPaleBlue:hsl(225, 100%, 98%);
+    --deSBlue:hsl(224, 23%, 55%);
+    --darkBlue:hsl(223, 47%, 23%);
+}
+
+
+.wrapper {
+    width: 400px;
+    margin: 0 auto;
+    border-radius: 4px;
+    margin-top: 10vh;
+    background-color: var(--veryPaleBlue);
+    
+}
+
+img{
+    width: 100%;
+    object-fit: contain;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+}
+h1 {
+    font-size: 36px;
+    text-align: center;
+    margin: 12px 0;
+}
+p {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.plan {
+    background-color: var(--deSBlue);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8px;
+}
+
+.music {
+    display: flex;
+    gap: 16px;
+    
+}
+
+.music img {
+    width: 50px;
+}
+
+.btn-wrapper {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:30px;
+}
+
+.btn1 {
+    background-color: var(--brightBlue);
+    padding: 16px 8px;
+    color: white;
+    border-radius: 33px;
+    cursor: pointer;
+    border: none;
+    font-size: 20px;
+}
+
+.btn2 {
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    
+}
