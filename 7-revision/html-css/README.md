@@ -23,4 +23,19 @@
 
 
 
-# JavaScript
+## FlexBox
+
+1. Align block element Horizontally
+2. Center items
+3. Distribution sapace between items
+4. Push item to the bottoms
+5. Building relative size column
+6. Building responsive Layout without and with media query
+7. Change order (not that important)
+8. Change position of items (not that important)
+
+# CSS Grid
+
+1. Pancake Stack
+2. Simple 12 column layout
+3. Responsive layout (Mobile, Tablet, Desktop)

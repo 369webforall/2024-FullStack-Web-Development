@@ -6,20 +6,40 @@
 html, body {
     height: 100%;
 }
-body {
+
+p {
+ 
+    border: 2px solid red;
+    margin-top: 20px;
+    
+}
+
+div{
    
-    border: 5px solid purple;
-   
+    border: 5px solid orange;
+    padding: 10px;
 }
 
-h1 {
-    border: 10px solid red;
 
+a {
+    display: block;
+    border: 2px solid purple;
+    margin: 10px;
 }
 
-div {
-    border: 5px solid green;
+.flex > div {
+border: 2px solid black;
+flex-basis: 45%;
 }
-ul {
-    border: 10px solid orange;
+
+.flex {
+    display: flex;
+    gap:20px;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    flex:1;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    
 }
