@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Best Practices</title>
+</head>
+<body>
+    <h1>Check the Console for Output</h1>
+    <script>
+        // JavaScript code here
+        const INITIAL_VALUE = 10;
+        let number = INITIAL_VALUE;
+
+        // Log initial value
+        console.log("Initial value:", number);
+
+        // Addition assignment
+        number += 5;  // equivalent to number = number + 5
+        console.log("After addition (+= 5):", number);
+
+        // Subtraction assignment
+        number -= 3;  // equivalent to number = number - 3
+        console.log("After subtraction (-= 3):", number);
+
+        // Multiplication assignment
+        number *= 2;  // equivalent to number = number * 2
+        console.log("After multiplication (*= 2):", number);
+
+        // Division assignment
+        number /= 4;  // equivalent to number = number / 4
+        console.log("After division (/= 4):", number);
+
+        // Modulus assignment
+        number %= 3;  // equivalent to number = number % 3
+        console.log("After modulus (%= 3):", number);
+
+        // Exponentiation assignment
+        number **= 2;  // equivalent to number = number ** 2
+        console.log("After exponentiation (**= 2):", number);
+
+        // Floor division assignment (using Math.floor to mimic floor division)
+        number = Math.floor(number / 2);  // equivalent to floor division
+        console.log("After floor division (using Math.floor):", number);
+
+        // Final value
+        console.log("Final value:", number);
+
+        // Using debugger keyword to set a breakpoint for debugging
+        debugger;
+
+        // Further operations can be performed here, if needed
+    </script>
+    <noscript>
+        JavaScript is disabled in your browser. Please enable JavaScript to view this page.
+    </noscript>
+</body>
+</html>
