@@ -12,7 +12,7 @@
 
 ## Configure git
 
-```
+```js
 Set your username:
 
  git config --global user.name "Robert Welker"
@@ -33,7 +33,7 @@ git config --global edit
 
 ```
 
-```javascript
+```js
 
 git add .
 git commit -m "change 1"
