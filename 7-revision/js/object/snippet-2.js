@@ -17,5 +17,5 @@ let restaurant = {
   console.log(restaurant["menu"]);
   console.log(restaurant[someKey]);
   console.log(restaurant.someKey); // undefined
-  
   console.log(restaurant.menu.includes("fries")); // true
+  
