@@ -10,7 +10,7 @@ const isPrime = function(num){
     if(num < 2){
         return false
     }
-    for(let i = 2; i < num; i++){
+    for(let i = 2; i < num; i++){ // 11  % 1 === 0
         if(num % i === 0){
             return false
         }
@@ -32,7 +32,7 @@ console.log(isPrime(3))
 const pickPrimes = function(arr){
 let newArr = [];
 for(let i =0; i < arr.length; i++){
-    let n = arr[i]
+    let n = arr[i] // 12
     let ans = isPrime(n) // false
 
     if(ans){
