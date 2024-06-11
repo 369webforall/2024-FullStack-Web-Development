@@ -13,3 +13,5 @@
 5. [Object-1](https://youtu.be/HRekjcYi9kk)
 
 6. [Object-2](https://youtu.be/d_ABB6emZ2g)
+
+7. [Promise](https://youtu.be/OYiI0FPtVEQ)

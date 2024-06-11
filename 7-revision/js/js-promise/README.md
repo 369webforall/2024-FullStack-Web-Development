@@ -150,7 +150,7 @@ Explanation
 
 
 
-## Async / Aawit
+## async / awit
 
 ### What is async ?
 - async is keyword to create a async function.
@@ -215,7 +215,7 @@ Example with setTimeout
 ```js
 const p = new Promise((resolve, reject)=>{
 setTimeout(()=>{
-  console.log('Promise is resolved after 3000ms')
+  resolve('Promise is resolved after 3000ms')
 }, 3000)
 })
 
@@ -239,7 +239,7 @@ getData();
 ```js
 const p = new Promise((resolve, reject)=>{
 setTimeout(()=>{
-  console.log('Promise is resolved after 3000ms')
+  resolve('Promise is resolved after 3000ms')
 }, 3000)
 })
 
