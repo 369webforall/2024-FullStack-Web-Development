@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOM Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #dialog {
+            display: none;
+            border: 1px solid #000;
+            padding: 20px;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Browser Object Model (BOM) to display a dialog and determine the screen size. Here’s a simple example using JavaScript: -->
+
+    <h1>BOM Interaction Example</h1>
+    <button id="showDialogBtn">Show Dialog</button>
+    <div id="dialog">
+        <p>This is a dialog box.</p>
+        <button id="closeDialogBtn">Close Dialog</button>
+    </div>
+    <p id="screenSize"></p>
+
+    <script>
+        // Function to show the dialog
+        function showDialog() {
+            document.getElementById('dialog').style.display = 'block';
+        }
+
+        // Function to close the dialog
+        function closeDialog() {
+            document.getElementById('dialog').style.display = 'none';
+        }
+
+        // Function to display the screen size
+        function displayScreenSize() {
+            var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            document.getElementById('screenSize').textContent = `Screen Size: ${width} x ${height}`;
+        }
+
+        // Add event listener to show dialog button
+        document.getElementById('showDialogBtn').addEventListener('click', showDialog);
+
+        // Add event listener to close dialog button
+        document.getElementById('closeDialogBtn').addEventListener('click', closeDialog);
+
+        // Display the screen size when the page loads
+        window.addEventListener('load', displayScreenSize);
+
+        // Update the screen size when the window is resized
+        window.addEventListener('resize', displayScreenSize);
+    </script>
+    
+</body>
+</html>
