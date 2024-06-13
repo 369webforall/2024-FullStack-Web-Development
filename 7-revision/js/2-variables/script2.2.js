@@ -1,4 +1,9 @@
 
+let arr = [1,2,3,4,5]
+let arr2 = [[5,7,8], [2,4,8], [4,8,7]]
+
+console.log(arr[arr.length - 1])
+
 // Sorting an Array
 
 //JavaScript provides the sort() method to sort an array. By default, the sort() method sorts the array elements as strings in ascending order. If you want to sort an array of numbers or use a custom sorting logic, you need to provide a compare function.
@@ -116,3 +121,24 @@ console.log(cheapItems);
     { name: 'cherry', price: 20 }
 ]
 */
+
+
+let basket = "apple";
+
+function PrintAnswer(){
+    console.log(basket)
+
+    let b = 50;
+
+    a()
+
+    function a(){
+        let c = 100;
+        console.log(c)
+    }
+}
+
+
+
+
+PrintAnswer();
