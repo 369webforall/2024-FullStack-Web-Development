@@ -15,3 +15,5 @@
 6. [Object-2](https://youtu.be/d_ABB6emZ2g)
 
 7. [Promise](https://youtu.be/p8_IrZrKrgY)
+
+8. [loops, while, do while, switch break continue](https://youtu.be/JI4DmcC17gM)
