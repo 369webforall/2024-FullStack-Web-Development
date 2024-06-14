@@ -104,6 +104,7 @@ let item = products.find(product => product.price < 40);
 console.log(item); // Output: { name: 'banana', price: 30 }
 
 
+
 // filter() - Returns a new array with all elements that satisfy the provided testing function.
 
 let obj = [
@@ -113,7 +114,7 @@ let obj = [
     { name: 'date', price: 40 }
 ];
 
-let cheapItems = obj.filter(item => item.price < 40);
+let cheapItems = obj.filter(item => item.price < 40 );
 console.log(cheapItems);
 /* Output:
 [
@@ -122,6 +123,8 @@ console.log(cheapItems);
 ]
 */
 
+
+// scope
 
 let basket = "apple";
 
