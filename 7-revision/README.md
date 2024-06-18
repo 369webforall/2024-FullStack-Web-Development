@@ -17,3 +17,5 @@
 7. [Promise](https://youtu.be/p8_IrZrKrgY)
 
 8. [loops, while, do while, switch break continue](https://youtu.be/JI4DmcC17gM)
+
+8. [DOM](https://youtu.be/6d1rDK1dNdU)
