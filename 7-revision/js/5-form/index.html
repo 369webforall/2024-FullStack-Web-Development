@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing form data</title>
+    <style>
+        label {
+            display: block;
+            margin: 1em 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Processing form data</h1>
+    <form id="myForm">
+        <input type="text" id="username" name="username" value="JohnDoe">
+        <input type="password" id="password" name="password" value="123456">
+        <select id="country" name="country">
+            <option value="USA">United States</option>
+            <option value="CAN">Canada</option>
+            <option value="MEX">Mexico</option>
+        </select>
+        <input type="checkbox" id="subscribe" name="subscribe" checked>
+        <fieldset>
+            <label for="male">
+                <input type="radio" name="gender" value="male" id="male" checked />
+                Male
+            </label>
+            <label for="female">
+                <input type="radio" name="gender" value="female" id="female">
+                Female
+            </label>
+        </fieldset>
+        <button type="button" onclick="retrieveFormValues()">Submit</button>
+    </form>
+
+    
+    <script>
+
+        // Retrieving Form Values
+
+        function retrieveFormValues() {
+    const form = document.getElementById('myForm');
+
+    const username = form.elements['username'].value;
+    const password = form.elements['password'].value;
+    const country = form.elements['country'].value;
+    const subscribe = form.elements['subscribe'].checked;
+    
+    const gender = form.querySelector('input[name="gender"]:checked').value;
+
+    console.log('Username:', username);
+    console.log('Password:', password);
+    console.log('Country:', country);
+    console.log('Subscribe:', subscribe);
+    console.log('Gender:', gender);
+}
+    </script>
+</body>
+</html>
