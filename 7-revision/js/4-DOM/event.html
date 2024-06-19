@@ -6,7 +6,9 @@
     <title>Event Handling Example</title>
 </head>
 <body>
-    <form>
+
+
+    <form id="myForm" class="login">
         <input type="text" name="exampleInput" placeholder="Type something...">
         <button type="submit">Submit</button>
     </form>
@@ -15,9 +17,10 @@
 // Document Event
 // The DOMContentLoaded event triggers when the HTML document has been completely loaded and parsed.
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            console.log('Document fully loaded and parsed');
-        });
+        // document.addEventListener('DOMContentLoaded', (event) => {
+        //     console.log('Document fully loaded and parsed');
+            
+        // });
 
       
 
@@ -28,64 +31,75 @@
           // Form Event
         // Forms can trigger various events like submit and reset.
 
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            console.log('Form submitted');
-        });
+        // form.addEventListener('submit', (event) => {
+        //     event.preventDefault();
+        //     let name = document.querySelector('input').value;
+        //     console.log(name)
+        // });
+
+        // button.addEventListener('click', (event)=>{
+        //     event.preventDefault();
+        //     console.log('button clicked')
+        //     console.log(input.value)
+        // })
+
 
         // Keyboard Events
         // Keyboard events include keydown, keyup, and keypress.
 
-        document.addEventListener('keydown', (event) => {
-            console.log(`Key down: ${event.key}`);
-        });
+        // document.addEventListener('keydown', (event) => {
+        //     console.log(`Key down: ${event.key}`);
+        // });
 
-        document.addEventListener('keyup', (event) => {
-            console.log(`Key up: ${event.key}`);
-        });
+        // document.addEventListener('keyup', (event) => {
+        //     console.log(`Key up: ${event.key}`);
+        // });
 
-        document.addEventListener('keypress', (event) => {
-            console.log(`Key press: ${event.key}`);
-        });
+        // document.addEventListener('keypress', (event) => {
+        //     console.log(`Key press: ${event.key}`);
+        // });
 
-        // Mouse Events
-        // Mouse events include click, mouseover, and mouseout.
+    //     // Mouse Events
+    //     // Mouse events include click, mouseover, and mouseout.
 
-        button.addEventListener('click', (event) => {
-            console.log('Button clicked');
-        });
+        // button.addEventListener('click', (event) => {
+        //     event.preventDefault();
+        //     console.log('Button clicked');
+        // });
 
-        button.addEventListener('mouseover', (event) => {
-            console.log('Mouse over button');
-        });
+        // button.addEventListener('mouseover', (event) => {
+        //     event.preventDefault();
+        //     console.log('Mouse over button');
+        // });
 
-        button.addEventListener('mouseout', (event) => {
-            console.log('Mouse out of button');
-        });
+        // button.addEventListener('mouseout', (event) => {
+        //     console.log('Mouse out of button');
+        // });
 
-    // onload Event
-    // The load event is triggered when the whole page (including all dependent resources like images) has loaded.
+    // // onload Event
+    // // The load event is triggered when the whole page (including all dependent resources like images) has loaded.
 
-        window.addEventListener('load', (event) => {
-            console.log('Page fully loaded');
-        });
+        // window.addEventListener('load', (event) => {
+        //     console.log('Page fully loaded');
+        // });
 
-        // onfocus and onblur Events
-        // These events are triggered when an element gains or loses focus.
+    //     // onfocus and onblur Events
+    //     // These events are triggered when an element gains or loses focus.
 
-        input.addEventListener('focus', (event) => {
-            console.log('Input focused');
-        });
+        // input.addEventListener('focus', (event) => {
+        //     console.log('Input focused');
+        // });
 
-        input.addEventListener('blur', (event) => {
-            console.log('Input lost focus');
-        });
+        // input.addEventListener('blur', (event) => {
+        //     console.log('Input lost focus');
+        // });
 
-        // onchange Event
-        // This event is triggered when the value of an input element is changed and the element loses focus.
+    //     // onchange Event
+    //     // This event is triggered when the value of an input element is changed and the element loses focus.
 
         input.addEventListener('change', (event) => {
             console.log('Input value changed');
+            console.log(input.value)
         });
     </script>
 </body>

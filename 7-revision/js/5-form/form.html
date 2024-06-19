@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning basic html form</title>
+
+    <style>
+        label {
+            display: block;
+            margin: 1em 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Complete your application</h1>
+    <p>Please fill out the form</p>
+
+    <form>
+        <fieldset>
+            <label for="apple">Enter the Name: <input type="text" id="apple" name="name" required /></label>
+            <label for="email">Enter the Email: <input type="email" id="email" name="email" required /></label>
+            <label for="pwd">Enter the Name: <input type="password" id="pwd" name="password" required /></label>
+        </fieldset>
+        <fieldset>
+            <label for="country">
+                Select Country:
+                <select id="country" name="country">
+                    <option value="USA">United States</option>
+                    <option value="CAN">Canada</option>
+                    <option value="MEX">Mexico</option>
+                </select>
+            </label>
+        </fieldset>
+        <fieldset>
+            <label for="file">Upload file: <input type="file" id="file" name="file" /></label>
+        </fieldset>
+        <fieldset>
+            <label for="male">
+                <input type="radio" name="gender" value="male" id="male" checked />
+                Male
+            </label>
+            <label for="female">
+                <input type="radio" name="gender" value="female" id="female"  />
+                Female
+            </label>
+
+            <label for="terms">
+                <input type="checkbox" id="terms" name="terms" value="terms and condition" /> 
+                Terms and Condition
+            </label>
+
+            <label for="bio">
+                Please enter your bio:
+                <textarea name="bio" id="bio" cols="30" rows="10"></textarea>
+            </label>
+        </fieldset>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
