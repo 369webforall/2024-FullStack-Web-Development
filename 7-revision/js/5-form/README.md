@@ -20,6 +20,7 @@ console.log(paragraph.textContent);
 ```
 
 2. Getting Values from Different Types of Elements
+
 - Different elements may require different methods to retrieve their values.
 
 - Input (text, password, checkbox)

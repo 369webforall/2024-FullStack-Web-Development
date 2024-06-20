@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation Example</title>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <form id="myForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword"><br><br>
+
+        <button type="button" onclick="validateForm()">Submit</button>
+    </form>
+
+    <div id="errorMessages" style="color: red;"></div>
+
+
+    <script>
+function validateForm() {
+    // Clear previous error messages
+    document.getElementById('errorMessages').innerHTML = '';
+
+    const username = document.getElementById('username').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+    let errors = [];
+
+    // Check if username is not blank
+    if (username === '') {
+        errors.push('Username cannot be blank.');
+    }
+
+    // Check if age is a number and not NaN
+    if (age === '') {
+        errors.push('Age cannot be blank.');
+    } else if (isNaN(age)) {
+        errors.push('Age must be a number.');
+    }
+
+    // Check if password is not blank
+    if (password === '') {
+        errors.push('Password cannot be blank.');
+    }
+
+    // Check if confirm password is not blank
+    if (confirmPassword === '') {
+        errors.push('Confirm Password cannot be blank.');
+    }
+
+    // Check if password and confirm password match
+    if (password !== confirmPassword) {
+        errors.push('Passwords do not match.');
+    }
+
+    // Case-sensitive string comparison (example: password must contain at least one uppercase letter)
+    const containsUppercase = /[A-Z]/.test(password);
+    if (!containsUppercase) {
+        errors.push('Password must contain at least one uppercase letter.');
+    }
+
+    // Display errors if any
+    if (errors.length > 0) {
+        document.getElementById('errorMessages').innerHTML = errors.join('<br>');
+    } else {
+        // No errors, proceed with form submission or further processing
+        document.getElementById('errorMessages').innerHTML = '';
+        console.log('Form submitted successfully!');
+        console.log(username, age, password)
+    }
+}
+
+
+
+    </script>
+</body>
+</html>
+
+

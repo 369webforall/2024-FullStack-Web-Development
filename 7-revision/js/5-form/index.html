@@ -13,7 +13,7 @@
 </head>
 <body>
     <h1>Processing form data</h1>
-    <form id="myForm">
+    <form id="myForm" onsubmit="handleSubmit(event)">
         <input type="text" id="username" name="username" value="JohnDoe">
         <input type="password" id="password" name="password" value="123456">
         <select id="country" name="country">
@@ -21,7 +21,7 @@
             <option value="CAN">Canada</option>
             <option value="MEX">Mexico</option>
         </select>
-        <input type="checkbox" id="subscribe" name="subscribe" checked>
+        <input type="checkbox" id="subscribe" name="subscribe" checked >
         <fieldset>
             <label for="male">
                 <input type="radio" name="gender" value="male" id="male" checked />
@@ -32,12 +32,16 @@
                 Female
             </label>
         </fieldset>
-        <button type="button" onclick="retrieveFormValues()">Submit</button>
+        <!-- <button type="submit">Submit</button> -->
+         <button type="button" onclick="retrieveFormValues()">Submit</button>
     </form>
 
     
     <script>
-
+// function handleSubmit(e) {
+//     e.preventDefault();
+//     console.log(e);
+// }
         // Retrieving Form Values
 
         function retrieveFormValues() {

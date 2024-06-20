@@ -22,3 +22,5 @@
 
 
 10. [event, html form](https://youtu.be/053XzTR717A)
+
+11. [DOM, form, validation](https://youtu.be/fUe1tZm94Qs)
