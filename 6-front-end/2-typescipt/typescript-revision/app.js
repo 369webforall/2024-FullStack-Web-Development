@@ -1,75 +1,37 @@
 "use strict";
-// number, string, boolean, null, undefine
-let x = 1;
+// number, string, boolean, null, undefined
+const x = 1;
 console.log(x);
-x = 100;
-console.log(x);
-let message = "This is message for tomorrow class";
+let name1 = "John Doe";
+let message = `Hello, ${name1}!`;
 console.log(message);
-//union
-let ans = null;
-console.log(ans);
-let y = 45;
-console.log(y);
-function greeting() {
-    console.log("Hello good morning");
+let apple = 5;
+console.log(apple);
+function greet() {
+    console.log("Hello!");
 }
-greeting();
-function greet(firstName) {
+function greetagain(firstName) {
     console.log("Hello " + firstName);
 }
-greet("Robert Welker");
+greetagain("Robert Welker");
 function sum(a, b) {
     return a + b;
 }
 console.log(sum(2, 3));
-function isLegal(age) {
-    if (age > 18) {
-        return true;
-    }
-    else {
-        return false;
-    }
+function delayedCall(fn) {
+    setTimeout(fn, 4000);
 }
-console.log(isLegal(2));
-function delayCall(fn) {
-    setTimeout(fn, 3000);
-}
-delayCall(function () {
-    console.log("run after 3 second");
+delayedCall(function () {
+    console.log("hi there");
 });
 const user = {
     firstName: "Robert",
     lastName: "Welker",
     email: "robert@gmail.com",
     age: 62,
+    arr: "adsfasdf",
 };
-function userInfo(user) {
-    console.log(user.age);
+function DiplayAge(obj) {
+    console.log(obj.age);
 }
-userInfo(user);
-function maxValue(arr) {
-    let max = 0;
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] > max) {
-            max = arr[i];
-        }
-    }
-    return max;
-}
-console.log(maxValue([1, 2, 3]));
-function filteredUsers(users) {
-    return users.filter((x) => x.age >= 18);
-}
-console.log(filteredUsers([
-    {
-        firstName: "Robert",
-        lastName: "SWelker",
-        age: 21,
-    },
-    {
-        firstName: "Tucker",
-        lastName: "Hoke",
-        age: 16,
-    },
-]));
+DiplayAge(user);

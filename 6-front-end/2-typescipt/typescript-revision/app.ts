@@ -1,35 +1,26 @@
-// number, string, boolean, null, undefine
+// number, string, boolean, null, undefined
 
-let x: number = 1;
+const x: number = 1;
 console.log(x);
 
-x = 100;
-console.log(x);
+let name1: string = "John Doe";
+let message: string = `Hello, ${name1}!`;
 
-let message: string = "This is message for tomorrow class";
 console.log(message);
 
-//union
+let apple: number | undefined = 5;
 
-let ans: number | null = null;
+console.log(apple);
 
-console.log(ans);
-
-let y: number | undefined = 45;
-
-console.log(y);
-
-function greeting(): void {
-  console.log("Hello good morning");
+function greet(): void {
+  console.log("Hello!");
 }
 
-greeting();
-
-function greet(firstName: string) {
+function greetagain(firstName: string) {
   console.log("Hello " + firstName);
 }
 
-greet("Robert Welker");
+greetagain("Robert Welker");
 
 function sum(a: number, b: number): number {
   return a + b;
@@ -37,22 +28,12 @@ function sum(a: number, b: number): number {
 
 console.log(sum(2, 3));
 
-function isLegal(age: number): boolean {
-  if (age > 18) {
-    return true;
-  } else {
-    return false;
-  }
+function delayedCall(fn: () => void) {
+  setTimeout(fn, 4000);
 }
 
-console.log(isLegal(2));
-
-function delayCall(fn: () => void) {
-  setTimeout(fn, 3000);
-}
-
-delayCall(function () {
-  console.log("run after 3 second");
+delayedCall(function () {
+  console.log("hi there");
 });
 
 const user = {
@@ -62,52 +43,17 @@ const user = {
   age: 62,
 };
 
-interface User1 {
+interface User {
   firstName: string;
   lastName: string;
   email: string;
   age: number;
 }
 
-function userInfo(user: User1) {
-  console.log(user.age);
+function DiplayAge(obj: User) {
+  console.log(obj.age);
 }
 
-userInfo(user);
+DiplayAge(user);
 
-function maxValue(arr: number[]) {
-  let max = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] > max) {
-      max = arr[i];
-    }
-  }
-  return max;
-}
-
-console.log(maxValue([1, 2, 3]));
-
-interface User {
-  firstName: string;
-  lastName: string;
-  age: number;
-}
-
-function filteredUsers(users: User[]) {
-  return users.filter((x) => x.age >= 18);
-}
-
-console.log(
-  filteredUsers([
-    {
-      firstName: "Robert",
-      lastName: "SWelker",
-      age: 21,
-    },
-    {
-      firstName: "Tucker",
-      lastName: "Hoke",
-      age: 16,
-    },
-  ])
-);
+[{}];

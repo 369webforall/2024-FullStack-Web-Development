@@ -2,7 +2,7 @@
 
 1. [TypeScript-basic](https://youtu.be/HVmwU7O0nVY)
 
-2. [TypeScript-revision](https://youtu.be/vtUM8ZYXRZU)
+2. [TypeScript-revision](https://youtu.be/s_7loCDXO0w)
 
 ## Types of languages
 
