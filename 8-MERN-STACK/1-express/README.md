@@ -115,3 +115,91 @@ module.exports = router;
 - `npm i -D @types/express`
 - `npm i -D @types/dotenv`
 - `npm install -D @types/mongoose --save-dev`
+
+**setup config file**
+
+```js
+// src/config/config.ts
+
+import { config as conf } from "dotenv";
+conf();
+
+const _config = {
+  port: process.env.PORT,
+  databaseURL: process.env.MONGO_CONNECTION_STRING,
+  env: process.env.NODE_ENV,
+};
+
+export const config = Object.freeze(_config);
+```
+
+```js
+// in root create server.ts
+
+import app from "./src/app";
+import { config } from "./src/config/config";
+
+const startServer = () => {
+  let PORT = config.port || 3000;
+  app.listen(PORT, () => {
+    console.log("server is running in port", PORT);
+  });
+};
+
+startServer();
+```
+
+**setup db connection**
+
+- connection string from mongodb database, with password
+- create db.ts file in config folder
+- add property to config.ts file for database connection
+
+```js
+// db.ts
+import mongoose from "mongoose";
+
+import { config } from "./config";
+const connectDB = async () => {
+  try {
+    mongoose.connection.on("connected", () => {
+      console.log("Connected to datbase sucessfully");
+    });
+    mongoose.connection.on("error", (err) => {
+      console.log("Error in connectiong database", err);
+    });
+    await mongoose.connect(config.databaseURL as string);
+  } catch (error) {
+    console.error("Failed to connect datbase", error);
+    process.exit(1);
+  }
+};
+
+export default connectDB;
+
+```
+
+**Error handling**
+
+- Create Globla error handling function - src/middlewares/globalErrorHandler.ts
+- we will use package called `npm i http-errors` to catch the error.
+- Type for http-errors ` npm i -D @types/http-errors`
+
+```js
+import { Request, Response, NextFunction } from "express";
+import { HttpError } from "http-errors";
+import { config } from "../config/config";
+export const globalErrorHandler = (
+  err: HttpError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const statusCode = err.statusCode || 500;
+
+  return res.status(statusCode).json({
+    message: err.message,
+    errorStack: config.env === "development" ? err.stack : "",
+  });
+};
+```
