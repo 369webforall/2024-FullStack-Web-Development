@@ -2,6 +2,8 @@
 
 1. [express-restapi intro](https://youtu.be/mTRENvA2A50)
 
+2. [express-restapi project](https://youtu.be/O5uzlpWqcqE)
+
 # Building a RESTful API with Express.js: A Beginner’s Guide
 
 **Introduction**
