@@ -205,3 +205,178 @@ export const globalErrorHandler = (
   });
 };
 ```
+
+**Build user endpoints**
+
+- userRouter - router job is to execute the request http method (get, post, put delete)
+
+```js
+// - users/userRouter.ts
+
+import express from "express";
+import { createUser } from "./userController";
+
+const userRouter = express.Router();
+
+userRouter.post("/register", createUser);
+
+export default userRouter;
+```
+
+- user controller - It's just the function which handle all the logic for that end point.
+
+```js
+// users/usercontroller.ts
+
+import { NextFunction, Request, Response } from "express";
+import createHttpError from "http-errors";
+import bcrypt from "bcrypt";
+import userModel from "./userModel";
+import { sign } from "jsonwebtoken";
+import { config } from "../config/config";
+import { User } from "./userTypes";
+
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { name, email, password } = req.body;
+
+  // Validation
+  if (!name || !email || !password) {
+    const error = createHttpError(400, "All fields are required");
+    return next(error);
+  }
+
+  // Database call.
+  try {
+    const user = await userModel.findOne({ email });
+    if (user) {
+      const error = createHttpError(
+        400,
+        "User already exists with this email."
+      );
+      return next(error);
+    }
+  } catch (err) {
+    return next(createHttpError(500, "Error while getting user"));
+  }
+
+  /// password -> hash
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  let newUser: User;
+  try {
+    newUser = await userModel.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+  } catch (err) {
+    return next(createHttpError(500, "Error while creating user."));
+  }
+
+  try {
+    // Token generation JWT
+    const token = sign({ sub: newUser._id }, config.jwtSecret as string, {
+      expiresIn: "7d",
+      algorithm: "HS256",
+    });
+    // Response
+    res.status(201).json({ accessToken: token });
+  } catch (err) {
+    return next(createHttpError(500, "Error while signing the jwt token"));
+  }
+};
+
+
+export { createUser };
+```
+
+- user model: we use mongoose ORM for mongodb database.
+
+**Introduction to Mongoose for MongoDB**
+
+Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js. It manages relationships between data, provides schema validation, and is used to translate between objects in code and the representation of those objects in MongoDB.
+
+```js
+// users/usermodel.ts
+
+import mongoose from "mongoose";
+import { User } from "./userTypes";
+const userSchema =
+  new mongoose.Schema() <
+  User >
+  ({
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true });
+
+// users collection
+
+export default mongoose.model < User > ("User", userSchema);
+```
+
+- define type for your user
+
+```js
+// users/userTypes.ts
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+```
+
+**Login point (post request)**
+
+```js
+//post method
+// userRouter - userRouter.post("/login", loginUser);
+
+// userController.ts
+
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(createHttpError(400, "All fields are required"));
+  }
+
+  // todo: wrap in try catch.
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    return next(createHttpError(404, "User not found."));
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return next(createHttpError(400, "Username or password incorrect!"));
+  }
+
+  // todo: handle errors
+  // Create accesstoken
+  const token = sign({ sub: user._id }, config.jwtSecret as string, {
+    expiresIn: "7d",
+    algorithm: "HS256",
+  });
+
+  res.json({ accessToken: token });
+};
+
+
+export {loginUser}
+```
