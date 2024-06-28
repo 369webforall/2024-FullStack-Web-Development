@@ -382,3 +382,130 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 export {loginUser}
 ```
+
+### Book Api
+
+**book endpoint**
+
+```js
+//book/bookTypes.ts
+
+import { User } from "../user/userTypes";
+
+export interface Book {
+  _id: string;
+  title: string;
+  description: string;
+  author: User;
+  genre: string;
+  coverImage: string;
+  file: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+- model
+
+```js
+//bookModel.ts
+
+import mongoose from "mongoose";
+import { Book } from "./bookTypes";
+
+const bookSchema =
+  new mongoose.Schema() <
+  Book >
+  ({
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      require: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      // add ref
+      ref: "User",
+      required: true,
+    },
+    // we will store coverImage and pdf file in cloudinary
+    coverImage: {
+      type: String,
+      required: true,
+    },
+    file: {
+      type: String,
+      requied: true,
+    },
+    genre: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true });
+
+export default mongoose.model < Book > ("Book", bookSchema);
+```
+
+- Router
+
+```js
+// book/bookRouter.ts
+import path from "node:path";
+import express from "express";
+import { createBook } from "./bookController";
+import multer from "multer";
+
+const bookRouter = express.Router();
+
+// file store local ->
+const upload = multer({
+  dest: path.resolve(__dirname, "../../public/data/uploads"),
+  // todo: put limit 10mb max.
+  limits: { fileSize: 3e7 }, // 30mb 30 * 1024 * 1024
+});
+
+// routes
+// /api/books
+
+bookRouter.post(
+  "/",
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  createBook
+);
+
+export default bookRouter;
+```
+
+- Controller
+- Here we are going to upload pdf file and image to cloudinary - online storage
+- to receive multipart form-data we will use library called multer.
+- Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
+
+`npm i multer`
+
+- we need to add this multer middleware in router.
+
+```js
+// bookController.ts
+
+import { Request, Response, NextFunction } from "express";
+import bookModel from "./bookModel";
+
+const createBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, genre, description } = req.body;
+  console.log("files", req.files);
+
+  // upload file in coudinary - create account
+
+  res.json({});
+};
+
+export { createBook };
+```
