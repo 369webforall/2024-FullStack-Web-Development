@@ -452,7 +452,14 @@ const bookSchema =
 export default mongoose.model < Book > ("Book", bookSchema);
 ```
 
-- Router
+### Add book cover and pdf file to coludinary
+
+- express doesn't have support for uploading file, so we use outside library called `multer`
+- `npm i --save multer`
+- `npm i -D @types/multer`
+- multer is middleware and we add multer as second parameter in our router.
+- multer is readymade middleware (it's just a function)
+- Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
 
 ```js
 // book/bookRouter.ts
@@ -467,7 +474,7 @@ const bookRouter = express.Router();
 const upload = multer({
   dest: path.resolve(__dirname, "../../public/data/uploads"),
   // todo: put limit 10mb max.
-  limits: { fileSize: 3e7 }, // 30mb 30 * 1024 * 1024
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10mb 1 0 * 1024 * 1024
 });
 
 // routes
@@ -475,6 +482,7 @@ const upload = multer({
 
 bookRouter.post(
   "/",
+
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "file", maxCount: 1 },
@@ -486,13 +494,6 @@ export default bookRouter;
 ```
 
 - Controller
-- Here we are going to upload pdf file and image to cloudinary - online storage
-- to receive multipart form-data we will use library called multer.
-- Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
-
-`npm i multer`
-
-- we need to add this multer middleware in router.
 
 ```js
 // bookController.ts
@@ -501,8 +502,8 @@ import { Request, Response, NextFunction } from "express";
 import bookModel from "./bookModel";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-  const { title, genre, description } = req.body;
-  console.log("files", req.files);
+  // const { title, genre, description } = req.body;
+  // console.log("files", req.files);
 
   // upload file in coudinary - create account
 
@@ -510,4 +511,265 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 export { createBook };
+```
+
+- Here we are going to upload pdf file and image to cloudinary - online storage
+- login to cloudinary
+- crearte cloudinary.ts file in config folder
+- `npm i cloudinary`
+- update .env file
+- CLOUDINARY_CLOUD=dpthkmox1
+- CLOUDINARY_API_KEY=468119127485962
+- CLOUDINARY_API_SECRET=HlaP0aHkIQet-QiVuhpDPlOuWZY
+
+- update configfile
+
+```js
+// cloudinary.ts
+
+import { v2 as cloudinary } from "cloudinary";
+import { configFile } from "./config";
+
+// Configuration
+cloudinary.config({
+  cloud_name: configFile.cloudName,
+  api_key: configFile.cloudApi,
+  api_secret: configFile.cloudSecret,
+});
+
+export default cloudinary;
+```
+
+```js
+// bookRouter.ts
+
+import authenticate from "../middlewares/authenticate";
+
+bookRouter.post(
+  "/",
+  authenticate,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  createBook
+);
+```
+
+- let create authenticate.ts file inside middleware folder so we can pass the token in req.
+- import this file in bookRouter.ts
+- and pass as middleware before multer;
+
+```js
+//authenticate.ts
+// postman Headers -Authorization - Bearer tokenkey
+
+//verify: This is a function from the jsonwebtoken library that verifies a JWT. It checks if the token is valid and has not been tampered with.
+
+import { NextFunction, Request, Response } from "express";
+import createHttpError from "http-errors";
+import { verify } from "jsonwebtoken";
+import { config } from "../config/config";
+
+export interface AuthRequest extends Request {
+  userId: string;
+}
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.header("Authorization");
+  if (!token) {
+    return next(createHttpError(401, "Authorization token is required."));
+  }
+
+  try {
+    const parsedToken = token.split(" ")[1];
+    const decoded = verify(parsedToken, config.jwtSecret as string);
+    const _req = req as AuthRequest;
+    _req.userId = decoded.sub as string;
+
+    next();
+  } catch (err) {
+    return next(createHttpError(401, "Token expired."));
+  }
+};
+
+export default authenticate;
+```
+
+### Controller.ts
+
+```js
+// bookController.ts
+import path from "node:path";
+import fs from "node:fs";
+import { Request, Response, NextFunction } from "express";
+import bookModel from "./bookModel";
+import cloudinary from "../config/cloudinary";
+import createHttpError from "http-errors";
+
+const createBook = async (req: Request, res: Response, next: NextFunction) => {
+  // const { title, genre, description } = req.body;
+  // console.log("files", req.files);
+
+  // to upload file in coudinary - create account and get api variables first.
+
+const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    // 'application/pdf'
+    const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
+    const fileName = files.coverImage[0].filename;
+    const filePath = path.resolve(
+        __dirname,
+        "../../public/data/uploads",
+        fileName
+    );
+
+    try {
+        const uploadResult = await cloudinary.uploader.upload(filePath, {
+            filename_override: fileName,
+            folder: "book-covers",
+            format: coverImageMimeType,
+        });
+
+        const bookFileName = files.file[0].filename;
+        const bookFilePath = path.resolve(
+            __dirname,
+            "../../public/data/uploads",
+            bookFileName
+        );
+
+        const bookFileUploadResult = await cloudinary.uploader.upload(
+            bookFilePath,
+            {
+                resource_type: "raw",
+                filename_override: bookFileName,
+                folder: "book-pdfs",
+                format: "pdf",
+            }
+        );
+        const _req = req as AuthRequest;
+
+        const newBook = await bookModel.create({
+            title,
+            description,
+            genre,
+            author: _req.userId,
+            coverImage: uploadResult.secure_url,
+            file: bookFileUploadResult.secure_url,
+        });
+
+        // Delete temp.files
+        // todo: wrap in try catch...
+        await fs.promises.unlink(filePath);
+        await fs.promises.unlink(bookFilePath);
+
+        res.status(201).json({ id: newBook._id });
+    } catch (err) {
+        console.log(err);
+        return next(createHttpError(500, "Error while uploading the files."));
+    }
+
+};
+
+export { createBook };
+```
+
+### update book
+
+- put: or patch: http://localhost:5000/api/books/id
+
+```js
+// bookRouter.ts
+
+bookRouter.patch(
+  "/:bookId",
+  authenticate,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  updateBook
+);
+```
+
+```js
+// bookController.ts
+
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+    const { title, description, genre } = req.body;
+    const bookId = req.params.bookId;
+
+    const book = await bookModel.findOne({ _id: bookId });
+
+    if (!book) {
+        return next(createHttpError(404, "Book not found"));
+    }
+    // Check access
+    const _req = req as AuthRequest;
+    if (book.author.toString() !== _req.userId) {
+        return next(createHttpError(403, "You can not update others book."));
+    }
+
+    // check if image field is exists.
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    let completeCoverImage = "";
+    if (files.coverImage) {
+        const filename = files.coverImage[0].filename;
+        const converMimeType = files.coverImage[0].mimetype.split("/").at(-1);
+        // send files to cloudinary
+        const filePath = path.resolve(
+            __dirname,
+            "../../public/data/uploads/" + filename
+        );
+        completeCoverImage = filename;
+        const uploadResult = await cloudinary.uploader.upload(filePath, {
+            filename_override: completeCoverImage,
+            folder: "book-covers",
+            format: converMimeType,
+        });
+
+        completeCoverImage = uploadResult.secure_url;
+        await fs.promises.unlink(filePath);
+    }
+
+    // check if file field is exists.
+    let completeFileName = "";
+    if (files.file) {
+        const bookFilePath = path.resolve(
+            __dirname,
+            "../../public/data/uploads/" + files.file[0].filename
+        );
+
+        const bookFileName = files.file[0].filename;
+        completeFileName = bookFileName;
+
+        const uploadResultPdf = await cloudinary.uploader.upload(bookFilePath, {
+            resource_type: "raw",
+            filename_override: completeFileName,
+            folder: "book-pdfs",
+            format: "pdf",
+        });
+
+        completeFileName = uploadResultPdf.secure_url;
+        await fs.promises.unlink(bookFilePath);
+    }
+
+    const updatedBook = await bookModel.findOneAndUpdate(
+        {
+            _id: bookId,
+        },
+        {
+            title: title,
+            description: description,
+            genre: genre,
+            coverImage: completeCoverImage
+                ? completeCoverImage
+                : book.coverImage,
+            file: completeFileName ? completeFileName : book.file,
+        },
+        { new: true }
+    );
+
+    res.json(updatedBook);
+};
+
 ```
