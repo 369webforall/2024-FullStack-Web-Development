@@ -3,7 +3,13 @@ import multer from "multer";
 
 import path from "node:path";
 
-import { createBook } from "./bookController";
+import {
+  createBook,
+  listBooks,
+  getSingleBook,
+  deleteBook,
+  updateBook,
+} from "./bookController";
 import authenticate from "../config/authenticate";
 
 const bookRouter = express.Router();
@@ -22,6 +28,31 @@ bookRouter.post(
     { name: "file", maxCount: 1 },
   ]),
   createBook
+);
+// http://localhost:5000/api/books
+bookRouter.get("/", listBooks);
+
+//get single book
+// http://localhost:5000/api/books/6683aaa3f12432a53114ba72
+
+bookRouter.get("/:bookId", getSingleBook);
+
+// delete route
+// http://localhost:5000/api/books/6683aaa3f12432a53114ba72
+
+bookRouter.delete("/:bookId", authenticate, deleteBook);
+
+// update book
+// http://localhost:5000/api/books/6683aaa3f12432a53114ba72
+
+bookRouter.patch(
+  "/:bookId",
+  authenticate,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  updateBook
 );
 
 export default bookRouter;

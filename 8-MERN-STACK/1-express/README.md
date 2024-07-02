@@ -10,6 +10,8 @@
 
 5. [express-restapi project- part 4](https://youtu.be/kQ4G07E8XLo)
 
+6. [express-restapi project- part 5](https://youtu.be/mkIJKp1bu3w)
+
 # Building a RESTful API with Express.js: A Beginner’s Guide
 
 **Introduction**
@@ -874,7 +876,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
         { new: true }
     );
 
-    res.json(updatedBook);
+    return res.json(updatedBook);
 };
 
 ```
