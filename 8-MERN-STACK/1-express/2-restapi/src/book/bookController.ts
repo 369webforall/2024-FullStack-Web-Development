@@ -55,9 +55,15 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
     // Delete temp.files
     // todo: wrap in try catch...
-    await fs.promises.unlink(filePath);
-    await fs.promises.unlink(bookFilePath);
+    console.log("before deleting");
+    try {
+      await fs.promises.unlink(filePath);
+      await fs.promises.unlink(bookFilePath);
+    } catch (error) {
+      console.log(error);
+    }
 
+    console.log("after deleting");
     res.status(201).json({ id: newBook._id });
   } catch (error) {
     console.log(error);
