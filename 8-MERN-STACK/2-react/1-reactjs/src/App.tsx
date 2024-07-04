@@ -6,6 +6,11 @@ const App = () => {
       <nav>
         <ul>
           <li>
+            <NavLink to="/" className={(e) => (e.isActive ? "bgColor" : "")}>
+              Home
+            </NavLink>
+          </li>
+          <li>
             <NavLink
               to="/about"
               className={(e) => (e.isActive ? "bgColor" : "")}

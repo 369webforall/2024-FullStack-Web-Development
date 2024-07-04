@@ -1,28 +1,25 @@
-import React from "react";
+import { createBrowserRouter } from "react-router-dom";
+import App from "./App";
 
-const Root = () => {
-  return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <a href="/">Home</a>
-          </li>
-          <li>
-            <a href="/about">About</a>
-          </li>
-          <li>
-            <a href="/contact">Contact</a>
-          </li>
-          <li>
-            <a href="/products">Products</a>
-          </li>
-        </ul>
-      </nav>
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Products from "./pages/Products";
+import User from "./pages/User";
 
-      <footer>This is footer</footer>
-    </div>
-  );
-};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
+      { path: "products", element: <Products /> },
+      { path: "user", element: <User /> },
+      { path: "user/:username", element: <User /> },
+    ],
+  },
+]);
 
-export default Root;
+export default router;
