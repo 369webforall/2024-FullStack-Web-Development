@@ -1,24 +1,48 @@
-import { useState } from "react";
+import { Outlet, NavLink } from "react-router-dom";
 
 const App = () => {
-  const [count, setCount] = useState(30);
-  console.log(count);
-
   return (
-    <>
-      <div>Learning react {count}</div>
-      <h1>This is heading</h1>
-      <Greeting name="Dev" />
-    </>
+    <div>
+      <nav>
+        <ul>
+          <li>
+            <NavLink
+              to="/about"
+              className={(e) => (e.isActive ? "bgColor" : "")}
+            >
+              About
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/products"
+              className={(e) => (e.isActive ? "bgColor" : "")}
+            >
+              Products
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/contact"
+              className={(e) => (e.isActive ? "bgColor" : "")}
+            >
+              Contact
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/user"
+              className={(e) => (e.isActive ? "bgColor" : "")}
+            >
+              User
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+      <Outlet />
+      <footer>footer</footer>
+    </div>
   );
 };
-// props = {name:"Dev"}
-interface Props {
-  name: string;
-}
-
-function Greeting(props: Props) {
-  return <h1>Hello, {props.name}!</h1>;
-}
 
 export default App;
