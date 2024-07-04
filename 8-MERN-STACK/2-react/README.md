@@ -130,3 +130,87 @@ function Timer() {
   return <div>Seconds: {seconds}</div>;
 }
 ```
+
+### REACT ROUTER DOM
+
+React Router DOM is an npm package that enables you to implement dynamic routing in a web app. It allows you to display pages and allow users to navigate them. It is a fully-featured client and server-side routing library for React.
+
+- Installation
+
+`npm install react-router-dom`
+
+```js
+//main.tsx
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+```
+
+```js
+// router.tsx
+
+import { createBrowserRouter } from "react-router-dom";
+import App from "./App";
+import Home from "./Home";
+import About from "./About";
+import Contact from "./Contact";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
+    ],
+  },
+]);
+
+export default router;
+```
+
+```js
+//App.tsx
+
+import React from "react";
+import { Link, Outlet } from "react-router-dom";
+
+const App = () => {
+  return (
+    <div>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="about">About</Link>
+          </li>
+          <li>
+            <Link to="products">Products</Link>
+          </li>
+          <li>
+            <Link to="contact">Contact</Link>
+          </li>
+        </ul>
+      </nav>
+      <Outlet />
+
+      <footer>This is Footer section</footer>
+    </div>
+  );
+};
+
+export default App;
+```
