@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Products = () => {
+  const [count, setCount] = useState(0);
+
+  const increase = () => {
+    setCount(count + 1);
+  };
+
+  const decrease = () => {
+    setCount(count + 1);
+  };
   return (
     <div>
-      <h1>products</h1>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum quasi
-        quibusdam eaque impedit optio tempore vel explicabo assumenda. Incidunt
-        inventore distinctio tempore alias ab laborum illum dolor maxime beatae
-        quas?
-      </p>
+      <h1>Counter App</h1>
+      <h3>Count is: ${count}</h3>
+
+      <button onClick={increase}>Increase + </button>
+      <button onClick={decrease}>Increase -</button>
     </div>
   );
 };
