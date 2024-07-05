@@ -216,3 +216,300 @@ const App = () => {
 
 export default App;
 ```
+
+## React Hooks (What is hooks?)
+
+- Hooks are `functions` to use some `react features` in functional components.
+- Hooks are functions that makes Functional components work like Class components.
+- Before react lunch hooks, there was only way to use state and life cycle methods by using the class components.
+
+### State Management
+
+1. useState,
+2. useReducer,
+
+**useState Hooks**
+
+- useState: This hook lets you add state to functional components.most common and most used hooks, its like bread and butter of the react functional components
+
+- it return array, with two value, first one is state which holds the data and second value is fucntion used for updating the state value.
+
+`What is state ?`
+
+- State are nothing but just value and variable of your component.
+
+Example 1. lets create a coundter app, mostly used when working with shopping cart.
+
+```js
+import React, { useState } from "react";
+
+function Counter() {
+  // Declare a state variable named 'count', initialized to 0
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You Add or Remove Cart Item: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Click me + </button>
+      <button onClick={() => setCount(count - 1)}>Click me -</button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+example 2 :
+
+- let useState to capture the value of input field
+
+```js
+import React, { useState } from "react";
+
+function InputCapture() {
+  // Declare a state variable named 'inputValue', initialized to an empty string
+  const [inputValue, setInputValue] = useState("");
+
+  // Handle change event for the input field
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleChange}
+        placeholder="Type something..."
+      />
+      <p>You typed: {inputValue}</p>
+    </div>
+  );
+}
+
+export default InputCapture;
+```
+
+example 3: useState for Toggle Visibility
+
+```js
+import React, { useState } from "react";
+
+function ToggleButton() {
+  // Declare a state variable named 'isOn', initialized to false
+  const [isOn, setIsOn] = useState(false);
+
+  // Handle the button click event to toggle the state
+  const toggle = () => {
+    setIsOn((prevIsOn) => !prevIsOn);
+  };
+
+  return (
+    <div>
+      <button onClick={toggle}>{isOn ? "ON" : "OFF"}</button>
+      <p>
+        The button is {isOn ? "When true display ON" : "When false display OFF"}
+      </p>
+    </div>
+  );
+}
+
+export default ToggleButton;
+```
+
+Example 4: We can also use useState to apply classes and style conditionally.
+
+```js
+import React, { useState } from "react";
+import "./ToggleStyle.css"; // Assuming you have some CSS classes defined in this file
+
+function ToggleStyle() {
+  // Declare a state variable named 'isToggled', initialized to false
+  const [isToggled, setIsToggled] = useState(false);
+
+  // Handle the button click event to toggle the state
+  const toggle = () => {
+    setIsToggled((prevIsToggled) => !prevIsToggled);
+  };
+
+  return (
+    <div>
+      <button
+        onClick={toggle}
+        className={isToggled ? "toggled-on" : "toggled-off"}
+        style={{
+          backgroundColor: isToggled ? "green" : "red",
+          color: isToggled ? "white" : "black",
+        }}
+      >
+        {isToggled ? "ON" : "OFF"}
+      </button>
+      <p className={isToggled ? "text-on" : "text-off"}>
+        The button is {isToggled ? "ON" : "OFF"}
+      </p>
+    </div>
+  );
+}
+
+export default ToggleStyle;
+
+//css
+
+
+.toggled-on {
+  border: 2px solid green;
+}
+
+.toggled-off {
+  border: 2px solid red;
+}
+
+.text-on {
+  font-weight: bold;
+  color: green;
+}
+
+.text-off {
+  font-weight: normal;
+  color: red;
+}
+
+```
+
+Example: 5 - How to work with object value in useState.
+
+```js
+const UserProfile = () => {
+  // Initialize state with an object
+  const [user, setUser] = useState({
+    name: "John Doe",
+    age: 30,
+    email: "john.doe@example.com",
+  });
+
+  // Function to update the user's name
+  const updateName = (newName) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      name: newName,
+    }));
+  };
+
+  // Function to update the user's age
+  const updateAge = (newAge) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      age: newAge,
+    }));
+  };
+
+  // Function to update the user's email
+  const updateEmail = (newEmail) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      email: newEmail,
+    }));
+  };
+
+  return (
+    <div>
+      <h1>User Profile</h1>
+      <p>Name: {user.name}</p>
+      <p>Age: {user.age}</p>
+      <p>Email: {user.email}</p>
+
+      <button onClick={() => updateName("Jane Smith")}>Change Name</button>
+      <button onClick={() => updateAge(35)}>Change Age</button>
+      <button onClick={() => updateEmail("jane.smith@example.com")}>
+        Change Email
+      </button>
+    </div>
+  );
+};
+
+export default UserProfile;
+```
+
+### Effect Hooks
+
+1. useEffect
+
+- UseEffect is used to perform side effects in our components.
+
+What is side Effect ?
+
+- Side effects are actions which are performed with the Outside world.
+- We perform a side effect when we need to reach outside of our React components to do somethings.
+- Fetching data from API, updating the DOM element and window and Time function like settimeout, setInterval
+- useEffect accepts two arguments, first is callback function where we write our side effect logic, and second is array of argumnets, which is optinal.
+
+```js
+useEffect(callback, dependencies);
+```
+
+**Variation of useEffect**
+
+UseEffect without any dependencies - it runs with first
+render and also run on any thing changes in that
+component. 2. UseEffect with an empty array - it runs only on first
+render. Useful for Fetching data. 3. UseEffect with variables - it runs on first render and then
+any variable that we pass in dependency change it will
+run.
+
+```js
+useEffect(() => {
+  document.title = `${count} new message!`;
+});
+```
+
+- Not use Effect will run every time we click the button.
+
+**Clean-up Function in useEffect**
+
+```js
+import React, { useEffect, useState } from "react";
+const App = () => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    console.log("Run useEffect", count);
+    return () => {
+      // clean-up function
+      console.log("Clean up", count);
+    };
+  }, [count]);
+  return (
+    <>
+      <h3>Count {count}</h3>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+    </>
+  );
+};
+export default App;
+```
+
+If we are setting state using setInterval and that side effect
+is not cleaned up, when our component unmounts or we're no
+longer using it, the state is destroyed with the component
+
+– but the setInterval function will keep running. and that’s
+make our application slow and low in performance.
+To use clean-up function we need to run return function in
+useEffect. Timeouts, subscriptions, event listeners, and
+other effects that are no longer needed should be disposed
+with the help of cleanup function.
+
+### Context Hooks
+
+1. useContext
+
+### Ref Hooks
+
+1. useRef
+
+### Performance Hooks
+
+1. useMemo
+2. useCallback
+
+### Custom Hooks
