@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, createContext } from "react";
+import DisplayData from "../components/DisplayData";
+
+// createContext , useContext
+export const counterContext = createContext(null);
 
 const About = () => {
   // Initialize state with an object
+
   const [user, setUser] = useState({
     name: "John Doe",
     age: 30,
@@ -44,6 +49,9 @@ const About = () => {
       <button onClick={() => updateEmail("jane.smith@example.com")}>
         Change Email
       </button>
+      <counterContext.Provider value={10}>
+        <DisplayData />
+      </counterContext.Provider>
     </div>
   );
 };

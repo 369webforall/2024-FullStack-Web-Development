@@ -6,6 +6,10 @@
 
 3. [React-Router-Dom](https://youtu.be/6yGnO3-BrSQ)
 
+4. [Hosting MERN APP](https://youtu.be/Wmjz4sVnAvY)
+
+5. [React Hooks - useContext](https://youtu.be/Rtoddpm6ik4)
+
 ## Projects To complete
 
 1. [MERN Stack Tutorial - Book Store Project](https://www.youtube.com/watch?v=-42K44A1oMA)
