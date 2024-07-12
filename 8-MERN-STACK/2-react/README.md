@@ -509,6 +509,340 @@ with the help of cleanup function.
 
 1. useContext
 
+The useContext hook in React is a way to access context values in functional components. It provides a way to share values between components without having to pass props down manually at every level of the component tree.
+
+Here's a step-by-step explanation and example of how to use the useContext hook:
+
+- Create a Context: First, you need to create a context using the createContext function.
+- Provide the Context: Use the Provider component of the context to wrap the part of your component tree that needs access to the context values.
+- Consume the Context: Use the useContext hook in any functional component that needs to access the context values.
+
+### First Example
+
+Step 1: Create a Context
+
+```js
+import React, { createContext, useState } from "react";
+
+// Create a context with a default value
+const CounterContext = createContext();
+
+// Step 2: Provide the Context
+
+const CounterProvider = ({ children }) => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  const decrement = () => {
+    setCount(count - 1);
+  };
+
+  return (
+    <CounterContext.Provider value={{ count, increment, decrement }}>
+      {children}
+    </CounterContext.Provider>
+  );
+};
+
+export default CounterProvider;
+```
+
+Step 3: Consume the Context
+
+Create a component that consumes the context to display the current count and buttons to increment and decrement the count.
+
+```js
+import React, { useContext } from "react";
+import CounterContext from "./CounterContext"; // Make sure to import the context
+
+const Counter = () => {
+  const { count, increment, decrement } = useContext(CounterContext);
+
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+Step 4: Use the Provider in Your App
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import CounterProvider from "./CounterProvider";
+import Counter from "./Counter";
+
+const App = () => {
+  return (
+    <CounterProvider>
+      <Counter />
+    </CounterProvider>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("root"));
+```
+
+### second example
+
+Step 1: Create a Context
+
+```js
+import React, { createContext, useState } from "react";
+
+// Create a context with a default value
+const ThemeContext = createContext("light");
+
+// Step 2: Provide the Context
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+```
+
+Step 3: Consume the Context
+
+Now, let's create a component that consumes the context and displays the current theme. We'll also add a button to toggle the theme.
+
+```js
+import React, { useContext } from "react";
+import ThemeContext from "./context/ThemeContext";
+
+const ThemeSwitcher = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    <div
+      style={{
+        background: theme === "light" ? "#fff" : "#333",
+        color: theme === "light" ? "#000" : "#fff",
+        padding: "20px",
+      }}
+    >
+      <p>Current Theme: {theme}</p>
+      <button onClick={toggleTheme}>Toggle Theme</button>
+    </div>
+  );
+};
+```
+
+Step 4: Use the Provider in Your App
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import ThemeProvider from "./ThemeProvider";
+import ThemeSwitcher from "./ThemeSwitcher";
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <ThemeSwitcher />
+    </ThemeProvider>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("root"));
+```
+
+### useReducer Hooks
+
+The useReducer hook is another way to manage state in React, often preferred for more complex state logic than useState. It is similar to how you would use a reducer in a Redux store. You define a reducer function that determines how the state should change in response to actions, and then use the useReducer hook to access the state and dispatch actions.
+
+**simple counter app example**
+
+Step 1: Define the Reducer Function
+
+Step 2: Use the useReducer Hook in a Component
+
+```js
+import React, { useReducer } from "react";
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      throw new Error();
+  }
+}
+
+const Counter = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <div>
+      <h1>Count: {state.count}</h1>
+      <button onClick={() => dispatch({ type: "increment" })}>Increment</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>Decrement</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+Step 3: Use the Component in Your App
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import Counter from "./Counter";
+
+const App = () => {
+  return (
+    <div>
+      <Counter />
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("root"));
+```
+
+### More complex example for useReducer hooks - Shopping cart
+
+Step 1: Define the Initial State and Reducer Function
+
+```js
+import React, { useReducer } from "react";
+
+// Define a list of products for demonstration purposes
+const products = [
+  { id: 1, name: "Product 1", price: 100 },
+  { id: 2, name: "Product 2", price: 200 },
+  { id: 3, name: "Product 3", price: 300 },
+];
+
+// Initial state of the cart
+const initialState = {
+  cart: [],
+  total: 0,
+};
+
+// Reducer function to handle actions
+function cartReducer(state, action) {
+  switch (action.type) {
+    case "add_item":
+      const updatedCart = [...state.cart, action.payload];
+      const updatedTotal = updatedCart.reduce(
+        (sum, item) => sum + item.price,
+        0
+      );
+      return { ...state, cart: updatedCart, total: updatedTotal };
+
+    case "remove_item":
+      const filteredCart = state.cart.filter(
+        (item) => item.id !== action.payload.id
+      );
+      const newTotal = filteredCart.reduce((sum, item) => sum + item.price, 0);
+      return { ...state, cart: filteredCart, total: newTotal };
+
+    case "clear_cart":
+      return { ...state, cart: [], total: 0 };
+
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+}
+
+onst ShoppingCart = () => {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  const addItemToCart = (item) => {
+    dispatch({ type: 'add_item', payload: item });
+  };
+
+  const removeItemFromCart = (item) => {
+    dispatch({ type: 'remove_item', payload: item });
+  };
+
+  const clearCart = () => {
+    dispatch({ type: 'clear_cart' });
+  };
+
+  return (
+    <div>
+      <h1>Shopping Cart</h1>
+      <div>
+        <h2>Products</h2>
+        {products.map(product => (
+          <div key={product.id}>
+            <span>{product.name} - ${product.price}</span>
+            <button onClick={() => addItemToCart(product)}>Add to Cart</button>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h2>Cart</h2>
+        {state.cart.length === 0 ? (
+          <p>Cart is empty</p>
+        ) : (
+          state.cart.map(item => (
+            <div key={item.id}>
+              <span>{item.name} - ${item.price}</span>
+              <button onClick={() => removeItemFromCart(item)}>Remove</button>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div>
+        <h2>Total: ${state.total}</h2>
+        <button onClick={clearCart}>Clear Cart</button>
+      </div>
+    </div>
+  );
+};
+
+export default ShoppingCart;
+
+
+
+```
+
+Step 3: Use the ShoppingCart Component in Your App
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import ShoppingCart from "./ShoppingCart";
+
+const App = () => {
+  return (
+    <div>
+      <ShoppingCart />
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("root"));
+```
+
 ### Ref Hooks
 
 1. useRef
