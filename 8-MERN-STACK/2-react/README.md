@@ -10,6 +10,8 @@
 
 5. [React Hooks - useContext](https://youtu.be/Rtoddpm6ik4)
 
+6. [React Hooks - useContext/useReducer](https://youtu.be/1_QlNz6KK5o)
+
 ## Projects To complete
 
 1. [MERN Stack Tutorial - Book Store Project](https://www.youtube.com/watch?v=-42K44A1oMA)

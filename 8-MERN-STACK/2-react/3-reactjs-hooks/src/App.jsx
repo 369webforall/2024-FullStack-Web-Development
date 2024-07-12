@@ -12,6 +12,9 @@ function App() {
           <li>
             <Link to="/counter">Counter</Link>
           </li>
+          <li>
+            <Link to="/counterApp">Counter App</Link>
+          </li>
         </ul>
       </nav>
       <Outlet />

@@ -2,10 +2,16 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Home from "./pages/Home";
 import Counter from "./pages/Counter";
+import CounterProvider from "./context/CounterProvider";
+import CounterApp from "./pages/CounterApp";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <CounterProvider>
+        <App />
+      </CounterProvider>
+    ),
 
     children: [
       {
@@ -15,6 +21,10 @@ export const router = createBrowserRouter([
       {
         path: "/counter",
         element: <Counter />,
+      },
+      {
+        path: "/counterApp",
+        element: <CounterApp />,
       },
     ],
   },
