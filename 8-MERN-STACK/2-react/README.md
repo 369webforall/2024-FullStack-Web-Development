@@ -12,6 +12,8 @@
 
 6. [React Hooks - useContext/useReducer](https://youtu.be/1_QlNz6KK5o)
 
+7. [Recoil State Management](https://youtu.be/s3YRgir_hVk)
+
 ## Projects To complete
 
 1. [MERN Stack Tutorial - Book Store Project](https://www.youtube.com/watch?v=-42K44A1oMA)

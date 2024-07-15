@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import { useRecoilState, useRecoilValue, RecoilRoot } from "recoil";
-import { countAtom, evenSelector } from "../store/atoms/count";
+import React from "react";
+import {
+  RecoilRoot,
+  useRecoilValue,
+  useRecoilState,
+  useSetRecoilState,
+} from "recoil";
+import { countAtom, evenSlector, productList } from "../store/atoms/count";
 
 const RecoilCouter = () => {
   return (
     <div>
       <RecoilRoot>
-        <Count />
+        <Counter />
       </RecoilRoot>
     </div>
   );
@@ -14,46 +19,58 @@ const RecoilCouter = () => {
 
 export default RecoilCouter;
 
-function Count() {
+const Counter = () => {
   return (
-    <>
+    <div>
+      <Products />
       <CountRender />
       <EvenCountRender />
       <Button />
-    </>
+    </div>
   );
-}
-
-function EvenCountRender() {
-  const isEven = useRecoilValue(evenSelector);
-
-  return (
-    <>
-      <p>{isEven ? "Is even value" : null}</p>
-    </>
-  );
-}
+};
 
 function CountRender() {
   const count = useRecoilValue(countAtom);
-
   return (
     <div>
       <p>
         {" "}
-        CountRender: <b>{count}</b>
+        CountRender: <b>count : {count}</b>
       </p>
     </div>
   );
 }
 
-function Button() {
-  const [count, setCount] = useRecoilState(countAtom);
+const Button = () => {
+  const setCount = useSetRecoilState(countAtom);
+  return (
+    <>
+      <button onClick={() => setCount((prev) => prev + 1)}>Increment</button>
+      <button onClick={() => setCount((prev) => prev - 1)}>Derement</button>
+    </>
+  );
+};
+
+function EvenCountRender() {
+  const isEven = useRecoilValue(evenSlector);
 
   return (
     <>
-      <button onClick={() => setCount(count + 1)}>Increase</button>
-      <button onClick={() => setCount(count - 1)}>Decrease</button>
+      <p className="text-xl text-red-500">
+        {isEven === 0 ? "Is even number" : null}
+      </p>
     </>
+  );
+}
+
+function Products() {
+  const products = useRecoilValue(productList);
+  console.log(products);
+
+  return (
+    <div>
+      <p>list of products</p>
+    </div>
   );
 }
