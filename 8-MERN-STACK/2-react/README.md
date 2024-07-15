@@ -845,6 +845,197 @@ const App = () => {
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
+## State Management using Recoil
+
+`What is state management`
+
+State management is a crucial concept in web development that deals with the way an application handles data that can change over time. In simpler terms, it’s about how an application keeps track of different pieces of data (state) and ensures that any changes in the state are properly reflected throughout the application.
+
+In a web application, state can include things like user input, data fetched from a server, the current view or page, UI elements' visibility, and much more. Proper state management ensures that the application is consistent, reliable, and responsive to user interactions.
+
+**Common State Management Libraries**
+
+There are several state management libraries commonly used in web development, including:
+
+- Redux: A predictable state container for JavaScript apps.
+- MobX: A simple, scalable state management solution.
+- Context API (React): Built-in state management solution in React.
+- Recoil: A state management library for React, which we'll explain in detail below.
+
+### Recoil
+
+Recoil is a relatively new state management library for React applications. It aims to provide a simpler and more efficient way to manage state in large and complex React applications. Here are some of the key concepts and features of Recoil:
+
+- Context Api has unnecessary re-renders, Where recoil get rid of this problem.
+
+`Key Concepts`
+
+1. Atoms:
+
+- Has concept of an atoms to store the state.
+- Atoms can be defined out side of the component.
+- can be teleported to any component.
+
+- Atoms are units of state in Recoil. They can be read from and written to from any component. An atom represents a piece of state that can be shared across different components.
+
+- When an atom's value changes, any component that subscribes to that atom will re-render with the new value.
+
+2. Selectors:
+
+- Selectors are derived state. They allow you to compute derived state based on the value of one or more atoms or other selectors. Think of them as a way to create dynamic data that depends on other state.
+
+- Selectors can also have asynchronous logic, making it easy to fetch data from an API and store it in the state.
+
+**Features of Recoil**
+
+1. Simplicity:
+
+- Recoil is designed to be simple and easy to use. It integrates seamlessly with React's function components and hooks.
+
+2. Performance:
+
+- Recoil optimizes re-renders by ensuring that only components that depend on changed atoms or selectors are re-rendered
+
+3. Scalability:
+
+- Recoil scales well with large applications by providing tools to manage complex state dependencies and interactions.
+
+`npm install recoil`
+
+### Things to learn
+
+- RecoilRoot: Sets up the Recoil context for the app.
+- Atoms: Units of state, can be read and written from any component.
+- useRecoilState: Hook to read and write an atom's value, similar to useState.
+- useRecoilValue: Hook to read an atom's value without subscribing to changes.
+- useSetRecoilState: Hook to set an atom's value without reading it.
+- Selectors: Functions that derive state from atoms or other selectors, can be synchronous or asynchronous.
+
+- Selectors are functions that derive state from atoms or other selectors. They can compute new values based on existing state.
+- Selectors can also be asynchronous, allowing you to fetch data from APIs and transform it before storing it in the state.
+
+```js
+// selector example
+
+import { selector } from "recoil";
+import { countState } from "./atoms";
+
+const doubledCountState = selector({
+  key: "doubledCountState", // unique ID
+  get: ({ get }) => {
+    const count = get(countState);
+    return count * 2;
+  },
+});
+```
+
+```js
+// use case
+
+import React from "react";
+import { useRecoilValue } from "recoil";
+import { doubledCountState } from "./selectors";
+
+function DoubledCount() {
+  const doubledCount = useRecoilValue(doubledCountState);
+
+  return <p>Doubled Count: {doubledCount}</p>;
+}
+
+export default DoubledCount;
+```
+
+### Example 1 - counter
+
+```js
+//store/atoms/count.jsx
+
+import { atom, selector } from "recoil";
+
+export const countAtom = atom({
+  key: "countAtom",
+  default: 0,
+});
+
+export const evenSelector = selector({
+  key: "evenSelector",
+  get: (props) => {
+    const count = props.get(countAtom);
+    return count % 2;
+  },
+});
+```
+
+```js
+//pages/RecoilCounter.jsx
+
+import React, { useState } from "react";
+import { useRecoilState, useRecoilValue, RecoilRoot } from "recoil";
+import { countAtom, evenSelector } from "../store/atoms/count";
+
+const RecoilCouter = () => {
+  return (
+    <div>
+      <RecoilRoot>
+        <Count />
+      </RecoilRoot>
+    </div>
+  );
+};
+
+export default RecoilCouter;
+
+function Count() {
+  return (
+    <>
+      <CountRender />
+      <EvenCountRender />
+      <Button />
+    </>
+  );
+}
+
+function EvenCountRender() {
+  const isEven = useRecoilValue(evenSelector);
+
+  return (
+    <>
+      <p>{isEven ? "Is even value" : null}</p>
+    </>
+  );
+}
+
+function CountRender() {
+  const count = useRecoilValue(countAtom);
+
+  return (
+    <div>
+      <p>
+        {" "}
+        CountRender: <b>{count}</b>
+      </p>
+    </div>
+  );
+}
+
+function Button() {
+  const [count, setCount] = useRecoilState(countAtom);
+
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+      <button onClick={() => setCount(count - 1)}>Decrease</button>
+    </>
+  );
+}
+```
+
+### Example 2 shopping cart using facke api and recoil for state management.
+
+```js
+
+```
+
 ### Ref Hooks
 
 1. useRef

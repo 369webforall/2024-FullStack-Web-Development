@@ -3,8 +3,8 @@ import { Outlet, Link } from "react-router-dom";
 function App() {
   return (
     <div>
-      <nav>
-        <ul>
+      <nav className="p-4 border-b-2">
+        <ul className="flex gap-6 items-center">
           <li>
             <Link to="/home">Home</Link>
           </li>
@@ -14,6 +14,9 @@ function App() {
           </li>
           <li>
             <Link to="/counterApp">Counter App</Link>
+          </li>
+          <li>
+            <Link to="/recoil">RecoilCounter</Link>
           </li>
         </ul>
       </nav>

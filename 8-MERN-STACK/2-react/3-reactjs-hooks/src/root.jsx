@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Counter from "./pages/Counter";
 import CounterProvider from "./context/CounterProvider";
 import CounterApp from "./pages/CounterApp";
+import RecoilCouter from "./pages/RecoilCouter";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: "/counterApp",
         element: <CounterApp />,
+      },
+      {
+        path: "/recoil",
+        element: <RecoilCouter />,
       },
     ],
   },
