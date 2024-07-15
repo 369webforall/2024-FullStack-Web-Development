@@ -17,8 +17,13 @@ export const evenSlector = selector({
 export const productList = selector({
   key: "productList",
   get: async () => {
-    const res = await axios("https://fakestoreapi.com/products");
-
-    return res.data || [];
+    try {
+      const res = await axios("https://fakestoreapi.com/products");
+      const data = await res.json();
+      return data || [];
+    } catch (error) {
+      console.log(`Error: \n ${error}`);
+      return [];
+    }
   },
 });

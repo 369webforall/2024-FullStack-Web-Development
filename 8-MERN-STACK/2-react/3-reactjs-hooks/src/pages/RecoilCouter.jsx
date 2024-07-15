@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  RecoilRoot,
-  useRecoilValue,
-  useRecoilState,
-  useSetRecoilState,
-} from "recoil";
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { countAtom, evenSlector, productList } from "../store/atoms/count";
 
 const RecoilCouter = () => {
@@ -70,7 +65,8 @@ function Products() {
 
   return (
     <div>
-      <p>list of products</p>
+      <h1>Fetched Data</h1>
+      <pre>{JSON.stringify(products, null, 2)}</pre>
     </div>
   );
 }

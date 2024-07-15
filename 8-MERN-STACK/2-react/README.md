@@ -14,6 +14,14 @@
 
 7. [Recoil State Management](https://youtu.be/s3YRgir_hVk)
 
+## React Hooks & Recoil video
+
+1. [ALL React Hooks Explained in 12 Minutes](https://www.youtube.com/watch?v=LOH1l-MP_9k)
+
+2. [React Hooks - 1 hour video](https://www.youtube.com/watch?v=HnXPKtro4SM)
+
+3. [Recoil- state management library](https://www.youtube.com/watch?v=wHe6-2-ZX6Y)
+
 ## Projects To complete
 
 1. [MERN Stack Tutorial - Book Store Project](https://www.youtube.com/watch?v=-42K44A1oMA)
