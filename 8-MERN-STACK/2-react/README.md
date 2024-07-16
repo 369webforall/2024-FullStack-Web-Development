@@ -1077,28 +1077,46 @@ export const cartState = atom({
 2. Set up React Query:
 
 ```js
-// src/index.jsx:
+// src/route.jsx:
 // npm i @tanstack/react-query
-
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
+import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
+import Home from "./pages/Home";
+import ProductList from "./pages/ProductList";
+import Cart from "./pages/Cart";
 import { RecoilRoot } from "recoil";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient();
+const queryClient = QueryClient();
 
-ReactDOM.render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </RecoilRoot>
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+const route = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <RecoilRoot>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </RecoilRoot>
+    ),
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/products",
+        element: <ProductList />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
+    ],
+  },
+]);
+
+export default route;
 ```
 
 Step 3: Create Product and Cart Components
@@ -1116,10 +1134,7 @@ const fetchProducts = async () => {
 };
 
 export const useProducts = () => {
-  return useQuery({
-    queryKey: "products",
-    queryFn: fetchProducts,
-  });
+  return useQuery({ queryKey: ["products"], queryFn: fetchProducts });
 };
 ```
 
