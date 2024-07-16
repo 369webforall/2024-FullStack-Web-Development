@@ -1,6 +1,6 @@
 import React from "react";
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
-import { countAtom, evenSlector, productList } from "../store/atoms/count";
+import { countAtom, evenSlector } from "../store/atoms/count";
 
 const RecoilCouter = () => {
   return (
@@ -17,7 +17,6 @@ export default RecoilCouter;
 const Counter = () => {
   return (
     <div>
-      <Products />
       <CountRender />
       <EvenCountRender />
       <Button />
@@ -56,17 +55,5 @@ function EvenCountRender() {
         {isEven === 0 ? "Is even number" : null}
       </p>
     </>
-  );
-}
-
-function Products() {
-  const products = useRecoilValue(productList);
-  console.log(products);
-
-  return (
-    <div>
-      <h1>Fetched Data</h1>
-      <pre>{JSON.stringify(products, null, 2)}</pre>
-    </div>
   );
 }

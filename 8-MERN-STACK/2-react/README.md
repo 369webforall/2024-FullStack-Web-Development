@@ -1040,11 +1040,218 @@ function Button() {
 }
 ```
 
-### Example 2 shopping cart using facke api and recoil for state management.
+### Example 2 shopping cart using fake store api and recoil for state management.
+
+Step 1: Set Up Your Project
+
+- install reactjs, setup tailwind css (https://vitejs.dev/guide/)
+- `npm install`
+
+- Tailwind css - (https://tailwindcss.com/)
+
+- clean the App component
+- `npm run dev`
+
+  **Install necessary packages:**
+
+- `npm install react-router-dom`
+
+- Build Navbar (Products Cart)
+
+Step 2: Set Up Recoil and React Query
+
+1. Create Recoil atoms for state management:
 
 ```js
+// npm install recoil
+//src/store/atoms/cartAtom.jsx:
 
+import { atom } from "recoil";
+
+export const cartState = atom({
+  key: "cartState",
+  default: [],
+});
 ```
+
+2. Set up React Query:
+
+```js
+// src/index.jsx:
+// npm i @tanstack/react-query
+
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import { RecoilRoot } from "recoil";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+ReactDOM.render(
+  <React.StrictMode>
+    <RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </RecoilRoot>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+```
+
+Step 3: Create Product and Cart Components
+
+1. Fetch products using React Query:
+
+```js
+// src/hooks/useProducts.jsx:
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchProducts = async () => {
+  const response = await fetch("https://fakestoreapi.com/products");
+  return await response.json();
+};
+
+export const useProducts = () => {
+  return useQuery({
+    queryKey: "products",
+    queryFn: fetchProducts,
+  });
+};
+```
+
+2. Create Product component:
+
+```js
+// src/components/Product.jsx:
+
+import React from "react";
+import { useRecoilState } from "recoil";
+import { cartState } from "../store/atoms/cartAtom";
+
+const Product = ({ product }) => {
+  const [cart, setCart] = useRecoilState(cartState);
+
+  const addToCart = () => {
+    setCart([...cart, product]);
+  };
+
+  return (
+    <div className="p-4 border rounded-md shadow-md">
+      <img
+        src={product.image}
+        alt={product.title}
+        className="w-full h-64 object-cover mb-4"
+      />
+      <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
+      <p className="mb-4">{product.price} USD</p>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        onClick={addToCart}
+      >
+        Add to Cart
+      </button>
+    </div>
+  );
+};
+
+export default Product;
+```
+
+3. Create ProductList component:
+
+```js
+// src/components/ProductList.js:
+
+import React from "react";
+import { useProducts } from "../hooks/useProducts";
+import Product from "./Product";
+
+const ProductList = () => {
+  const { data, isLoading, error } = useProducts();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading products</div>;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {data.map((product) => (
+        <Product key={product.id} product={product} />
+      ))}
+    </div>
+  );
+};
+
+export default ProductList;
+```
+
+4. Create Cart component:
+
+```js
+// src/components/Cart.js:
+
+import React from "react";
+import { useRecoilValue } from "recoil";
+import { cartState } from "../atoms/cartAtom";
+
+const Cart = () => {
+  const cart = useRecoilValue(cartState);
+
+  return (
+    <div className="p-4 border rounded-md shadow-md">
+      <h2 className="text-xl font-semibold mb-2">Shopping Cart</h2>
+      {cart.length === 0 ? (
+        <p>Your cart is empty</p>
+      ) : (
+        <ul>
+          {cart.map((item, index) => (
+            <li key={index} className="mb-2">
+              {item.title} - {item.price} USD
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default Cart;
+```
+
+Step 4: Assemble the App
+
+1. Create the main App component:
+
+```js
+// src/App.js:
+
+import React from "react";
+import ProductList from "./components/ProductList";
+import Cart from "./components/Cart";
+
+const App = () => {
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-4">Recoil Shop</h1>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <ProductList />
+        </div>
+        <div className="w-full md:w-1/3">
+          <Cart />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
+```
+
+### Part 2: Shopping Part (improve shopping cart, update, delete item, total amount, Payment)
 
 ### Ref Hooks
 
