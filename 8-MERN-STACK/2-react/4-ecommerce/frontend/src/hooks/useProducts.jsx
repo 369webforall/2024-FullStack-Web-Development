@@ -1,9 +1,8 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import { data } from "../../public/data.js";
 const fetchProducts = async () => {
-  const response = await fetch("https://fakestoreapi.com/products");
-  return await response.json();
+  return data;
 };
 
 export const useProducts = () => {
