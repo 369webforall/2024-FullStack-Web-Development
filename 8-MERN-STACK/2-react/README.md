@@ -14,6 +14,8 @@
 
 7. [Recoil State Management](https://youtu.be/s3YRgir_hVk)
 
+8. [Recoil - shopping cart- final ](https://youtu.be/3njmxrxkR1w)
+
 ## React Hooks & Recoil video
 
 1. [ALL React Hooks Explained in 12 Minutes](https://www.youtube.com/watch?v=LOH1l-MP_9k)
@@ -1458,6 +1460,8 @@ app.listen(3001, () => console.log("Server is running on port 3001"));
 
 ```js
 //Cart.jsx
+// npm install @stripe/stripe-js
+
 import React from "react";
 import { useRecoilState } from "recoil";
 import { cartState } from "../store/atoms/cartAtom";

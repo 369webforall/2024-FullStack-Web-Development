@@ -44,7 +44,7 @@ const Cart = () => {
       console.error("Error:", error);
     }
   };
-
+  // {id:1, title, qty:1, qty:item.qty +1}
   const increaseQty = (index) => {
     const newCart = cart.map((item, i) =>
       i === index ? { ...deepCopy(item), qty: item.qty + 1 } : item
@@ -62,7 +62,7 @@ const Cart = () => {
   };
 
   const removeItem = (index) => {
-    const newCart = cart.filter((_, i) => i !== index);
+    const newCart = cart.filter((item, i) => i !== index);
     setCart(newCart);
   };
 
@@ -109,9 +109,11 @@ const Cart = () => {
         </ul>
       )}
       <div className="mt-4">
-        <h3 className="text-lg font-semibold">
-          Total: ${calculateTotal()} USD
-        </h3>
+        {cart.length > 0 ? (
+          <h3 className="text-lg font-semibold">
+            Total: ${calculateTotal()} USD
+          </h3>
+        ) : null}
       </div>
       <div className="mt-4">
         {cart.length > 0 && (

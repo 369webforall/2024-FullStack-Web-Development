@@ -6,7 +6,7 @@ import Stripe from "stripe";
 dotenv.config();
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-console.log(stripeSecretKey);
+
 if (!stripeSecretKey) {
   console.error("Stripe secret key is not set in the environment variables");
   process.exit(1); // Exit the process with an error code
@@ -39,8 +39,8 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
-      success_url: "http://localhost:5173/home", // Replace with your success URL
-      cancel_url: "http://localhost:5173/home", // Replace with your cancel URL
+      success_url: "http://localhost:5173", // Replace with your success URL
+      cancel_url: "http://localhost:5173", // Replace with your cancel URL
     });
 
     res.json({ id: session.id });
