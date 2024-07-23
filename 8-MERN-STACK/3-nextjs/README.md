@@ -6,6 +6,8 @@
 
 1. [Ecommerce- day 1](https://youtu.be/zF7nlhBDxjk)
 
+1. [Ecommerce- day 2](https://youtu.be/Cptfbvxk5Po)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
