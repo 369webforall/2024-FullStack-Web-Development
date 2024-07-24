@@ -2,13 +2,13 @@
 
 # Nextjs Video
 
-1. ecommerce
-
 1. [Ecommerce- day 1](https://youtu.be/zF7nlhBDxjk)
 
-1. [Ecommerce- day 2](https://youtu.be/Cptfbvxk5Po)
+2. [Ecommerce- day 2](https://youtu.be/Cptfbvxk5Po)
 
-1. [Ecommerce- day 3](https://youtu.be/-DxmYzUnoto)
+3. [Ecommerce- day 3](https://youtu.be/-DxmYzUnoto)
+
+4. [Ecommerce- day 3-part2](https://youtu.be/qOj-rR6MP8o)
 
 ## Ecommerce FullStack web application with admin dashboard
 
