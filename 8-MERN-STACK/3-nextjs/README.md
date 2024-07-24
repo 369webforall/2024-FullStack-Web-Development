@@ -8,6 +8,8 @@
 
 1. [Ecommerce- day 2](https://youtu.be/Cptfbvxk5Po)
 
+1. [Ecommerce- day 3](https://youtu.be/-DxmYzUnoto)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
@@ -327,8 +329,10 @@ export default Home;
 
    ```ts
    export async function getProductBySlug(slug: string) {
-     return await db.query.products.findFirst({
-       where: eq(products.slug, slug),
+     return await prisma.product.findFirst({
+       where: {
+         slug: slug,
+       },
      });
    }
    ```
@@ -409,6 +413,15 @@ export default Home;
    import ProductPrice from './product-price'
    ...
     <ProductPrice value={Number(product.price)} />
+   ```
+
+   ```js
+   // - setup constant - lib/constants/index.ts
+
+   export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Amazona";
+   export const APP_DESCRIPTION =
+     process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
+     "An Amazon clone built with Next.js, Postgres, Shadcn";
    ```
 
 6. app/(root)/product/[slug]/page.tsx
@@ -515,11 +528,7 @@ export default Home;
    export default ProductDetails;
    ```
 
-- setup constant - lib/constants/index.ts
+```
 
-```js
-export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Amazona";
-export const APP_DESCRIPTION =
-  process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
-  "An Amazon clone built with Next.js, Postgres, Shadcn";
+
 ```
