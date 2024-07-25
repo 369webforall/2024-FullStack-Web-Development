@@ -611,9 +611,6 @@ export function Register() {
       };
   const router = useRouter();
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formRegisterSchema>) {
-// 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formRegisterSchema>) {
     const res = await signUp(values);
     if (res.success) {
@@ -705,23 +702,6 @@ export function Register() {
 }
 ```
 
-- - (auth)/sign-in>page.tsx
-
-```js
-import React from "react";
-import { SignIn } from "./singin-form";
-
-const LoginPage = () => {
-  return (
-    <div className="max-w-sm">
-      <SignIn />
-    </div>
-  );
-};
-
-export default LoginPage;
-```
-
 - register the user with server action.
 
 auth.action.ts
@@ -768,6 +748,23 @@ export const signUp = async (values: z.infer<typeof formRegisterSchema>) => {
 - steup toast from shadcn to display message.
 
 - Login form, loginpage, login-action
+
+- - (auth)/sign-in>page.tsx
+
+```js
+import React from "react";
+import { SignIn } from "./singin";
+
+const LoginPage = () => {
+  return (
+    <div className="max-w-sm">
+      <SignIn />
+    </div>
+  );
+};
+
+export default LoginPage;
+```
 
 ```js
 //login-action
