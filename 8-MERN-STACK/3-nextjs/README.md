@@ -10,6 +10,8 @@
 
 4. [Ecommerce- day 3-part2](https://youtu.be/qOj-rR6MP8o)
 
+5. [Ecommerce- day 4- Auth](https://youtu.be/b_o3Rf99ats)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
