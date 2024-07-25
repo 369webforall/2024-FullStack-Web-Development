@@ -528,7 +528,270 @@ export default Home;
    export default ProductDetails;
    ```
 
+### Add auth to project
+
+1. Install all the packages and library required for next-auth
+
+`npm install @prisma/client @auth/prisma-adapter @auth/mongodb-adapter`
+
+`npm i bcryptjs @types/bcryptjs`
+
+`npm install next-auth@beta`
+
+`npx auth secret`
+
+2. .env
+
+```js
+AUTH_SECRET=
 ```
 
+3. add schema to prisma.schema file
 
+4. create signup form (shadcn form)
+
+- (auth)/sign-in>sing-in.tsx
+
+```js
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { signUp } from "./auth.action";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+export const formRegisterSchema = z
+  .object({
+    name: z.string().min(2, {
+      message: "Name must be at least 2 characters.",
+    }),
+    email: z.string().email().min(3, {
+      message: "Email is required.",
+    }),
+    password: z.string().min(3, {
+      message: "Password is required",
+    }),
+    confirmPassword: z.string().min(3, {
+      message: "Confirm Password is required",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export function Register() {
+  // 1. Define your form.
+  const form =
+    useForm <
+    z.infer <
+    typeof formRegisterSchema >>
+      {
+        resolver: zodResolver(formRegisterSchema),
+        defaultValues: {
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        },
+      };
+  const router = useRouter();
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formRegisterSchema>) {
+// 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formRegisterSchema>) {
+    const res = await signUp(values);
+    if (res.success) {
+      toast.success("Account created successfully");
+      router.push("/");
+    } else {
+      toast.error(res.error);
+    }
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Your FullName...." {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter your email..."
+                  {...field}
+                  type="email"
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter your password..."
+                  {...field}
+                  type="password"
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Confirm Password..."
+                  {...field}
+                  type="password"
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Register</Button>
+      </form>
+    </Form>
+  );
+}
+```
+
+- - (auth)/sign-in>page.tsx
+
+```js
+import React from "react";
+import { SignIn } from "./singin-form";
+
+const LoginPage = () => {
+  return (
+    <div className="max-w-sm">
+      <SignIn />
+    </div>
+  );
+};
+
+export default LoginPage;
+```
+
+- register the user with server action.
+
+auth.action.ts
+
+```js
+"use server";
+import prisma from "@/prisma/client";
+import { z } from "zod";
+import bcrypt from "bcryptjs";
+import { formRegisterSchema } from "./signup-form";
+
+export const signUp = async (values: z.infer<typeof formRegisterSchema>) => {
+  try {
+    // if user already exists, throw an error
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: values.email,
+      },
+    });
+    if (existingUser) {
+      return { error: "User already exists", success: false };
+    }
+
+    // Utility function to generate student ID
+
+    const hashedPassword = bcrypt.hashSync(values.password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name: values.name,
+        email: values.email,
+        password: hashedPassword,
+      },
+    });
+
+    return { message: "Account created successfully", success: true };
+  } catch (error) {
+    console.error("Error during sign up:", error);
+    return { error: "Something went wrong", success: false };
+  }
+};
+```
+
+- steup toast from shadcn to display message.
+
+- Login form, loginpage, login-action
+
+```js
+//login-action
+"use server";
+import { formSignInSchema } from "./singin-form";
+import { z } from "zod";
+import prisma from "@/prisma/client";
+import bcrypt from "bcryptjs";
+export const signIn = async (values: z.infer<typeof formSignInSchema>) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: values.email,
+    },
+  });
+  if (!user || !user.confirmPassword) {
+    return { success: false, error: "Invalid Credentials!" };
+  }
+  const passwordMatch = bcrypt.compareSync(
+    values.password,
+    user.confirmPassword
+  );
+  if (!passwordMatch) {
+    return { success: false, error: "Invalid Credentials!" };
+  }
+  // successfully login
+
+  console.log("login success");
+};
 ```
