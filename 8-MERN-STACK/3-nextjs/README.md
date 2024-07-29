@@ -796,3 +796,643 @@ export const signIn = async (values: z.infer<typeof formSignInSchema>) => {
   console.log("login success");
 };
 ```
+
+### implement add to cart
+
+- finalize the types of data and create validation for it.
+- Format the price
+- create schema for your cart
+- idea is to create session id in user cookies when someone visits the website and add the poducts to database cart table if user click on add to cart button.
+- will track the session id and compare to our database cart, so that visitor can see the shopping cart even when he visits next time.
+
+1. lib/validator.ts
+
+```ts
+// CART
+import { z } from "zod";
+import { formatNumberWithDecimal } from "../utils";
+
+export const cartItemSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  name: z.string().min(1, "Name is required"),
+  slug: z.string().min(1, "Slug is required"),
+  qty: z.number().int().nonnegative("Quantity must be a non-negative number"),
+  image: z.string().min(1, "Image is required"),
+  price: z
+    .number()
+    .refine(
+      (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(value)),
+      "Price must have exactly two decimal places (e.g., 49.99)"
+    ),
+});
+```
+
+1.a lib/utils.ts
+
+```js
+export const formatNumberWithDecimal = (num: number): string => {
+  const [int, decimal] = num.toString().split(".");
+  return decimal ? `${int}.${decimal.padEnd(2, "0")}` : int; //12.1 => 12.10
+};
+```
+
+1.b lib/types/index.ts
+
+```js
+import { cartItemSchema } from "../schema/validator";
+import { z } from "zod";
+
+//CART
+
+export type CartItem = z.infer<typeof cartItemSchema>;
+```
+
+2. create schema for cart table.
+   prisma/prisma.schema
+
+   npx prisma db push
+
+```js
+model Cart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  sessionCartId String
+  items         Json     @default("[]")
+  itemsPrice    Float
+  shippingPrice Float
+  taxPrice      Float
+  totalPrice    Float
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
+  @@map("cart")
+}
+```
+
+3. Now main logic to add cart, update auth.ts
+
+```js
+ async jwt({ token, user, session, trigger }: any) {
+      if (user) {
+        if (trigger === "signIn" || trigger === "signUp") {
+          const sessionCartId = cookies().get("sessionCartId")?.value;
+          if (!sessionCartId) throw new Error("Session cart not Found");
+
+          const sessionCartExists = await prisma.cart.findFirst({
+            where: {
+              sessionCartId: sessionCartId,
+            },
+          });
+
+          if (sessionCartExists && !sessionCartExists.userId) {
+            const userCartExists = await prisma.cart.findFirst({
+              where: {
+                userId: user.id,
+              },
+            });
+            if (userCartExists) {
+              cookies().set("beforeSigninSessionCartId", sessionCartId);
+              cookies().set("sessionCartId", userCartExists.sessionCartId);
+            } else {
+              await prisma.cart.update({
+                where: { id: sessionCartExists.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
+      }
+      return token;
+    },
+
+// to keep session updated
+
+    session: async ({ session, user, trigger, token }: any) => {
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      if (trigger === "update") {
+        session.user.name = user.name;
+      }
+      return session;
+    },
+
+    //authorized function will always run in any route
+
+  authorized({ request, auth }: any) {
+      const protectedPaths = [
+        /\/shipping-address/,
+        /\/payment-method/,
+        /\/place-order/,
+        /\/profile/,
+        /\/user\/(.*)/,
+        /\/order\/(.*)/,
+        /\/admin/,
+      ];
+      const { pathname } = request.nextUrl;
+      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
+
+      const sessionCartId = request.cookies.get("sessionCartId");
+      if (!sessionCartId) {
+        const newSessionCartId = crypto.randomUUID();
+        const newRequestHeaders = new Headers(request.headers);
+        const response = NextResponse.next({
+          request: {
+            headers: newRequestHeaders,
+          },
+        });
+        response.cookies.set("sessionCartId", newSessionCartId);
+        return response;
+      } else {
+        return true;
+      }
+    },
+
+```
+
+4. lib/utils.ts
+
+```js
+export const round2 = (value: number | string) => {
+  if (typeof value === "number") {
+    return Math.round((value + Number.EPSILON) * 100) / 100; // avoid rounding errors
+  } else if (typeof value === "string") {
+    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  } else {
+    throw new Error("value is not a number nor a string");
+  }
+};
+```
+
+5. lib/actions/cart.actions.ts
+
+a. first function getMyCart()
+
+```ts
+"use server";
+
+export async function getMyCart() {
+  const sessionCartId = cookies().get("sessionCartId")?.value;
+  const session = await auth();
+  const userId = session?.user?.id as string | undefined;
+
+  if (!sessionCartId) return null;
+
+  const cart = await prisma.cart.findFirst({
+    where: {
+      OR: [{ userId }, { sessionCartId }],
+    },
+  });
+
+  if (!cart) return null;
+
+  return {
+    ...cart,
+    items: cart.items as CartItem[], // Type assertion to specify items as CartItem[]
+  };
+}
+```
+
+b.
+
+- let's use this function in header section
+- components/header/cart-button.tsx
+
+```js
+import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { getMyCart } from "@/lib/actions/cart.actions";
+import { Cart } from "@prisma/client";
+import { CartItem } from "@/lib/types";
+
+type CartArray = Omit<Cart, "items"> & {
+  items: CartItem[];
+};
+
+export default async function CartButton() {
+  const cart = ((await getMyCart()) as CartArray) || null;
+
+  return (
+    <Button asChild variant="ghost">
+      <Link href="/cart">
+        <ShoppingCart className="mr-1" />
+        Cart
+        {cart && cart.items.length > 0 && (
+          <Badge className="ml-1">
+            {cart.items.reduce((a, c) => a + c.qty, 0)}
+          </Badge>
+        )}
+      </Link>
+    </Button>
+  );
+}
+
+```
+
+- use this cart item component to display cart with total item count.
+
+c. define cal
+
+```js
+const calcPrice = (items: CartItem[]) => {
+  const itemsPrice = items.reduce(
+    (total, item) => total + item.qty * item.price,
+    0
+  );
+  const shippingPrice = 10; // example calculation
+  const taxPrice = itemsPrice * 0.1; // example calculation
+  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+
+  return { itemsPrice, shippingPrice, taxPrice, totalPrice };
+};
+```
+
+- time to implement addToCartItem function
+
+```js
+export const addItemToCart = async (data: CartItem) => {
+  try {
+    let sessionCartId = cookies().get("sessionCartId")?.value;
+
+    // If no sessionCartId, generate a new one and set it in cookies
+    if (!sessionCartId) {
+      sessionCartId = crypto.randomUUID();
+      cookies().set("sessionCartId", sessionCartId);
+    }
+
+    const session = await auth();
+    const userId = session?.user?.id as string | undefined;
+
+    const cart = await getMyCart();
+    const item = cartItemSchema.parse(data);
+
+    const product = await prisma.product.findUnique({
+      where: { id: item.productId },
+    });
+    if (!product) throw new Error("Product not found");
+
+    if (!cart) {
+      if (product.stock < 1) throw new Error("Not enough stock");
+
+      const prices = calcPrice([item]);
+
+      const cartData: any = {
+        sessionCartId,
+        items: [item],
+        ...prices,
+      };
+
+      if (userId) {
+        cartData.userId = userId;
+      }
+
+      await prisma.cart.create({
+        data: cartData,
+      });
+
+      revalidatePath(`/product/${product.slug}`);
+      return {
+        success: true,
+        message: "Item added to cart successfully",
+      };
+    } else {
+      const existItem = cart.items.find((x) => x.productId === item.productId);
+      if (existItem) {
+        if (product.stock < existItem.qty + 1)
+          throw new Error("Not enough stock");
+        existItem.qty += 1;
+      } else {
+        if (product.stock < 1) throw new Error("Not enough stock");
+        cart.items.push(item);
+      }
+
+      const prices = calcPrice(cart.items);
+
+      await prisma.cart.update({
+        where: { id: cart.id },
+        data: {
+          items: cart.items,
+          ...prices,
+        },
+      });
+
+      revalidatePath(`/product/${product.slug}`);
+      return {
+        success: true,
+        message: `${product.name} ${
+          existItem ? "updated in" : "added to"
+        } cart successfully`,
+      };
+    }
+  } catch (error: any) {
+    return { success: false, message: formatError(error) };
+  }
+};
+
+```
+
+// complete code for lib/actions/cart.actions.ts
+
+```js
+"use server";
+import { cookies } from "next/headers";
+import { auth } from "@/auth";
+import prisma from "@/prisma/client";
+import { CartItem } from "../types";
+import { cartItemSchema } from "../schema/validator";
+import { revalidatePath } from "next/cache";
+import { formatError } from "../utils";
+
+const calcPrice = (items: CartItem[]) => {
+  const itemsPrice = items.reduce(
+    (total, item) => total + item.qty * item.price,
+    0
+  );
+  const shippingPrice = 10; // example calculation
+  const taxPrice = itemsPrice * 0.1; // example calculation
+  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+
+  return { itemsPrice, shippingPrice, taxPrice, totalPrice };
+};
+
+export async function getMyCart() {
+  const sessionCartId = cookies().get("sessionCartId")?.value;
+  const session = await auth();
+  const userId = session?.user?.id as string | undefined;
+
+  if (!sessionCartId) return null;
+
+  const cart = await prisma.cart.findFirst({
+    where: {
+      OR: [{ userId }, { sessionCartId }],
+    },
+  });
+
+  if (!cart) return null;
+
+  return {
+    ...cart,
+    items: cart.items as CartItem[], // Type assertion to specify items as CartItem[]
+  };
+}
+
+export const addItemToCart = async (data: CartItem) => {
+  try {
+    let sessionCartId = cookies().get("sessionCartId")?.value;
+
+    // If no sessionCartId, generate a new one and set it in cookies
+    if (!sessionCartId) {
+      sessionCartId = crypto.randomUUID();
+      cookies().set("sessionCartId", sessionCartId);
+    }
+
+    const session = await auth();
+    const userId = session?.user?.id as string | undefined;
+
+    const cart = await getMyCart();
+    const item = cartItemSchema.parse(data);
+
+    const product = await prisma.product.findUnique({
+      where: { id: item.productId },
+    });
+    if (!product) throw new Error("Product not found");
+
+    if (!cart) {
+      if (product.stock < 1) throw new Error("Not enough stock");
+
+      const prices = calcPrice([item]);
+
+      const cartData: any = {
+        sessionCartId,
+        items: [item],
+        ...prices,
+      };
+
+      if (userId) {
+        cartData.userId = userId;
+      }
+
+      await prisma.cart.create({
+        data: cartData,
+      });
+
+      revalidatePath(`/product/${product.slug}`);
+      return {
+        success: true,
+        message: "Item added to cart successfully",
+      };
+    } else {
+      const existItem = cart.items.find((x) => x.productId === item.productId);
+      if (existItem) {
+        if (product.stock < existItem.qty + 1)
+          throw new Error("Not enough stock");
+        existItem.qty += 1;
+      } else {
+        if (product.stock < 1) throw new Error("Not enough stock");
+        cart.items.push(item);
+      }
+
+      const prices = calcPrice(cart.items);
+
+      await prisma.cart.update({
+        where: { id: cart.id },
+        data: {
+          items: cart.items,
+          ...prices,
+        },
+      });
+
+      revalidatePath(`/product/${product.slug}`);
+      return {
+        success: true,
+        message: `${product.name} ${
+          existItem ? "updated in" : "added to"
+        } cart successfully`,
+      };
+    }
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const removeItemFromCart = async (productId: string) => {
+  try {
+    const sessionCartId = cookies().get("sessionCartId")?.value;
+    if (!sessionCartId) throw new Error("Cart Session not found");
+
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (!product) throw new Error("Product not found");
+
+    const cart = await getMyCart();
+    if (!cart) throw new Error("Cart not found");
+
+    const exist = cart.items.find((x: any) => x.productId === productId);
+    if (!exist) throw new Error("Item not found");
+
+    if (exist.qty === 1) {
+      cart.items = cart.items.filter(
+        (x: any) => x.productId !== exist.productId
+      );
+    } else {
+      exist.qty -= 1;
+    }
+
+    const prices = calcPrice(cart.items);
+
+    await prisma.cart.update({
+      where: { id: cart.id },
+      data: {
+        items: cart.items,
+        ...prices,
+      },
+    });
+
+    revalidatePath(`/product/${product.slug}`);
+    return {
+      success: true,
+      message: `${product.name} ${
+        cart.items.find((x: any) => x.productId === productId)
+          ? "updated in"
+          : "removed from"
+      } cart successfully`,
+    };
+  } catch (error: any) {
+    return { success: false, message: formatError(error) };
+  }
+};
+
+```
+
+- components/shared/product/add-to-cart.tsx
+
+```js
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
+import { CartItem } from "@/lib/types";
+import { Cart } from "@prisma/client";
+import { Loader, Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+
+export default function AddToCart({
+  cart,
+  item,
+}: {
+  cart?: (Cart & { items: CartItem[] | null }) | null, // Ensure cart can be null or have nullable items
+  item: Omit<CartItem, "cartId">,
+}) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const existItem = cart?.items?.find((x) => x.productId === item.productId);
+
+  return existItem ? (
+    <div>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={isPending}
+        onClick={() => {
+          startTransition(async () => {
+            const res = await removeItemFromCart(item.productId);
+            toast({
+              variant: res.success ? "default" : "destructive",
+              description: res.message,
+            });
+          });
+        }}
+      >
+        {isPending ? (
+          <Loader className="w-4 h-4 animate-spin" />
+        ) : (
+          <Minus className="w-4 h-4" />
+        )}
+      </Button>
+      <span className="px-2">{existItem.qty}</span>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={isPending}
+        onClick={() => {
+          startTransition(async () => {
+            const res = await addItemToCart(item);
+            toast({
+              variant: res.success ? "default" : "destructive",
+              description: res.message,
+            });
+          });
+        }}
+      >
+        {isPending ? (
+          <Loader className="w-4 h-4 animate-spin" />
+        ) : (
+          <Plus className="w-4 h-4" />
+        )}
+      </Button>
+    </div>
+  ) : (
+    <Button
+      className="w-full"
+      type="button"
+      disabled={isPending}
+      onClick={() => {
+        startTransition(async () => {
+          const res = await addItemToCart(item);
+          if (!res.success) {
+            toast({
+              variant: "destructive",
+              description: res.message,
+            });
+            return;
+          }
+          toast({
+            description: `${item.name} added to the cart`,
+            action: (
+              <ToastAction
+                className="bg-primary"
+                onClick={() => router.push("/cart")}
+                altText="Go to cart"
+              >
+                Go to cart
+              </ToastAction>
+            ),
+          });
+        });
+      }}
+    >
+      {isPending ? <Loader className="animate-spin" /> : <Plus />}
+      Add to cart
+    </Button>
+  );
+}
+```
+
+- go to app/(root)/product/[slug]
+
+-replace Add to cart button with AddToCart Component.
+
+```js
+{product.stock !== 0 && (
+                  <div className=" flex-center">
+                    <AddToCart
+                      cart={cart}
+                      item={{
+                        productId: product.id,
+                        name: product.name,
+                        slug: product.slug,
+                        price: round2(product.price),
+                        qty: 1,
+                        image: product.images![0],
+                      }}
+                    />
+                  </div>
+                )}
+```
