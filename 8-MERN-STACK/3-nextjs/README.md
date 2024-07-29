@@ -1035,7 +1035,8 @@ export default async function CartButton() {
 
 - use this cart item component to display cart with total item count.
 
-c. define cal
+c. define calculate price function
+lib/actions/cart.actions.ts
 
 ```js
 const calcPrice = (items: CartItem[]) => {
@@ -1052,6 +1053,7 @@ const calcPrice = (items: CartItem[]) => {
 ```
 
 - time to implement addToCartItem function
+  lib/actions/cart.actions.ts
 
 ```js
 export const addItemToCart = async (data: CartItem) => {
