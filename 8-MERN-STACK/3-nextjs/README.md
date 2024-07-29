@@ -14,6 +14,8 @@
 
 6. [Ecommerce- day 5- Next-Auth Credentials](https://youtu.be/mc3Bnevr0kc)
 
+7. [Ecommerce- day 6-shopping cart](https://youtu.be/wFbL9ZS4QF4)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
