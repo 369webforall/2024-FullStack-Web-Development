@@ -857,7 +857,7 @@ export type CartItem = z.infer<typeof cartItemSchema>;
 ```js
 model Cart {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @db.ObjectId
+  userId        String?   @db.ObjectId
   sessionCartId String
   items         Json     @default("[]")
   itemsPrice    Float
@@ -865,7 +865,7 @@ model Cart {
   taxPrice      Float
   totalPrice    Float
   createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
 
   @@unique([userId])
   @@map("cart")
@@ -910,9 +910,10 @@ model Cart {
 
 // to keep session updated
 
-    session: async ({ session, user, trigger, token }: any) => {
-      session.user.id = token.sub;
-      session.user.role = token.role;
+      session: async ({ session, user, trigger, token }: any) => {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
       if (trigger === "update") {
         session.user.name = user.name;
       }
@@ -997,7 +998,8 @@ export async function getMyCart() {
 
 b.
 
-- let's use this function in header section
+- let's use this function in header section to display the total item qty.
+
 - components/header/cart-button.tsx
 
 ```js
@@ -1033,22 +1035,23 @@ export default async function CartButton() {
 
 ```
 
-- use this cart item component to display cart with total item count.
-
 c. define calculate price function
 lib/actions/cart.actions.ts
 
 ```js
 const calcPrice = (items: CartItem[]) => {
-  const itemsPrice = items.reduce(
-    (total, item) => total + item.qty * item.price,
-    0
-  );
-  const shippingPrice = 10; // example calculation
-  const taxPrice = itemsPrice * 0.1; // example calculation
-  const totalPrice = itemsPrice + shippingPrice + taxPrice;
-
-  return { itemsPrice, shippingPrice, taxPrice, totalPrice };
+  const itemsPrice = round2(
+      items.reduce((acc, item) => acc + item.price * item.qty, 0)
+    ),
+    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+    taxPrice = round2(0.15 * itemsPrice),
+    totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+  return {
+    itemsPrice: Number(itemsPrice.toFixed(2)),
+    shippingPrice: Number(shippingPrice.toFixed(2)),
+    taxPrice: Number(taxPrice.toFixed(2)),
+    totalPrice: Number(totalPrice.toFixed(2)),
+  };
 };
 ```
 
@@ -1060,11 +1063,7 @@ export const addItemToCart = async (data: CartItem) => {
   try {
     let sessionCartId = cookies().get("sessionCartId")?.value;
 
-    // If no sessionCartId, generate a new one and set it in cookies
-    if (!sessionCartId) {
-      sessionCartId = crypto.randomUUID();
-      cookies().set("sessionCartId", sessionCartId);
-    }
+    if (!sessionCartId) throw new Error("Cart Session not found");
 
     const session = await auth();
     const userId = session?.user?.id as string | undefined;
@@ -1148,19 +1147,22 @@ import { CartItem } from "../types";
 import { cartItemSchema } from "../schema/validator";
 import { revalidatePath } from "next/cache";
 import { formatError } from "../utils";
+import { round2 } from "../utils";
 
 const calcPrice = (items: CartItem[]) => {
-  const itemsPrice = items.reduce(
-    (total, item) => total + item.qty * item.price,
-    0
-  );
-  const shippingPrice = 10; // example calculation
-  const taxPrice = itemsPrice * 0.1; // example calculation
-  const totalPrice = itemsPrice + shippingPrice + taxPrice;
-
-  return { itemsPrice, shippingPrice, taxPrice, totalPrice };
+  const itemsPrice = round2(
+      items.reduce((acc, item) => acc + item.price * item.qty, 0)
+    ),
+    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+    taxPrice = round2(0.15 * itemsPrice),
+    totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+  return {
+    itemsPrice: Number(itemsPrice.toFixed(2)),
+    shippingPrice: Number(shippingPrice.toFixed(2)),
+    taxPrice: Number(taxPrice.toFixed(2)),
+    totalPrice: Number(totalPrice.toFixed(2)),
+  };
 };
-
 export async function getMyCart() {
   const sessionCartId = cookies().get("sessionCartId")?.value;
   const session = await auth();
@@ -1173,7 +1175,7 @@ export async function getMyCart() {
       OR: [{ userId }, { sessionCartId }],
     },
   });
-
+  console.log(cart);
   if (!cart) return null;
 
   return {
@@ -1186,21 +1188,17 @@ export const addItemToCart = async (data: CartItem) => {
   try {
     let sessionCartId = cookies().get("sessionCartId")?.value;
 
-    // If no sessionCartId, generate a new one and set it in cookies
-    if (!sessionCartId) {
-      sessionCartId = crypto.randomUUID();
-      cookies().set("sessionCartId", sessionCartId);
-    }
-
+    if (!sessionCartId) throw new Error("Cart Session not found");
     const session = await auth();
     const userId = session?.user?.id as string | undefined;
 
     const cart = await getMyCart();
     const item = cartItemSchema.parse(data);
 
-    const product = await prisma.product.findUnique({
+    const product = await prisma.product.findFirst({
       where: { id: item.productId },
     });
+
     if (!product) throw new Error("Product not found");
 
     if (!cart) {
@@ -1213,20 +1211,23 @@ export const addItemToCart = async (data: CartItem) => {
         items: [item],
         ...prices,
       };
-
       if (userId) {
         cartData.userId = userId;
       }
 
-      await prisma.cart.create({
-        data: cartData,
-      });
+      try {
+        await prisma.cart.create({
+          data: cartData,
+        });
 
-      revalidatePath(`/product/${product.slug}`);
-      return {
-        success: true,
-        message: "Item added to cart successfully",
-      };
+        revalidatePath(`/product/${product.slug}`);
+        return {
+          success: true,
+          message: "Item added to cart successfully",
+        };
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       const existItem = cart.items.find((x) => x.productId === item.productId);
       if (existItem) {
@@ -1440,3 +1441,11 @@ export default function AddToCart({
                   </div>
                 )}
 ```
+
+The useTransition hook in React is used to manage state transitions and defer updates that are not urgent, allowing for a smoother and more responsive user experience. This hook is particularly useful when you have updates that may take a while to complete, such as fetching data from an API or performing complex calculations.
+
+### Shopping cart page
+
+- display list of items in shopping cart.
+- here user can increase/decrease item in cart.
+- remove item from cart.
