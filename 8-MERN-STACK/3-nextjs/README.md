@@ -18,6 +18,8 @@
 
 8. [Ecommerce- day 7-shopping cart](https://youtu.be/UCRx9lhOqHM)
 
+9. [Ecommerce- day 8-cart details page](https://youtu.be/m6am5ZK2uzQ)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
