@@ -1446,8 +1446,242 @@ export default function AddToCart({
 
 The useTransition hook in React is used to manage state transitions and defer updates that are not urgent, allowing for a smoother and more responsive user experience. This hook is particularly useful when you have updates that may take a while to complete, such as fetching data from an API or performing complex calculations.
 
+- Add formatError component
+
+```ts
+export const formatError = (error: any): string => {
+  if (error.name === "ZodError") {
+    const fieldErrors = Object.keys(error.errors).map((field) => {
+      const errorMessage = error.errors[field].message;
+      return `${error.errors[field].path}: ${errorMessage}`; // field: errorMessage
+    });
+    return fieldErrors.join(". ");
+  } else if (error.name === "ValidationError") {
+    const fieldErrors = Object.keys(error.errors).map((field) => {
+      const errorMessage = error.errors[field].message;
+      return errorMessage;
+    });
+    return fieldErrors.join(". ");
+  } else {
+    return typeof error.message === "string"
+      ? error.message
+      : JSON.stringify(error.message);
+  }
+};
+```
+
 ### Shopping cart page
 
 - display list of items in shopping cart.
 - here user can increase/decrease item in cart.
 - remove item from cart.
+- proceed to payment
+
+1. lib/utils.ts
+
+   ```ts
+   export function formatCurrency(amount: number | string | null) {
+     if (typeof amount === "number") {
+       return CURRENCY_FORMATTER.format(amount);
+     } else if (typeof amount === "string") {
+       return CURRENCY_FORMATTER.format(Number(amount));
+     } else {
+       return "NaN";
+     }
+   }
+   ```
+
+```ts
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  style: "currency",
+  minimumFractionDigits: 2,
+});
+```
+
+2. install table component from shadcn.
+
+3. create cart form component (app/(root)/cart/cart-form.tsx)
+
+```ts
+"use client";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { useTransition } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { CartItem } from "@/lib/types";
+import { removeItemFromCart, addItemToCart } from "@/lib/actions/cart.actions";
+import { Cart } from "@prisma/client";
+import { Loader, Minus, Plus, ArrowRight } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function CartForm({ cart }: { cart?: Cart }) {
+  const router = useRouter();
+
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const cartItems = cart?.items as CartItem[];
+
+  return (
+    <>
+      <h1 className="py-4 h2-bold">Shopping Cart</h1>
+
+      {!cart || cartItems?.length === 0 ? (
+        <div>
+          Cart is empty. <Link href="/">Go shopping</Link>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-4 md:gap-5">
+          <div className="overflow-x-auto md:col-span-3">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Item</TableHead>
+                  <TableHead className="text-center">Quantity</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {cartItems.map((item: CartItem) => (
+                  <TableRow key={item.slug}>
+                    <TableCell>
+                      <Link
+                        href={`/product/${item.slug}`}
+                        className="flex items-center"
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={50}
+                          height={50}
+                        ></Image>
+                        <span className="px-2">{item.name}</span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="flex-center gap-2">
+                      <Button
+                        disabled={isPending}
+                        variant="outline"
+                        type="button"
+                        onClick={() =>
+                          startTransition(async () => {
+                            const res = await removeItemFromCart(
+                              item.productId
+                            );
+                            if (!res.success) {
+                              toast({
+                                variant: "destructive",
+                                description: res.message,
+                              });
+                            }
+                          })
+                        }
+                      >
+                        {isPending ? (
+                          <Loader className="w-4 h-4  animate-spin" />
+                        ) : (
+                          <Minus className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <span>{item.qty}</span>
+                      <Button
+                        disabled={isPending}
+                        variant="outline"
+                        type="button"
+                        onClick={() =>
+                          startTransition(async () => {
+                            const res = await addItemToCart(item);
+                            if (!res?.success) {
+                              toast({
+                                variant: "destructive",
+                                description: res?.message,
+                              });
+                            }
+                          })
+                        }
+                      >
+                        {isPending ? (
+                          <Loader className="w-4 h-4  animate-spin" />
+                        ) : (
+                          <Plus className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </TableCell>
+                    <TableCell className="text-right">${item.price}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div>
+            <Card>
+              <CardContent className="p-4   gap-4">
+                <div className="pb-3 text-xl">
+                  Subtotal ({cartItems.reduce((a, c) => a + c.qty, 0)}):
+                  {formatCurrency(cart.itemsPrice)}
+                </div>
+                <Button
+                  onClick={() => startTransition(() => router.push("/sign-in"))}
+                  className="w-full"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader className="animate-spin w-4 h-4" />
+                  ) : (
+                    <ArrowRight className="w-4 h-4" />
+                  )}
+                  Proceed to Checkout
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+4. update cart page- (root)/cart/page.tsx
+
+```ts
+import { getMyCart } from "@/lib/actions/cart.actions";
+import CartForm from "./cart-form";
+import { Cart } from "@prisma/client";
+import { CartItem } from "@/lib/types";
+import { APP_NAME } from "@/lib/constants";
+
+export const metadata = {
+  title: `Shopping Cart - ${APP_NAME}`,
+};
+
+type CartType = Omit<Cart, "items"> & { items: CartItem[] };
+
+const CartPage = async () => {
+  const cart = await getMyCart();
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+
+  const parsedCart: CartType = {
+    ...cart,
+    items: cart.items,
+  };
+  return <CartForm cart={parsedCart} />;
+};
+
+export default CartPage;
+```
+
+### Shipping address page
