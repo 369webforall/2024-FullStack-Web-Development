@@ -1687,3 +1687,368 @@ export default CartPage;
 ```
 
 ### Shipping address page
+
+1. Shipping address schema in (lib/schema/validator.ts)
+
+```ts
+export const shippingAddressSchema = z.object({
+  fullName: z.string().min(3, "Name must be at least 3 characters"),
+  streetAddress: z.string().min(3, "Address must be at least 3 characters"),
+  city: z.string().min(3, "city must be at least 3 characters"),
+  postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
+  country: z.string().min(3, "Country must be at least 3 characters"),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+});
+```
+
+2. creating the types based on this schema (lib/types/index.ts)
+
+```ts
+// shipping address type
+
+export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
+```
+
+3. create schema for shipping address (prisma.schema)
+
+```js
+model Address {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  fullName      String
+  streetAddress String
+  city          String
+  postalCode    String
+  country       String
+  lat           Float?
+  lng           Float?
+  userId        String @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("addresses")
+
+  // note in User schema add address Address[]
+}
+
+
+```
+
+4. next step in user.action(lib/action/user.action)
+
+- define the function getUserById
+
+```ts
+export const getUserById = async (id: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        Address: {
+          take: 1,
+        },
+      },
+    });
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
+```
+
+-
+- define function to save user address in the address table.(lib/action/user.action)
+
+```ts
+export async function updateUserAddress(data: ShippingAddress) {
+  try {
+    const session = await auth();
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        id: session?.user?.id,
+      },
+    });
+    if (!currentUser) throw new Error("User not found");
+    const address = shippingAddressSchema.parse(data);
+
+    // Check if the user already has an address
+    const existingAddress = await prisma.address.findFirst({
+      where: { userId: currentUser.id },
+    });
+
+    if (existingAddress) {
+      // Update the existing address
+      await prisma.address.update({
+        where: { id: existingAddress.id },
+        data: { ...address },
+      });
+    } else {
+      // Create a new address
+      await prisma.address.create({
+        data: { ...address, userId: currentUser.id },
+      });
+    }
+
+    revalidatePath("/place-order");
+
+    return {
+      success: true,
+      message: "User address updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
+  }
+}
+```
+
+5. components/shared/checkout-steps.tsx
+
+```ts
+import React from "react";
+
+import { cn } from "@/lib/utils";
+
+const CheckoutSteps = ({ current = 0 }) => {
+  return (
+    <div className="flex-between  flex-col md:flex-row  space-x-2 space-y-2">
+      {["User Login", "Shipping Address", "Payment Method", "Place Order"].map(
+        (step, index) => (
+          <React.Fragment key={step}>
+            <div
+              className={cn(
+                "p-2 w-56 rounded-full text-center  text-sm",
+                index === current ? "bg-secondary" : ""
+              )}
+            >
+              {step}
+            </div>
+            {step !== "Place Order" && (
+              <hr className="w-16 border-t border-gray-300 mx-2" />
+            )}
+          </React.Fragment>
+        )
+      )}
+    </div>
+  );
+};
+export default CheckoutSteps;
+```
+
+6. create shipping address from - app/(root)/shipping-address/shipping-address-form.tsx
+
+```ts
+// components/shipping-address-form.tsx
+"use client";
+import React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { useRouter } from "next/router";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Address } from "@prisma/client";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { ArrowRight, Loader } from "lucide-react";
+
+import CheckoutSteps from "@/components/shared/checkout-steps";
+import { updateUserAddress } from "@/lib/actions/user.action";
+
+import { shippingAddressSchema } from "@/lib/schema/validator";
+
+export default function ShippingAddressForm({
+  address,
+}: {
+  address: Address | null;
+}) {
+  const router = useRouter();
+  const defaultValues = address
+    ? {
+        fullName: address.fullName || "",
+        streetAddress: address.streetAddress || "",
+        city: address.city || "",
+        postalCode: address.postalCode || "",
+        country: address.country || "",
+        lat: address.lat ?? undefined,
+        lng: address.lng ?? undefined,
+      }
+    : {
+        fullName: "",
+        streetAddress: "",
+        city: "",
+        postalCode: "",
+        country: "",
+        lat: undefined,
+        lng: undefined,
+      };
+  const form = useForm<z.infer<typeof shippingAddressSchema>>({
+    resolver: zodResolver(shippingAddressSchema),
+    defaultValues,
+  });
+  const { toast } = useToast();
+
+  const [isPending, startTransition] = React.useTransition();
+  function onSubmit(values: z.infer<typeof shippingAddressSchema>) {
+    startTransition(async () => {
+      const res = await updateUserAddress(values);
+      if (!res.success) {
+        toast({
+          variant: "destructive",
+          description: res.message,
+        });
+        return;
+      }
+      router.push("/payment-method");
+    });
+  }
+
+  return (
+    <>
+      <CheckoutSteps current={1} />
+      <div className="max-w-md mx-auto space-y-4">
+        <h1 className="h2-bold mt-4">Shipping Address</h1>
+        <p className="text-sm text-muted-foreground">
+          Please enter the address that you want to ship to
+        </p>
+        <Form {...form}>
+          <form
+            method="post"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <div className="flex flex-col gap-5 md:flex-row">
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div>
+              <FormField
+                control={form.control}
+                name="streetAddress"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex flex-col gap-5 md:flex-row">
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter city" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter country" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="postalCode"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Postal Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter postal code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <Loader className="animate-spin w-4 h-4" />
+                ) : (
+                  <ArrowRight className="w-4 h-4" />
+                )}
+                Continue
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </>
+  );
+}
+```
+
+7. create shipping address page. app/(root)/shipping-address/page.tsx
+
+```ts
+import { APP_NAME } from "@/lib/constants";
+import { Metadata } from "next";
+import { getMyCart } from "@/lib/actions/cart.actions";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { getUserById } from "@/lib/actions/user.action";
+import ShippingAddressForm from "./shipping-address-form";
+
+export const metadata: Metadata = {
+  title: `Shipping Address - ${APP_NAME}`,
+};
+
+export default async function ShippingPage() {
+  const cart = await getMyCart();
+  if (!cart || cart.items.length === 0) redirect("/cart");
+
+  const session = await auth();
+  const user = await getUserById(session?.user?.id!);
+
+  // Ensure user.Address exists and take the first address if it's an array
+  const address = Array.isArray(user?.Address)
+    ? user.Address[0]
+    : user?.Address || null;
+
+  return <ShippingAddressForm address={address} />;
+}
+```
