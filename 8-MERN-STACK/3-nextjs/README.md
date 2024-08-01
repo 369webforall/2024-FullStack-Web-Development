@@ -20,6 +20,8 @@
 
 9. [Ecommerce- day 8-cart details page](https://youtu.be/m6am5ZK2uzQ)
 
+10. [Ecommerce- day 9-shipping address](https://youtu.be/88BBKaJ_Kw8)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
