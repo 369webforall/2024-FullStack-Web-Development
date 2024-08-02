@@ -2054,3 +2054,332 @@ export default async function ShippingPage() {
   return <ShippingAddressForm address={address} />;
 }
 ```
+
+### select payment method
+
+1- .env
+
+```shell
+  PAYMENT_METHODS=PayPal, Stripe, CashOnDelivery
+```
+
+2. lib/constants/index.ts
+
+- add DEFAULT_PAYMENT_METHOD=Stripe in .env file
+
+  ```ts
+  export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
+    ? process.env.PAYMENT_METHODS.split(", ")
+    : ["PayPal", "Stripe", "CashOnDelivery"];
+  export const DEFAULT_PAYMENT_METHOD =
+    process.env.DEFAULT_PAYMENT_METHOD || "PayPal";
+  ```
+
+  3. / updateUserPaymentMethod
+
+```ts
+export async function updateUserPaymentMethod(
+  data: z.infer<typeof paymentMethodSchema>
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!currentUser) {
+      throw new Error("User not found");
+    }
+
+    const paymentMethod = paymentMethodSchema.parse(data);
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { paymentMethod: paymentMethod.type },
+    });
+
+    revalidatePath("/place-order");
+
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+```
+
+4. lib/validator.ts
+
+```ts
+export const paymentMethodSchema = z
+  .object({
+    type: z.string().min(1, "Payment method is required"),
+  })
+  .refine((data) => PAYMENT_METHODS.includes(data.type), {
+    path: ["type"],
+    message: "Invalid payment method",
+  });
+```
+
+5. update the prisma.schema , add paymentMethod filed.
+
+6. npx shadcn-ui@latest add radio-group
+
+- radio button to select the payment method.
+
+7. app/(root)/payment-method/payment-method-form.tsx
+
+```ts
+"use client";
+
+import CheckoutSteps from "@/components/shared/checkout-steps";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/components/ui/use-toast";
+import { updateUserPaymentMethod } from "@/lib/actions/user.actions";
+import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from "@/lib/constants";
+import { paymentMethodSchema } from "@/lib/validator";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+export default function PaymentMethodForm({
+  preferredPaymentMethod,
+}: {
+  preferredPaymentMethod: string | null;
+}) {
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof paymentMethodSchema>>({
+    resolver: zodResolver(paymentMethodSchema),
+    defaultValues: {
+      type: preferredPaymentMethod || DEFAULT_PAYMENT_METHOD,
+    },
+  });
+
+  const [isPending, startTransition] = useTransition();
+
+  const { toast } = useToast();
+
+  async function onSubmit(values: z.infer<typeof paymentMethodSchema>) {
+    startTransition(async () => {
+      const res = await updateUserPaymentMethod(values);
+      if (!res.success) {
+        toast({
+          variant: "destructive",
+          description: res.message,
+        });
+        return;
+      }
+      router.push("/place-order");
+    });
+  }
+
+  return (
+    <>
+      <CheckoutSteps current={2} />
+      <div className="max-w-md mx-auto">
+        <Form {...form}>
+          <form
+            method="post"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <h1 className="h2-bold mt-4">Payment Method</h1>
+            <p className="text-sm text-muted-foreground">
+              Please select your preferred payment method
+            </p>
+
+            <div className="flex flex-col gap-5 md:flex-row">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        className="flex flex-col space-y-2"
+                      >
+                        {PAYMENT_METHODS.map((paymentMethod) => (
+                          <FormItem
+                            key={paymentMethod}
+                            className="flex items-center space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <RadioGroupItem
+                                value={paymentMethod}
+                                checked={field.value === paymentMethod}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {paymentMethod}
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <Loader className="animate-spin w-4 h-4" />
+                ) : (
+                  <ArrowRight className="w-4 h-4" />
+                )}
+                Continue
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </>
+  );
+}
+```
+
+8. app/(root)/payment-method/pagetsx
+
+```ts
+import React from "react";
+import { Metadata } from "next";
+import { auth } from "@/auth";
+import { getUserById } from "@/lib/actions/user.action";
+import { APP_NAME } from "@/lib/constants";
+import PaymentMethodForm from "./payment-method-form";
+import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: `Payment method - ${APP_NAME}`,
+};
+const PaymentMethodPage = async () => {
+  const session = await auth();
+  if (!session) redirect("/");
+  const user = await getUserById(session?.user?.id!);
+  return <PaymentMethodForm preferredPaymentMethod={user?.paymentMethod!} />;
+};
+
+export default PaymentMethodPage;
+```
+
+### Place order
+
+1. prisma.schema
+
+- first create schema for order model and orderItem
+
+```ts
+model Order {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  shippingAddress Json
+  paymentMethod   String
+  paymentResult   Json?
+  itemsPrice      Float
+  shippingPrice   Float
+  taxPrice        Float
+  totalPrice      Float
+  isPaid          Boolean   @default(false)
+  paidAt          DateTime?
+  isDelivered     Boolean   @default(false)
+  deliveredAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String @db.ObjectId
+  productId String @db.ObjectId
+  qty       Int
+  price     Float
+  name      String
+  slug      String
+  image     String
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, productId])
+  @@map("orderItem")
+}
+
+
+```
+
+2. schema/validator.ts
+
+```ts
+// Payment Result Schema
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  email_address: z.string(),
+  pricePaid: z.string(),
+});
+
+// Insert Order Schema
+export const insertOrderSchema = z.object({
+  userId: z.string(),
+  shippingAddress: shippingAddressSchema,
+  paymentMethod: z.string(),
+  paymentResult: paymentResultSchema.optional(),
+  itemsPrice: z.number().positive(),
+  shippingPrice: z.number().positive(),
+  taxPrice: z.number().positive(),
+  totalPrice: z.number().positive(),
+  isPaid: z.boolean().optional(),
+  paidAt: z.date().optional(),
+  isDelivered: z.boolean().optional(),
+  deliveredAt: z.date().optional(),
+  createdAt: z.date().optional(),
+});
+
+// Insert Order Item Schema
+export const insertOrderItemSchema = z.object({
+  orderId: z.string(),
+  productId: z.string(),
+  qty: z.number().int().positive(),
+  price: z.number().positive(),
+  name: z.string(),
+  slug: z.string(),
+  image: z.string(),
+});
+```
+
+3. action/order.actions.ts
+
+```ts
+
+```
+
+4. app/(root)/place-order/place-order-form.tsx
+
+5. app/(root)/place-order/page.tsx
