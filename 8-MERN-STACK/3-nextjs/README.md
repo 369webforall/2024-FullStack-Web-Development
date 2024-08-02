@@ -22,7 +22,11 @@
 
 10. [Ecommerce- day 9-shipping address](https://youtu.be/88BBKaJ_Kw8)
 
+11. [Ecommerce- day 10- payment option](https://youtu.be/dDuNj3EX5Fk)
+
 ## Ecommerce FullStack web application with admin dashboard
+
+[Github link for project](https://github.com/369webforall/nextjs-ecommerce)
 
 (Nextjs 14, tailwindcss, shadcn, prisma, mongodb, auth)
 
