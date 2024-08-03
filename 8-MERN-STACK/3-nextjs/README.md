@@ -2381,9 +2381,266 @@ export const insertOrderItemSchema = z.object({
 3. action/order.actions.ts
 
 ```ts
+"use server";
+import { auth } from "@/auth";
+import { getMyCart } from "@/lib/actions/cart.actions";
+import { getUserById } from "@/lib/actions/user.action";
+import { redirect } from "next/navigation";
+import { insertOrderSchema } from "../schema/validator";
+import prisma from "@/prisma/client";
+import { formatError } from "../utils";
+export const createOrder = async () => {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User is not authenticated");
 
+    const cart = await getMyCart();
+    if (!cart || cart.items.length === 0) redirect("/cart");
+
+    const user = await getUserById(session?.user?.id!);
+    if (!user?.address || user.address.length === 0)
+      redirect("/shipping-address");
+    if (!user.paymentMethod) redirect("/payment-method");
+
+    const address = user.address[0]; // Assuming you're using the first address
+
+    if (cart.shippingPrice <= 0) {
+      throw new Error("Invalid shipping price");
+    }
+
+    const order = insertOrderSchema.parse({
+      userId: user.id,
+      shippingAddress: address, // Use the first address object
+      paymentMethod: user.paymentMethod,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice: cart.taxPrice,
+      totalPrice: cart.totalPrice,
+    });
+
+    const insertedOrderId = await prisma.$transaction(async (tx) => {
+      const insertedOrder = await tx.order.create({
+        data: order,
+      });
+
+      for (const item of cart.items) {
+        await tx.orderItem.create({
+          data: {
+            ...item,
+            price: parseFloat(item.price.toFixed(2)), // Ensure price is a number
+            orderId: insertedOrder.id,
+          },
+        });
+      }
+
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: {
+          items: [],
+          totalPrice: 0,
+          shippingPrice: 0,
+          taxPrice: 0,
+          itemsPrice: 0,
+        },
+      });
+
+      return insertedOrder.id;
+    });
+
+    if (!insertedOrderId) throw new Error("Order not created");
+
+    redirect(`/order/${insertedOrderId}`);
+  } catch (error) {
+    if (error instanceof Error && error.name === "NextRedirectError") {
+      throw error;
+    }
+    return { success: false, message: formatError(error) };
+  }
+};
 ```
 
 4. app/(root)/place-order/place-order-form.tsx
 
+```ts
+"use client";
+
+import { Check, Loader } from "lucide-react";
+import { useFormState, useFormStatus } from "react-dom";
+
+import { Button } from "@/components/ui/button";
+import { createOrder } from "@/lib/actions/order.actions";
+
+export default function PlaceOrderForm() {
+  const [data, action] = useFormState(createOrder, {
+    success: false,
+    message: "",
+  });
+
+  const PlaceOrderButton = () => {
+    const { pending } = useFormStatus();
+    return (
+      <Button disabled={pending} className="w-full">
+        {pending ? (
+          <Loader className="w-4 h-4 animate-spin" />
+        ) : (
+          <Check className="w-4 h-4" />
+        )}{" "}
+        Place Order
+      </Button>
+    );
+  };
+
+  return (
+    <form action={action} className="w-full">
+      <PlaceOrderButton />
+      {!data.success && <p className="text-destructive py-4">{data.message}</p>}
+    </form>
+  );
+}
+```
+
 5. app/(root)/place-order/page.tsx
+
+```ts
+import { auth } from "@/auth";
+import CheckoutSteps from "@/components/shared/checkout-steps";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getMyCart } from "@/lib/actions/cart.actions";
+import { getUserById } from "@/lib/actions/user.action";
+import { APP_NAME } from "@/lib/constants";
+import { formatCurrency } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import PlaceOrderForm from "./place-order-form";
+
+export const metadata = {
+  title: `Place Order - ${APP_NAME}`,
+};
+
+export default async function PlaceOrderPage() {
+  const cart = await getMyCart();
+  const session = await auth();
+  const user = await getUserById(session?.user?.id!);
+
+  if (!cart || cart.items.length === 0) redirect("/cart");
+  if (!user?.address || user.address.length === 0)
+    redirect("/shipping-address");
+  if (!user.paymentMethod) redirect("/payment-method");
+
+  const address = user.address[0]; // Assuming you're using the first address
+
+  return (
+    <>
+      <CheckoutSteps current={3} />
+      <h1 className="py-4 text-2xl">Place Order</h1>
+
+      <div className="grid md:grid-cols-3 md:gap-5">
+        <div className="overflow-x-auto md:col-span-2 space-y-4">
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Shipping Address</h2>
+              <p>{address.fullName}</p>
+              <p>
+                {address.streetAddress}, {address.city}, {address.postalCode},{" "}
+                {address.country}{" "}
+              </p>
+              <div>
+                <Link href="/shipping-address">
+                  <Button variant="outline">Edit</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Payment Method</h2>
+              <p>{user.paymentMethod}</p>
+              <div>
+                <Link href="/payment-method">
+                  <Button variant="outline">Edit</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Order Items</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {cart.items.map((item) => (
+                    <TableRow key={item.slug}>
+                      <TableCell>
+                        <Link
+                          href={`/product/${item.slug}`}
+                          className="flex items-center"
+                        >
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={50}
+                            height={50}
+                          ></Image>
+                          <span className="px-2">{item.name}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2">{item.qty}</span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${item.price}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Link href="/cart">
+                <Button variant="outline">Edit</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CardContent className="p-4 gap-4 space-y-4">
+              <div className="flex justify-between">
+                <div>Items</div>
+                <div>{formatCurrency(cart.itemsPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Tax</div>
+                <div>{formatCurrency(cart.taxPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Shipping</div>
+                <div>{formatCurrency(cart.shippingPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Total</div>
+                <div>{formatCurrency(cart.totalPrice)}</div>
+              </div>
+              <PlaceOrderForm />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}
+```
