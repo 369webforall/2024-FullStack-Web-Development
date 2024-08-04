@@ -2644,3 +2644,262 @@ export default async function PlaceOrderPage() {
   );
 }
 ```
+
+### add payment system.
+
+1.lib/actions/order.actions.ts
+
+```ts
+//GET
+export async function getOrderById(orderId: string) {
+  return await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      orderItems: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+}
+```
+
+2. create two utility functions
+
+```ts
+export function formatId(id: string) {
+  return `..${id.substring(id.length - 6)}`;
+}
+
+export const formatDateTime = (dateString: Date) => {
+  const dateTimeOptions: Intl.DateTimeFormatOptions = {
+    month: "short", // abbreviated month name (e.g., 'Oct')
+    year: "numeric", // abbreviated month name (e.g., 'Oct')
+    day: "numeric", // numeric day of the month (e.g., '25')
+    hour: "numeric", // numeric hour (e.g., '8')
+    minute: "numeric", // numeric minute (e.g., '30')
+    hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
+  };
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    weekday: "short", // abbreviated weekday name (e.g., 'Mon')
+    month: "short", // abbreviated month name (e.g., 'Oct')
+    year: "numeric", // numeric year (e.g., '2023')
+    day: "numeric", // numeric day of the month (e.g., '25')
+  };
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric", // numeric hour (e.g., '8')
+    minute: "numeric", // numeric minute (e.g., '30')
+    hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
+  };
+  const formattedDateTime: string = new Date(dateString).toLocaleString(
+    "en-US",
+    dateTimeOptions
+  );
+  const formattedDate: string = new Date(dateString).toLocaleString(
+    "en-US",
+    dateOptions
+  );
+  const formattedTime: string = new Date(dateString).toLocaleString(
+    "en-US",
+    timeOptions
+  );
+  return {
+    dateTime: formattedDateTime,
+    dateOnly: formattedDate,
+    timeOnly: formattedTime,
+  };
+};
+```
+
+4. create types for Order
+
+- lib/types/index.ts
+
+```ts
+import { Order as PrismaOrder } from "@prisma/client";
+import { OrderItem } from "@prisma/client";
+
+// Type for Order with nested relations
+export type Order = PrismaOrder & {
+  orderItems: OrderItem[];
+  user: { name: string | null; email: string };
+  shippingAddress: ShippingAddress;
+};
+```
+
+3. app/(root)/order/[id]/order-details-form.tsx
+
+```ts
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
+import { Order } from "@/lib/types";
+import Image from "next/image";
+import Link from "next/link";
+
+export default function OrderDetailsForm({ order }: { order: Order }) {
+  const {
+    shippingAddress,
+    orderItems,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    paymentMethod,
+    isPaid,
+    paidAt,
+    isDelivered,
+    deliveredAt,
+  } = order;
+
+  return (
+    <>
+      <h1 className="py-4 text-2xl"> Order {formatId(order.id)}</h1>
+      <div className="grid md:grid-cols-3 md:gap-5">
+        <div className="overflow-x-auto md:col-span-2 space-y-4">
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Payment Method</h2>
+              <p>{paymentMethod}</p>
+              {isPaid ? (
+                <Badge variant="secondary">
+                  Paid at {formatDateTime(paidAt!).dateTime}
+                </Badge>
+              ) : (
+                <Badge variant="destructive">Not paid</Badge>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Shipping Address</h2>
+              {shippingAddress ? (
+                <>
+                  <p>{shippingAddress.fullName}</p>
+                  <p>
+                    {shippingAddress.streetAddress}, {shippingAddress.city},{" "}
+                    {shippingAddress.postalCode}, {shippingAddress.country}{" "}
+                  </p>
+                </>
+              ) : (
+                <p>No shipping address provided</p>
+              )}
+              {isDelivered ? (
+                <Badge variant="secondary">
+                  Delivered at {formatDateTime(deliveredAt!).dateTime}
+                </Badge>
+              ) : (
+                <Badge variant="destructive">Not delivered</Badge>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 gap-4">
+              <h2 className="text-xl pb-4">Order Items</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orderItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <Link
+                          href={`/product/${item.slug}`}
+                          className="flex items-center"
+                        >
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={50}
+                            height={50}
+                          ></Image>
+                          <span className="px-2">{item.name}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2">{item.qty}</span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${item.price}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CardContent className="p-4 space-y-4 gap-4">
+              <h2 className="text-xl pb-4">Order Summary</h2>
+              <div className="flex justify-between">
+                <div>Items</div>
+                <div>{formatCurrency(itemsPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Tax</div>
+                <div>{formatCurrency(taxPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Shipping</div>
+                <div>{formatCurrency(shippingPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Total</div>
+                <div>{formatCurrency(totalPrice)}</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}
+```
+
+4. app/(root)/order/[id]/page.tsx
+
+```ts
+import { getOrderById } from "@/lib/actions/order.actions";
+import { APP_NAME } from "@/lib/constants";
+import { notFound } from "next/navigation";
+import OrderDetailsForm from "./order-details-form";
+export const metadata = {
+  title: `Order Details - ${APP_NAME}`,
+};
+
+const OrderDetailsPage = async ({
+  params: { id },
+}: {
+  params: {
+    id: string;
+  };
+}) => {
+  const order = await getOrderById(id);
+  console.log(order);
+  if (!order) notFound();
+
+  return <OrderDetailsForm order={order} />;
+};
+
+export default OrderDetailsPage;
+```
