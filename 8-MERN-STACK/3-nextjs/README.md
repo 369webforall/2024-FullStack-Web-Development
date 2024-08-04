@@ -2645,7 +2645,7 @@ export default async function PlaceOrderPage() {
 }
 ```
 
-### add payment system.
+### create order details page
 
 1.lib/actions/order.actions.ts
 
