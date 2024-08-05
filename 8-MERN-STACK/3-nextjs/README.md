@@ -26,6 +26,8 @@
 
 12. [Ecommerce- day 11- order details page](https://youtu.be/L7iCQSjxYS4)
 
+13. [Ecommerce- day 12- order details page](https://youtu.be/XCSNFzBhMK4)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 [Github link for project](https://github.com/369webforall/nextjs-ecommerce)
@@ -2384,35 +2386,29 @@ export const insertOrderItemSchema = z.object({
 
 ```ts
 "use server";
+
 import { auth } from "@/auth";
-import { getMyCart } from "@/lib/actions/cart.actions";
-import { getUserById } from "@/lib/actions/user.action";
+import { getMyCart } from "./cart.actions";
 import { redirect } from "next/navigation";
-import { insertOrderSchema } from "../schema/validator";
+import { insertOrderSchema } from "../validation/validator";
 import prisma from "@/prisma/client";
+import { isRedirectError } from "next/dist/client/components/redirect";
 import { formatError } from "../utils";
+
+// CREATE
 export const createOrder = async () => {
   try {
     const session = await auth();
     if (!session) throw new Error("User is not authenticated");
-
     const cart = await getMyCart();
-    if (!cart || cart.items.length === 0) redirect("/cart");
-
     const user = await getUserById(session?.user?.id!);
-    if (!user?.address || user.address.length === 0)
-      redirect("/shipping-address");
+    if (!cart || cart.items.length === 0) redirect("/cart");
+    if (!user?.address) redirect("/shipping-address");
     if (!user.paymentMethod) redirect("/payment-method");
-
-    const address = user.address[0]; // Assuming you're using the first address
-
-    if (cart.shippingPrice <= 0) {
-      throw new Error("Invalid shipping price");
-    }
 
     const order = insertOrderSchema.parse({
       userId: user.id,
-      shippingAddress: address, // Use the first address object
+      shippingAddress: user.address[0],
       paymentMethod: user.paymentMethod,
       itemsPrice: cart.itemsPrice,
       shippingPrice: cart.shippingPrice,
@@ -2420,20 +2416,19 @@ export const createOrder = async () => {
       totalPrice: cart.totalPrice,
     });
 
-    const insertedOrderId = await prisma.$transaction(async (tx) => {
-      const insertedOrder = await tx.order.create({
+    const insertedOrder = await prisma.$transaction(async (tx) => {
+      const newOrder = await tx.order.create({
         data: order,
       });
 
-      for (const item of cart.items) {
-        await tx.orderItem.create({
-          data: {
-            ...item,
-            price: parseFloat(item.price.toFixed(2)), // Ensure price is a number
-            orderId: insertedOrder.id,
-          },
-        });
-      }
+      const orderItemsData = cart.items.map((item) => ({
+        ...item,
+        price: Number(item.price.toFixed(2)),
+        orderId: newOrder.id,
+      }));
+      await tx.orderItem.createMany({
+        data: orderItemsData,
+      });
 
       await tx.cart.update({
         where: { id: cart.id },
@@ -2446,14 +2441,13 @@ export const createOrder = async () => {
         },
       });
 
-      return insertedOrder.id;
+      return newOrder.id;
     });
 
-    if (!insertedOrderId) throw new Error("Order not created");
-
-    redirect(`/order/${insertedOrderId}`);
+    if (!insertedOrder) throw new Error("Order not created");
+    redirect(`/order/${insertedOrder}`);
   } catch (error) {
-    if (error instanceof Error && error.name === "NextRedirectError") {
+    if (isRedirectError(error)) {
       throw error;
     }
     return { success: false, message: formatError(error) };
@@ -2669,7 +2663,7 @@ export async function getOrderById(orderId: string) {
 }
 ```
 
-2. create two utility functions
+2. create two utility functions - lib/utils.ts
 
 ```ts
 export function formatId(id: string) {
