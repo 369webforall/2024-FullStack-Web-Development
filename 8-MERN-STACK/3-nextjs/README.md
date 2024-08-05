@@ -24,6 +24,8 @@
 
 11. [Ecommerce- day 10- payment option](https://youtu.be/dDuNj3EX5Fk)
 
+12. [Ecommerce- day 11- order details page](https://youtu.be/L7iCQSjxYS4)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 [Github link for project](https://github.com/369webforall/nextjs-ecommerce)
