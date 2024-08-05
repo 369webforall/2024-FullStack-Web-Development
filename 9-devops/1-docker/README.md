@@ -2,6 +2,8 @@
 
 ## Video
 
+1. [Docker class 1](https://youtu.be/fRF2yknPjZ4)
+
 ## class content
 
 ### Step 1 - Why Docker?
