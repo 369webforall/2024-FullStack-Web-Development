@@ -167,7 +167,7 @@ Explanation
 
 `CMD ["node", "app.js"]:` This specifies the command to run when the container starts. In this case, it runs the Node.js application using node app.js.
 
-#### Building and Running the Docker Image
+#### Step- 9 and 10 - Building and Running the Docker Image
 
 - To build and run the Docker image created by this Dockerfile, follow these steps:
 
@@ -185,5 +185,32 @@ This command builds a Docker image using the Dockerfile in the current directory
 ```ts
 docker run -p 3000:3000 my-node-app
 
+```
+
+### Step - 11 - Passing in env variables
+
+```ts
+// start the container for postgresql
+
+docker run --name my_db -e POSTGRES_PASSWORD=password123 -p 5432:5432 -d postgres
 
 ```
+
+- `to connect to the PostgreSQL Database:`
+
+```ts
+postgres://postgres:password123@localhost:5432/my_db
+
+```
+
+- so to set this to env varaible
+
+```ts
+docker run -p 3000:3000 -e DATABASE_URL="postgres://postgres:password123@localhost:5432/my_db"
+```
+
+- The -e argument let’s you send in environment variables to your node.js app
+
+postgres://username:password@host:port/database
+
+postgres://postgres:mysecretpassword@localhost:5432/postgres
