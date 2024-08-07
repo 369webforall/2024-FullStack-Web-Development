@@ -194,9 +194,7 @@ docker run -d -p 3000:3000 node_app
 
 - `to connect to the PostgreSQL Database:`
 
-```ts
-docker run -d --name backend --link postgres -e DATABASE_URL=postgres://postgres:password123@postgres:5432/db_backend -p 3000:3000 node_app
-```
+## docker run -d --name backend --link postgres -e DATABASE_URL=postgres://postgres:password123@postgres:5432/db_backend -p 3000:3000 node_app
 
 - The -e argument let’s you send in environment variables to your node.js app
 
@@ -290,4 +288,4 @@ Networks: Networks allow containers to communicate with each other. You can defi
 
 Docker Compose is a tool designed to help you define and run multi-container Docker applications. With Compose, you use a YAML file to configure your application's services, networks, and volumes. Then, with a single command, you can create and start all the services from your configuration
 
-Docker: Images, Networking, Volumes & Docker Compose - https://medium.com/@mohamed.enn/docker-deep-dive-971535ad8e17#:~:text=Volumes%3A%20Volumes%20allow%20you%20to,networks%20in%20your%20docker%2Dcompose.
+[Docker: Images, Networking, Volumes & Docker Compose](https://medium.com/@mohamed.enn/docker-deep-dive-971535ad8e17#:~:text=Volumes%3A%20Volumes%20allow%20you%20to,networks%20in%20your%20docker%2Dcompose.)
