@@ -176,8 +176,7 @@ Explanation
 1. Build the Docker Image:
 
 ```ts
-docker build -t my-node-app .
-
+docker build -t node-app .
 ```
 
 This command builds a Docker image using the Dockerfile in the current directory (.) and tags it with the name my-node-app.
@@ -185,34 +184,114 @@ This command builds a Docker image using the Dockerfile in the current directory
 2. Run the Docker Container:
 
 ```ts
-docker run -p 3000:3000 my-node-app
+docker run -d -p 3000:3000 node_app
 
 ```
 
-### Step - 11 - Passing in env variables
+`or run with env variables`
 
-```ts
-// start the container for postgresql
-
-docker run --name my_db -e POSTGRES_PASSWORD=password123 -p 5432:5432 -d postgres
-
-```
+### Step - 11 - Passing in env variables and run the container
 
 - `to connect to the PostgreSQL Database:`
 
 ```ts
-postgres://postgres:password123@localhost:5432/my_db
-
-```
-
-- so to set this to env varaible
-
-```ts
-docker run -p 3000:3000 -e DATABASE_URL="postgres://postgres:password123@localhost:5432/my_db"
+docker run -d --name backend --link postgres -e DATABASE_URL=postgres://postgres:password123@postgres:5432/db_backend -p 3000:3000 node_app
 ```
 
 - The -e argument let’s you send in environment variables to your node.js app
 
-postgres://username:password@host:port/database
+## Step 12 - More commands
 
-postgres://postgres:mysecretpassword@localhost:5432/postgres
+1. docker kill - to kill a container
+2. docker exec - to exectue a command inside a container
+
+Example
+
+- List all contents of a container folder
+
+```ts
+docker exec <container_name or container_id>
+```
+
+### Step 13 - Pushing to dockerhub
+
+- Once you’ve created your image, you can push it to dockerhub to share it with the world.
+
+1. signup to dockerhub
+2. Create a new repository
+3. user profile/account settings and click on Personal access tokens
+4. copy the login and password, login to your credentials.
+
+`docker login -u brham1980`
+
+`dckr_pat_JYld8EOP8ru2pInmnoVnM-HBDok`
+
+5. create repository
+
+6. in your local machine build image
+
+`docker build -t brham1980/node_backend:latest .`
+
+7. then push the code
+   `docker push brham1980/node_backend:tagname`
+
+### Step 14 - Layers in Docker
+
+Docker layers are a fundamental concept in the architecture of Docker images. Each Docker image is composed of multiple layers, which represent instructions from the Dockerfile. When a Dockerfile is executed, each instruction (e.g., RUN, COPY, ADD) creates a new layer. These layers are stacked on top of each other to form the final image. Here’s a brief explanation with an example
+
+Key Points about Docker Layers:
+
+1. Base Layer: The starting point of an image, typically an operating system (OS) like Ubuntu, Alpine, or any other base image specified in a Dockerfile.
+
+2. Instruction Layers: Each command in a Dockerfile creates a new layer in the image. These include instructions like RUN, COPY, which modify the filesystem by installing packages, copying files from the host to the container, or making other changes. Each of these modifications creates a new layer on top of the base layer.
+
+3. Reusable & Shareable: Layers are cached and reusable across different images, which makes building and sharing images more efficient. If multiple images are built from the same base image or share common instructions, they can reuse the same layers, reducing storage space and speeding up image downloads and builds.
+
+4. Immutable: Once a layer is created, it cannot be changed. If a change is made, Docker creates a new layer that captures the difference. This immutability is key to Docker's reliability and performance, as unchanged layers can be shared across images and containers.
+
+### Why layers?
+
+- If you change your Dockerfile, layers can get re-used based on where the change was made
+- Note: If a layer changes, all subsequent layers also change
+
+- You can change your source code.
+- you can change the package.json
+
+![Why layers?](./images/Screenshot_2.png)
+
+### Optimising Dockerfile
+
+- let change the docker file a bit.
+
+[change docker file](./images/Screenshot_3.png)
+
+1. We first copy over only the things that npm install and npx prisma generate need
+
+2. Then we run these scripts
+
+3. Then we copy over the rest of the source code
+
+Case 1 - You change your source code (but nothing in package.json/prisma)
+
+![case 1](./images/Screenshot_4.png)
+
+Case 2 - You change the package.json file (added a dependency)
+
+![case 2](./images/Screenshot_5.png)
+
+### Step 15 - Networks and volumes
+
+Networks and volumes are concepts that become important when you have multiple containers running in which you.
+
+Volumes: Volumes allow you to persist data between container restarts. This is useful for storing data that you don't want to lose when a container is stopped or destroyed.
+
+Networks: Networks allow containers to communicate with each other. You can define your own networks in your docker-compose.
+
+1. Need to persist data across docker restarts
+2. Need to allow containers to talk to each other
+
+### Step 22 - docker-compose
+
+Docker Compose is a tool designed to help you define and run multi-container Docker applications. With Compose, you use a YAML file to configure your application's services, networks, and volumes. Then, with a single command, you can create and start all the services from your configuration
+
+[Docker: Images, Networking, Volumes & Docker Compose](https://medium.com/@mohamed.enn/docker-deep-dive-971535ad8e17#:~:text=Volumes%3A%20Volumes%20allow%20you%20to,networks%20in%20your%20docker%2Dcompose.)
