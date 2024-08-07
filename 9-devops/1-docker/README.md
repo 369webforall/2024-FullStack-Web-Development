@@ -222,10 +222,6 @@ docker exec <container_name or container_id>
 3. user profile/account settings and click on Personal access tokens
 4. copy the login and password, login to your credentials.
 
-`docker login -u brham1980`
-
-`dckr_pat_JYld8EOP8ru2pInmnoVnM-HBDok`
-
 5. create repository
 
 6. in your local machine build image
