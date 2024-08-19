@@ -257,7 +257,7 @@ Key Points about Docker Layers:
 
 - let change the docker file a bit.
 
-[change docker file](./images/Screenshot_3.png)
+![change docker file](./images/Screenshot_3.png)
 
 1. We first copy over only the things that npm install and npx prisma generate need
 
@@ -277,15 +277,87 @@ Case 2 - You change the package.json file (added a dependency)
 
 Networks and volumes are concepts that become important when you have multiple containers running in which you.
 
+1. Need to persist data across docker restarts
+
+2. Need to allow containers to talk to each other
+
 Volumes: Volumes allow you to persist data between container restarts. This is useful for storing data that you don't want to lose when a container is stopped or destroyed.
 
 Networks: Networks allow containers to communicate with each other. You can define your own networks in your docker-compose.
-
-1. Need to persist data across docker restarts
-2. Need to allow containers to talk to each other
 
 ### Step 22 - docker-compose
 
 Docker Compose is a tool designed to help you define and run multi-container Docker applications. With Compose, you use a YAML file to configure your application's services, networks, and volumes. Then, with a single command, you can create and start all the services from your configuration
 
 [Docker: Images, Networking, Volumes & Docker Compose](https://medium.com/@mohamed.enn/docker-deep-dive-971535ad8e17#:~:text=Volumes%3A%20Volumes%20allow%20you%20to,networks%20in%20your%20docker%2Dcompose.)
+
+![docker compose](./images/Screenshot_6.png)
+
+### Before docker-compose
+
+- Create a network
+
+```ts
+docker network create my_custom_network
+```
+
+- Create a volume
+
+```ts
+docker volume create volume_database
+```
+
+- Start mongo container
+
+```ts
+docker run -d -v volume_database:/data/db --name mongo --network my_custom_network  mongo
+```
+
+- Start backend container
+
+```ts
+docker run -d -p 3000:3000 --name backend --network my_custom_network backend
+```
+
+### After docker-compose
+
+- Install docker-compose - https://docs.docker.com/compose/install/
+- Create a yaml file describing all your containers and volumes (by default all containers in a docker-compose run on the same network)
+
+```ts
+version: '3.8'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  backend22:
+    image: backend
+    container_name: backend_app
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: "mongodb://mongodb:27017"
+
+volumes:
+  mongodb_data:
+
+```
+
+1. Start the compose
+
+```ts
+docker-compose up
+```
+
+2. Stop everything (including volumes)
+
+```ts
+ docker-compose down --volumes
+```
