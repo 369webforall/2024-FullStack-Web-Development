@@ -6,6 +6,8 @@
 
 2. [Docker class 2](https://youtu.be/_cdHMqsuaJU)
 
+3. [Docker class 3](https://youtu.be/O7YuQ_yhjBk)
+
 ## class content
 
 ### Step 1 - Why Docker?
