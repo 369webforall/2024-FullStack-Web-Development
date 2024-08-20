@@ -1,5 +1,9 @@
 # Turborepo and Monorepos
 
+### Video
+
+[Turborepo Tutorial - a monorepo by Vercel](https://www.youtube.com/watch?v=d5De8rvFylQ)
+
 ## What are monorepos
 
 As the name suggests, a single repository (on github lets say) that holds all your frontend, backend, devops code
