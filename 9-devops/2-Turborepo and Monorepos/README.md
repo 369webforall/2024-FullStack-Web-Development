@@ -126,3 +126,178 @@ Same for dev and lint
 ## Exploring packages/ui
 
 ## Exploring apps/web
+
+## Let’s add a new page
+
+- Try adding a new page to /admin to the apps/web next.js website.
+- It should use a simple Admin component from packages/ui
+
+Steps to follow -
+
+- Create a new file admin.tsx inside packages/ui/src
+- Export a simple React component
+
+```ts
+"use client";
+
+export const Admin = () => {
+  return <h1>This is Admin component</h1>;
+};
+```
+
+- Add the component to exports in packages/ui/package.json
+- Create apps/web/app/admin/page.tsx
+- Export a default component that uses the @repo/ui/admin component
+- Run npm run dev (either in root or in apps/web ) and try to see the website
+
+- You can also use the packages/ui/turbo/generators to quickly bootstrap a new component
+- Try running npx gen react-component and notice it’ll do step 1, 2, 3 for you in one cli call
+
+## Exploring turbo.json
+
+![Exploring turbo.json](./images/Screenshot_2.jpg)
+
+Ref - https://turbo.build/repo/docs/getting-started/create-new#3-understanding-turbojson
+References - https://turbo.build/repo/docs/reference/configuration#globaldependencies
+
+## Adding React projects
+
+1. Go to the apps folder
+
+`cd app`
+
+2. Create a fresh vite app
+
+`npm create vite@latest `
+
+3. Update package.json to include @repo/ui as a dependency
+
+`"@repo/ui": "*",`
+
+4. Run npm install in the root folder (back to root folder and )
+
+`npm install`
+
+5. Run npm run dev
+
+6. Try importing something from the ui package and rendering it
+
+7. Add a turbo.json to the react folder to override the outputs object of this module.
+   Ref https://turbo.build/repo/docs/core-concepts/monorepos/configuring-workspaces
+
+```ts
+{
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": ["dist/**"]
+    }
+  }
+}
+
+```
+
+## Adding a Node.js app
+
+1. Create apps/backend
+2. Initialize empty ts repo
+
+```ts
+npm init -y
+npx tsc --init
+```
+
+1. Use base tsconfig (Ref - https://github.com/vercel/turbo/blob/main/examples/kitchen-sink/apps/api/tsconfig.json )
+
+```ts
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["ES2015"],
+    "module": "CommonJS",
+    "outDir": "./dist",
+  },
+  "exclude": ["node_modules"],
+  "include": ["."]
+}
+```
+
+1. Add dependencies
+
+```ts
+npm i express @types/express
+```
+
+1. Add src/index.ts
+
+```ts
+import express from "express";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "hello world",
+  });
+});
+```
+
+1. Update turbo.json
+
+```ts
+{
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": ["dist/**"]
+    }
+  }
+}
+```
+
+1. Install esbuild
+
+```ts
+npm install esbuild
+```
+
+1. Add build script to package.json
+
+```ts
+"build": "esbuild src/index.ts --platform=node --bundle --outdir=dist"
+```
+
+## Adding a common module
+
+A lot of times you need a module that can be shared by both frontend and backend apps
+
+1. Initialize a packages/common module
+
+```ts
+cd packages
+mkdir common
+```
+
+1.  Initialize an empty node.js project
+
+```ts
+npm init -y
+npx tsc --init
+```
+
+1. Change the name to @repo/common
+
+2. Export a few things from src/index.ts
+
+```ts
+export const NUMBER = 1;
+```
+
+1. Add it to the package.json of various apps (next app/react app/node app)
+
+```ts
+"@repo/common": "*",
+```
+
+1. Import it in any projecct and try to use it.
+2. Run npm install in root folder and see if it works as expected
