@@ -8,6 +8,8 @@
 
 [Turborepo and Monorepos- 2](https://youtu.be/pKsfjBicT0M)
 
+[Turborepo and Monorepos- 3](https://youtu.be/4gZHMvqgzto)
+
 ## What are monorepos
 
 As the name suggests, a single repository (on github lets say) that holds all your frontend, backend, devops code
