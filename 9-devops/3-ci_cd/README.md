@@ -1,5 +1,9 @@
 # CI and CD
 
+## video
+
+[CI-CD class 1](https://youtu.be/7qtDCSJRiRc)
+
 ## How to host next js app on GitHub pages using GitHub Actions | CI/CD
 
 - create repo in github
