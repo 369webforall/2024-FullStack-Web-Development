@@ -100,7 +100,9 @@ The resources below offer further learning and skill development opportunities. 
 
 **Tools**
 [Jobscan to optimize your resume against ATS](https://www.jobscan.co/)
+
 [Huntr for job application tracking](https://huntr.co/)
+
 [StrengthsFinder for self-assessment](https://www.gallup.com/cliftonstrengths/en/strengthsfinder.aspx)
 
 **Networking Platforms**
