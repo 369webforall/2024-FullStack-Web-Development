@@ -94,11 +94,15 @@ The resources below offer further learning and skill development opportunities. 
 "Soft Skills: The Software Developer's Life Manual" by John Sonmez for all-around career advice
 
 **Online Courses**
+
 [LeetCode for coding challenges and interview preparation](https://leetcode.com/)
+
 [Coursera's Improving Communication Skills for soft skills development](https://www.coursera.org/learn/communication-skills)
+
 [Coursera's Data Structures and Algorithm Specialization](https://www.coursera.org/specializations/data-structures-algorithms)
 
 **Tools**
+
 [Jobscan to optimize your resume against ATS](https://www.jobscan.co/)
 
 [Huntr for job application tracking](https://huntr.co/)
@@ -111,6 +115,7 @@ The resources below offer further learning and skill development opportunities. 
 [Stack Overflow for community engagement and learning](https://stackoverflow.com/)
 
 **Articles**
+
 [Reframing Your Focus During the Job Search](https://www.linkedin.com/pulse/journey-just-destination-reframing-your-focus-during-job-lopez/)
 
 [Referral Requests: Dos and Don'ts for Career Advancement](https://www.linkedin.com/pulse/referral-requests-dos-donts-career-advancement-jessica-lopez)
