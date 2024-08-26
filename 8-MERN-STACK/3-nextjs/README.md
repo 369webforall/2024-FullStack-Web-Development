@@ -2899,3 +2899,312 @@ const OrderDetailsPage = async ({
 
 export default OrderDetailsPage;
 ```
+
+## pay order by PayPal
+
+- Based on payment method selected we will display the button to proceed with payment. eg. here PayPal button
+
+#### step 1
+
+1. get paypal client id from developer.paypal.com
+2. .env
+
+   ```env
+   PAYPAL_API_URL=https://api-m.sandbox.paypal.com
+   PAYPAL_CLIENT_ID=sb
+   PAYPAL_APP_SECRET=???
+   ```
+
+#### step 2
+
+- App & Credentials
+- new app
+- App name,
+- type Merchant
+- sandboxaccount
+- create app
+- update the value on .env file
+
+```env
+ PAYPAL_API_URL=https://api-m.sandbox.paypal.com
+   PAYPAL_CLIENT_ID=sb
+   PAYPAL_APP_SECRET=???
+```
+
+note for live payment, get remove sandbox form the PAYPAL_API_URL = https://api-m.paypal.com
+
+#### step 3
+
+3. app/(root)/order/[id]/page.tsx
+
+   ```ts
+   return (
+     <OrderDetailsForm
+       order={order}
+       paypalClientId={process.env.PAYPAL_CLIENT_ID || "sb"}
+     />
+   );
+   ```
+
+- update the type in page
+
+```ts
+export default function OrderDetailsForm({
+  order,
+  paypalClientId,
+}: {
+  order: Order;
+  paypalClientId: string;
+}) {}
+```
+
+#### step 4
+
+- creating the utility functions
+
+lib/paypal.ts
+
+```ts
+const base = process.env.PAYPAL_API_URL || "https://api-m.sandbox.paypal.com";
+
+export const paypal = {
+  createOrder: async function createOrder(price: number) {
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders`;
+    const response = await fetch(url, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: price,
+            },
+          },
+        ],
+      }),
+    });
+    return handleResponse(response);
+  },
+  capturePayment: async function capturePayment(orderId: string) {
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+    const response = await fetch(url, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return handleResponse(response);
+  },
+};
+
+async function generateAccessToken() {
+  const { PAYPAL_CLIENT_ID, PAYPAL_APP_SECRET } = process.env;
+  const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_APP_SECRET).toString(
+    "base64"
+  );
+  const response = await fetch(`${base}/v1/oauth2/token`, {
+    method: "post",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  });
+
+  const jsonData = await handleResponse(response);
+  return jsonData.access_token;
+}
+
+async function handleResponse(response: any) {
+  if (response.status === 200 || response.status === 201) {
+    return response.json();
+  }
+
+  const errorMessage = await response.text();
+  throw new Error(errorMessage);
+}
+```
+
+#### step-5
+
+5.  lib/actions/order.actions.ts
+
+```ts
+// UPDATE
+export async function createPayPalOrder(orderId: string) {
+  try {
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.id, orderId),
+    });
+    if (order) {
+      const paypalOrder = await paypal.createOrder(Number(order.totalPrice));
+      await db
+        .update(orders)
+        .set({
+          paymentResult: {
+            id: paypalOrder.id,
+            email_address: "",
+            status: "",
+            pricePaid: "0",
+          },
+        })
+        .where(eq(orders.id, orderId));
+      return {
+        success: true,
+        message: "PayPal order created successfully",
+        data: paypalOrder.id,
+      };
+    } else {
+      throw new Error("Order not found");
+    }
+  } catch (err) {
+    return { success: false, message: formatError(err) };
+  }
+}
+
+export async function approvePayPalOrder(
+  orderId: string,
+  data: { orderID: string }
+) {
+  try {
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.id, orderId),
+    });
+    if (!order) throw new Error("Order not found");
+
+    const captureData = await paypal.capturePayment(data.orderID);
+    if (
+      !captureData ||
+      captureData.id !== order.paymentResult?.id ||
+      captureData.status !== "COMPLETED"
+    )
+      throw new Error("Error in paypal payment");
+    await updateOrderToPaid({
+      orderId,
+      paymentResult: {
+        id: captureData.id,
+        status: captureData.status,
+        email_address: captureData.payer.email_address,
+        pricePaid:
+          captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
+      },
+    });
+    revalidatePath(`/order/${orderId}`);
+    return {
+      success: true,
+      message: "Your order has been successfully paid by PayPal",
+    };
+  } catch (err) {
+    return { success: false, message: formatError(err) };
+  }
+}
+```
+
+- update
+- lib/actions/order.actions.ts
+
+```ts
+export const updateOrderToPaid = async ({
+  orderId,
+  paymentResult,
+}: {
+  orderId: string;
+  paymentResult?: PaymentResult;
+}) => {
+  const order = await db.query.orders.findFirst({
+    columns: { isPaid: true },
+    where: eq(orders.id, orderId),
+    with: { orderItems: true },
+  });
+  if (!order) throw new Error("Order not found");
+  if (order.isPaid) throw new Error("Order is already paid");
+  await db.transaction(async (tx) => {
+    for (const item of order.orderItems) {
+      await tx
+        .update(products)
+        .set({
+          stock: sql`${products.stock} - ${item.qty}`,
+        })
+        .where(eq(products.id, item.productId));
+    }
+    await tx
+      .update(orders)
+      .set({
+        isPaid: true,
+        paidAt: new Date(),
+        paymentResult,
+      })
+      .where(eq(orders.id, orderId));
+  });
+};
+```
+
+### step 6
+
+6. app/(root)/order/[id]/order-details-form.tsx
+
+- npm i @paypal/react-paypal-js
+- import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+
+  ```ts
+  export default function OrderDetailsForm({
+    order,
+    paypalClientId,
+  }: {
+    order: Order;
+    paypalClientId: string;
+  }) {
+    const { toast } = useToast();
+
+    function PrintLoadingState() {
+      const [{ isPending, isRejected }] = usePayPalScriptReducer();
+      let status = "";
+      if (isPending) {
+        status = "Loading PayPal...";
+      } else if (isRejected) {
+        status = "Error in loading PayPal.";
+      }
+      return status;
+    }
+    const handleCreatePayPalOrder = async () => {
+      const res = await createPayPalOrder(order.id);
+      if (!res.success)
+        return toast({
+          description: res.message,
+          variant: "destructive",
+        });
+      return res.data;
+    };
+    const handleApprovePayPalOrder = async (data: { orderID: string }) => {
+      const res = await approvePayPalOrder(order.id, data);
+      toast({
+        description: res.message,
+        variant: res.success ? "default" : "destructive",
+      });
+    };
+
+    return (
+      <>
+        {!isPaid && paymentMethod === "PayPal" && (
+          <div>
+            <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+              <PrintLoadingState />
+              <PayPalButtons
+                createOrder={handleCreatePayPalOrder}
+                onApprove={handleApprovePayPalOrder}
+              />
+            </PayPalScriptProvider>
+          </div>
+        )}
+      </>
+    );
+  }
+  ```

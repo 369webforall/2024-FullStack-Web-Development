@@ -1,0 +1,15 @@
+# Fullstack revision
+
+[zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
+
+[PostgreSQL](https://www.youtube.com/watch?v=85pG_pDkITY)
+
+#### Tech need to master to work as fullstack web developer.
+
+- Nextjs, Typescript, Tailwindcss, shadcn, zod, react-hook-form, prisma, postgresql
+
+### Projects for practice
+
+1. [Agency Website](https://www.youtube.com/watch?v=0NvSiEjW-EY)
+
+2. [Responsive Website with Next.js](https://www.youtube.com/watch?v=zSz67kLPbZY)
