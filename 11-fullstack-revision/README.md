@@ -10,7 +10,7 @@
 
 [PostgreSQL](https://www.youtube.com/watch?v=85pG_pDkITY)
 
-#### Tech need to master to work as fullstack web developer.
+#### To work as a full-stack web developer, you'll need to master the following technologies and skills:
 
 - Nextjs, Typescript, Tailwindcss, shadcn, zod, react-hook-form, prisma, postgresql
 
