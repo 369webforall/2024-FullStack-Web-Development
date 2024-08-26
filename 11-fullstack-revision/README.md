@@ -1,5 +1,11 @@
 # Fullstack revision
 
+## Class recording
+
+[Day-1- Tailwind css](https://youtu.be/CfA9fu7YDcs)
+
+### youtube resources
+
 [zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
 
 [PostgreSQL](https://www.youtube.com/watch?v=85pG_pDkITY)
