@@ -2946,7 +2946,7 @@ note for live payment, get remove sandbox form the PAYPAL_API_URL = https://api-
    );
    ```
 
-- update the type in page
+- update the type in order details form.
 
 ```ts
 export default function OrderDetailsForm({
@@ -3038,33 +3038,35 @@ async function handleResponse(response: any) {
 5.  lib/actions/order.actions.ts
 
 ```ts
-// UPDATE
+// update
+
 export async function createPayPalOrder(orderId: string) {
   try {
-    const order = await db.query.orders.findFirst({
-      where: eq(orders.id, orderId),
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
     });
-    if (order) {
-      const paypalOrder = await paypal.createOrder(Number(order.totalPrice));
-      await db
-        .update(orders)
-        .set({
-          paymentResult: {
-            id: paypalOrder.id,
-            email_address: "",
-            status: "",
-            pricePaid: "0",
-          },
-        })
-        .where(eq(orders.id, orderId));
-      return {
-        success: true,
-        message: "PayPal order created successfully",
-        data: paypalOrder.id,
-      };
-    } else {
-      throw new Error("Order not found");
-    }
+
+    if (!order) throw new Error("Order not found");
+
+    const paypalOrder = await paypal.createOrder(Number(order.totalPrice));
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentResult: {
+          id: paypalOrder.id,
+          email_address: "",
+          status: "",
+          pricePaid: "0",
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "PayPal order created successfully",
+      data: paypalOrder.id,
+    };
   } catch (err) {
     return { success: false, message: formatError(err) };
   }
@@ -3075,9 +3077,10 @@ export async function approvePayPalOrder(
   data: { orderID: string }
 ) {
   try {
-    const order = await db.query.orders.findFirst({
-      where: eq(orders.id, orderId),
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
     });
+
     if (!order) throw new Error("Order not found");
 
     const captureData = await paypal.capturePayment(data.orderID);
@@ -3086,7 +3089,8 @@ export async function approvePayPalOrder(
       captureData.id !== order.paymentResult?.id ||
       captureData.status !== "COMPLETED"
     )
-      throw new Error("Error in paypal payment");
+      throw new Error("Error in PayPal payment");
+
     await updateOrderToPaid({
       orderId,
       paymentResult: {
@@ -3097,7 +3101,9 @@ export async function approvePayPalOrder(
           captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
       },
     });
+
     revalidatePath(`/order/${orderId}`);
+
     return {
       success: true,
       message: "Your order has been successfully paid by PayPal",
@@ -3106,12 +3112,7 @@ export async function approvePayPalOrder(
     return { success: false, message: formatError(err) };
   }
 }
-```
 
-- update
-- lib/actions/order.actions.ts
-
-```ts
 export const updateOrderToPaid = async ({
   orderId,
   paymentResult,
@@ -3119,30 +3120,42 @@ export const updateOrderToPaid = async ({
   orderId: string;
   paymentResult?: PaymentResult;
 }) => {
-  const order = await db.query.orders.findFirst({
-    columns: { isPaid: true },
-    where: eq(orders.id, orderId),
-    with: { orderItems: true },
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { orderItems: true }, // Include order items in the query
   });
+
   if (!order) throw new Error("Order not found");
   if (order.isPaid) throw new Error("Order is already paid");
-  await db.transaction(async (tx) => {
+
+  await prisma.$transaction(async (tx) => {
     for (const item of order.orderItems) {
-      await tx
-        .update(products)
-        .set({
-          stock: sql`${products.stock} - ${item.qty}`,
-        })
-        .where(eq(products.id, item.productId));
+      // Decrement stock in MongoDB by manually calculating the new stock value
+      const product = await tx.product.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (!product) throw new Error(`Product not found: ${item.productId}`);
+
+      const newStock = product.stock - item.qty;
+
+      await tx.product.update({
+        where: { id: item.productId },
+        data: {
+          stock: newStock, // Update with the new stock value
+        },
+      });
     }
-    await tx
-      .update(orders)
-      .set({
+
+    // Update the order to mark it as paid
+    await tx.order.update({
+      where: { id: orderId },
+      data: {
         isPaid: true,
         paidAt: new Date(),
-        paymentResult,
-      })
-      .where(eq(orders.id, orderId));
+        paymentResult: paymentResult || undefined, // Update payment result if provided
+      },
+    });
   });
 };
 ```
@@ -3155,56 +3168,69 @@ export const updateOrderToPaid = async ({
 - import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
   ```ts
-  export default function OrderDetailsForm({
-    order,
-    paypalClientId,
-  }: {
-    order: Order;
-    paypalClientId: string;
-  }) {
-    const { toast } = useToast();
-
-    function PrintLoadingState() {
-      const [{ isPending, isRejected }] = usePayPalScriptReducer();
-      let status = "";
-      if (isPending) {
-        status = "Loading PayPal...";
-      } else if (isRejected) {
-        status = "Error in loading PayPal.";
-      }
-      return status;
+  const { toast } = useToast();
+  function PrintLoadingState() {
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
+    let status = "";
+    if (isPending) {
+      status = "Loading PayPal...";
+    } else if (isRejected) {
+      status = "Error in loading PayPal.";
     }
-    const handleCreatePayPalOrder = async () => {
-      const res = await createPayPalOrder(order.id);
-      if (!res.success)
-        return toast({
-          description: res.message,
-          variant: "destructive",
-        });
-      return res.data;
-    };
-    const handleApprovePayPalOrder = async (data: { orderID: string }) => {
-      const res = await approvePayPalOrder(order.id, data);
-      toast({
+    return status;
+  }
+  const handleCreatePayPalOrder = async () => {
+    const res = await createPayPalOrder(order.id);
+    if (!res.success)
+      return toast({
         description: res.message,
-        variant: res.success ? "default" : "destructive",
+        variant: "destructive",
       });
-    };
+    return res.data;
+  };
+  const handleApprovePayPalOrder = async (data: { orderID: string }) => {
+    const res = await approvePayPalOrder(order.id, data);
+    toast({
+      description: res.message,
+      variant: res.success ? "default" : "destructive",
+    });
+  };
+
 
     return (
-      <>
-        {!isPaid && paymentMethod === "PayPal" && (
-          <div>
-            <PayPalScriptProvider options={{ clientId: paypalClientId }}>
-              <PrintLoadingState />
-              <PayPalButtons
-                createOrder={handleCreatePayPalOrder}
-                onApprove={handleApprovePayPalOrder}
-              />
-            </PayPalScriptProvider>
-          </div>
-        )}
-      </>
+      .....
+      <Card>
+            <CardContent className="p-4 space-y-4 gap-4">
+              <h2 className="text-xl pb-4">Order Summary</h2>
+              <div className="flex justify-between">
+                <div>Items</div>
+                <div>{formatCurrency(itemsPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Tax</div>
+                <div>{formatCurrency(taxPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Shipping</div>
+                <div>{formatCurrency(shippingPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Total</div>
+                <div>{formatCurrency(totalPrice)}</div>
+              </div>
+              {!isPaid && paymentMethod === "PayPal" && (
+                <div>
+                  <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                    <PrintLoadingState />
+                    <PayPalButtons
+                      createOrder={handleCreatePayPalOrder}
+                      onApprove={handleApprovePayPalOrder}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              )}
+            </CardContent>
+          </Card>
     );
   }
   ```
