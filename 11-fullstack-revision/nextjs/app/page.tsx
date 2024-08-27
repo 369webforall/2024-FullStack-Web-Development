@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -10,6 +12,9 @@ export default function Home() {
         numquam aliquam laboriosam placeat voluptatibus repellat, aut pariatur
         fuga repellendus nihil nam!
       </p>
+      <Button variant="purple" size="lg">
+        Add to cart
+      </Button>
     </div>
   );
 }

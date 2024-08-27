@@ -4,6 +4,8 @@
 
 [Day-1- Tailwind css](https://youtu.be/CfA9fu7YDcs)
 
+[Day-2- Shadcn](https://youtu.be/7OCKJ8yhYqY)
+
 ### youtube resources
 
 [zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
