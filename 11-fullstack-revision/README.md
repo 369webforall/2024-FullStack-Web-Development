@@ -6,6 +6,8 @@
 
 [Day-2- Shadcn](https://youtu.be/7OCKJ8yhYqY)
 
+[Day-3- Shadcn-navbar](https://youtu.be/8HJ75Qzju7U)
+
 ### youtube resources
 
 [zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
