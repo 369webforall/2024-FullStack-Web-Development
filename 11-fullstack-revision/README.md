@@ -8,6 +8,8 @@
 
 [Day-3- Shadcn-navbar](https://youtu.be/8HJ75Qzju7U)
 
+[Day-4- Nextjs-prisma](https://youtu.be/OzEMkcw55To)
+
 ### youtube resources
 
 [zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
