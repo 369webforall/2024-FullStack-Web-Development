@@ -30,6 +30,8 @@
 
 14. [Ecommerce- day 13- Payment with paypal](https://youtu.be/LbZeUFLzLlw)
 
+15. [Ecommerce- day 14- Order history page](https://youtu.be/HdPUS4CkAC4)
+
 ## Ecommerce FullStack web application with admin dashboard
 
 [Github link for project](https://github.com/369webforall/nextjs-ecommerce)
