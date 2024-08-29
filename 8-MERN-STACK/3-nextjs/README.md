@@ -3236,3 +3236,356 @@ export const updateOrderToPaid = async ({
     );
   }
   ```
+
+## Order history page with pagination
+
+#### step -1
+
+app/user/main-nav.tsx
+
+```ts
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+
+import { cn } from "@/lib/utils";
+
+const links = [
+  {
+    title: "Profile",
+    href: "/user/profile",
+  },
+  {
+    title: "Orders",
+    href: "/user/orders",
+  },
+  {
+    title: "Settings",
+    href: "/user/settings",
+  },
+];
+export function MainNav({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLElement>) {
+  const pathname = usePathname();
+  return (
+    <nav
+      className={cn("flex items-center space-x-4 lg:space-x-6", className)}
+      {...props}
+    >
+      {links.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            pathname.includes(item.href) ? "" : "text-muted-foreground"
+          )}
+        >
+          {item.title}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+```
+
+### step -2
+
+- create layout page
+  app/user/layout.tsx
+
+```ts
+import Link from "next/link";
+import Image from "next/image";
+import { APP_NAME } from "@/lib/constant";
+import { MainNav } from "./main-nav";
+import UserButton from "@/components/shared/user-button";
+export default async function DashboardPage({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <div className="flex flex-col">
+        <div className="border-b">
+          <div className="flex h-16 items-center px-4">
+            <Link href="/" className="w-36">
+              <Image
+                src="/icons/logo-amazon.svg"
+                width={80}
+                height={80}
+                alt={`${APP_NAME} logo`}
+              />
+            </Link>
+            <MainNav className="mx-6" />
+            <div className="ml-auto flex items-center space-x-4">
+              {/* <Search /> */}
+              <UserButton />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 space-y-4 p-8 pt-6">{children}</div>
+      </div>
+    </>
+  );
+}
+```
+
+### step - 3
+
+- create order history page
+
+app/user/orders/page.tsx
+
+```ts
+import { APP_NAME } from "@/lib/constant";
+import { Metadata } from "next";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import { formatDateTime } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
+import Link from "next/link";
+import { getMyOrders } from "@/lib/action/user.action";
+import Pagination from "@/components/shared/pagination";
+export const metadata: Metadata = {
+  title: `My Orders - ${APP_NAME}`,
+};
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: { page: string };
+}) {
+  const page = Number(searchParams.page) || 1;
+  const orders = await getMyOrders({
+    page,
+    limit: 6,
+  });
+  return (
+    <div className="space-y-2">
+      <h2 className="h2-bold">Orders</h2>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>DATE</TableHead>
+              <TableHead>TOTAL</TableHead>
+              <TableHead>PAID</TableHead>
+              <TableHead>DELIVERED</TableHead>
+              <TableHead>ACTIONS</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orders.data.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell>{order.id.substring(20, 24)}</TableCell>
+                <TableCell>
+                  {formatDateTime(order.createdAt).dateTime}
+                </TableCell>
+                <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
+                <TableCell>
+                  {order.isPaid && order.paidAt
+                    ? formatDateTime(order.paidAt).dateTime
+                    : "not paid"}
+                </TableCell>
+                <TableCell>
+                  {order.isDelivered && order.deliveredAt
+                    ? formatDateTime(order.deliveredAt).dateTime
+                    : "not delivered"}
+                </TableCell>
+                <TableCell>
+                  <Link href={`/order/${order.id}`}>
+                    <span className="px-2">Details</span>
+                  </Link>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {orders.totalPages > 1 && (
+          <Pagination page={page} totalPages={orders?.totalPages!} />
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+- Function Definition: This is an asynchronous function that serves as the main component for the "Orders" page. It accepts searchParams as a prop, which is an object containing the query parameters from the URL, like the page number.
+
+- Page Number: The page variable is extracted from searchParams. If no page number is provided, it defaults to 1.
+
+- Fetching Orders: The getMyOrders function is called with the current page and a limit of 6 orders per page, fetching the user's orders.
+
+### step -4
+
+- go to order.actions.tsx
+- define getMyOrders function
+
+```ts
+export async function getMyOrders({
+  limit = PAGE_SIZE,
+  page,
+}: {
+  limit?: number;
+  page: number;
+}) {
+  const session = await auth();
+  if (!session) throw new Error("User is not authenticated");
+
+  const data = await prisma.order.findMany({
+    where: {
+      userId: session?.user?.id!,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+
+  const dataCount = await prisma.order.count({
+    where: {
+      userId: session?.user?.id!,
+    },
+  });
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
+}
+```
+
+Purpose: The getMyOrders function is used to retrieve a paginated list of orders for the authenticated user from the database.
+Steps:
+
+- Authenticate the User: Check if the user is logged in.
+- Fetch Orders: Retrieve the orders belonging to the user, applying pagination and sorting.
+- Count Orders: Calculate the total number of orders to determine the number of pages available.
+- Return Data: Return the fetched orders and the total number of pages.
+
+### step- 5
+
+- add pagination
+
+components/shared/pagination.tsx
+
+```ts
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import React from "react";
+
+import { formUrlQuery } from "@/lib/utils";
+
+import { Button } from "../ui/button";
+
+type PaginationProps = {
+  page: number | string;
+  totalPages: number;
+  urlParamName?: string;
+};
+
+const Pagination = ({ page, totalPages, urlParamName }: PaginationProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const onClick = (btnType: string) => {
+    const pageValue = btnType === "next" ? Number(page) + 1 : Number(page) - 1;
+
+    const newUrl = formUrlQuery({
+      params: searchParams.toString(),
+      key: urlParamName || "page",
+      value: pageValue.toString(),
+    });
+
+    router.push(newUrl, { scroll: false });
+  };
+
+  return (
+    <div className="flex gap-2">
+      <Button
+        size="lg"
+        variant="outline"
+        className="w-28"
+        onClick={() => onClick("prev")}
+        disabled={Number(page) <= 1}
+      >
+        Previous
+      </Button>
+      <Button
+        size="lg"
+        variant="outline"
+        className="w-28"
+        onClick={() => onClick("next")}
+        disabled={Number(page) >= totalPages}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
+
+export default Pagination;
+```
+
+- lib/utils.ts
+
+- add formUrlQuery function
+- install `npm install query-string`
+- import qs from "query-string";
+
+```ts
+export function formUrlQuery({
+  params,
+  key,
+  value,
+}: {
+  params: string;
+  key: string;
+  value: string | null;
+}) {
+  const currentUrl = qs.parse(params);
+
+  currentUrl[key] = value; // Updating the Query Paramete
+
+  // Stringifying the Updated URL and return
+
+  return qs.stringifyUrl(
+    {
+      url: window.location.pathname,
+      query: currentUrl,
+    },
+    { skipNull: true }
+  );
+}
+```
+
+- params: This is the current query string of the URL (the part after the ? in a URL).
+
+- key: The name of the query parameter you want to update or add.
+
+- value: The value to set for the specified key. If null, the query parameter may be removed or handled differently based on the options passed to the qs.stringifyUrl function.
+
+`Stringifying the Updated URL and return`
+
+- qs.stringifyUrl: This method converts the currentUrl object back into a query string and appends it to the current path (window.location.pathname).
+
+- url: This is the base URL path, without the query string. window.location.pathname refers to the path of the current page, ensuring the updated query string is appended to the same path.
+
+- query: This is the updated query parameters object (currentUrl).
+
+- skipNull: true: This option tells the function to skip query parameters that have a null value, effectively removing them from the final URL.
