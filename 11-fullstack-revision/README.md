@@ -10,6 +10,8 @@
 
 [Day-4- Nextjs-prisma](https://youtu.be/OzEMkcw55To)
 
+[Day-5- Nextjs-shadcn-layout](https://youtu.be/BqHT7SLqLwQ)
+
 ### youtube resources
 
 [zod](https://www.youtube.com/watch?v=n7iK-5Ahg6o)
