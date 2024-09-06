@@ -4,7 +4,7 @@
 
 ## Class Recording
 
-[SEO-nextjs, google search console]()
+[SEO-nextjs, google search console](https://youtu.be/dbH1E-fEwH8)
 
 ## Tools
 
@@ -214,3 +214,5 @@ export default function robots(): MetadataRoute.Robots {
 ```
 
 ## Google search console
+
+[Google search console]()
