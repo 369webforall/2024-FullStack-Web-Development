@@ -2,6 +2,8 @@
 
 ## Class Recording
 
+1. Day 1 - [setup project and navbar](https://youtu.be/ej414O81POw)
+
 ## Tutorial
 
 1. Step 1
