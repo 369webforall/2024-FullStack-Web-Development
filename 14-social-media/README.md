@@ -4,6 +4,8 @@
 
 1. Day 1 - [setup project and navbar](https://youtu.be/ej414O81POw)
 
+2. Day 2 - [App stories](https://youtu.be/WFMm2WtsyiI)
+
 ## Tutorial
 
 1. Step 1
