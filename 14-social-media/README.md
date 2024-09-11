@@ -6,6 +6,8 @@
 
 2. Day 2 - [App stories](https://youtu.be/WFMm2WtsyiI)
 
+3. Day 3 - [App stories](https://youtu.be/2olJfgDFUn4)
+
 ## Tutorial
 
 1. Step 1
