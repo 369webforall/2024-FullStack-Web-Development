@@ -10,6 +10,8 @@
 
 4. Day 4 - [App stories](https://youtu.be/6BSpx3379gU)
 
+5. Day 5 - [App stories](https://youtu.be/T9udvYF4KbE)
+
 ## Tutorial
 
 1. Step 1
