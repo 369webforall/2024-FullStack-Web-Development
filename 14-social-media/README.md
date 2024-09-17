@@ -12,6 +12,8 @@
 
 5. Day 5 - [App stories](https://youtu.be/T9udvYF4KbE)
 
+6. Day 6 - [App stories](https://youtu.be/xqhxOkhPaQ0)
+
 ## Tutorial
 
 1. Step 1
