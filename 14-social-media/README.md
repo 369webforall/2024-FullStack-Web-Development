@@ -14,6 +14,8 @@
 
 6. Day 6 - [App stories](https://youtu.be/xqhxOkhPaQ0)
 
+7. Day 7 - [user info update](https://youtu.be/-f44zsNpcjU)
+
 ## Tutorial
 
 1. Step 1
