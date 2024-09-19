@@ -16,6 +16,10 @@
 
 7. Day 7 - [user info update](https://youtu.be/-f44zsNpcjU)
 
+8. Day 8A - [user info update](https://youtu.be/eB_99mrsj_w)
+
+9. Day 8B - [Friend request](https://youtu.be/raok89TpexE)
+
 ## Tutorial
 
 1. Step 1
