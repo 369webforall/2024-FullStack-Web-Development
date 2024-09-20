@@ -20,6 +20,8 @@
 
 9. Day 8B - [Friend request](https://youtu.be/raok89TpexE)
 
+10. Day 9 - [Update user](https://youtu.be/ynrM9GXdSmM)
+
 ## Tutorial
 
 1. Step 1
