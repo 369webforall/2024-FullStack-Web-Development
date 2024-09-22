@@ -22,6 +22,8 @@
 
 10. Day 9 - [Update user](https://youtu.be/ynrM9GXdSmM)
 
+11. Day 10 - [Update profile image](https://youtu.be/0Ndbz9-XGks)
+
 ## Tutorial
 
 1. Step 1
