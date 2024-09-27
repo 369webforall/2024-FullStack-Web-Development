@@ -24,6 +24,8 @@
 
 11. Day 10 - [Update profile image](https://youtu.be/0Ndbz9-XGks)
 
+12. Day 11 - [display post and add comments](https://youtu.be/2l-9ra6ypcY)
+
 ## Tutorial
 
 1. Step 1
