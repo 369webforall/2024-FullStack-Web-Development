@@ -26,6 +26,8 @@
 
 12. Day 11 - [display post and add comments](https://youtu.be/2l-9ra6ypcY)
 
+13. Day 12 - [Add post and stories](https://youtu.be/1s0BR-prtDg)
+
 ## Tutorial
 
 1. Step 1
