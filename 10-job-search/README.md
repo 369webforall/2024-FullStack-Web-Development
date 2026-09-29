@@ -104,6 +104,9 @@ The resources below offer further learning and skill development opportunities. 
 **Tools**
 
 [Jobscan to optimize your resume against ATS](https://www.jobscan.co/)
+[ResumeAI:](https://withresumeai.com/)
+
+Free ATS checker (3 checks/day anonymous, 10/day with a free account). Also publishes State of ATS 2026 (738 employers, 704 portal-verified; Workday 37.9%, not the folklore 75.4%).
 
 [Huntr for job application tracking](https://huntr.co/)
 
